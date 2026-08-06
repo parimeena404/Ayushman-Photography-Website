@@ -17,7 +17,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <Hero mode="video" />
+      <Hero mode="slideshow" />
       <PressCarousel />
       <FeaturedStories />
       <PortfolioCategories />

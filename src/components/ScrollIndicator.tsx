@@ -26,7 +26,7 @@ export default function ScrollIndicator() {
           fontSize: '0.7rem',
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
-          color: 'rgba(248, 245, 239, 0.6)',
+          color: 'rgba(252, 247, 246, 0.8)',
         }}
       >
         Scroll
@@ -37,7 +37,7 @@ export default function ScrollIndicator() {
         style={{
           width: '1px',
           height: '40px',
-          backgroundColor: 'rgba(191, 164, 111, 0.5)',
+          backgroundColor: 'var(--accent-secondary)',
         }}
       />
     </motion.div>

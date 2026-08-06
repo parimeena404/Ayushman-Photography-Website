@@ -6,39 +6,39 @@ import { staggerContainer, fadeInUp, fadeInLeft, fadeInRight } from '@/lib/anima
 
 const categories = [
   {
-    name: 'Wedding',
-    description: 'Timeless celebrations captured with an editorial eye. Every vow, every glance, every stolen moment.',
-    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=900&q=80',
+    name: 'Royal Weddings',
+    description: 'Timeless Indian wedding celebrations captured with an editorial eye. Every ritual, every emotion, every sacred vow.',
+    image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1400&q=85&auto=format',
   },
   {
-    name: 'Pre-Wedding',
-    description: 'The quiet anticipation before the grand day. Intimate portraits woven into breathtaking landscapes.',
-    image: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=900&q=80',
+    name: 'Pre-Wedding & Couples',
+    description: 'The quiet anticipation before the grand day. Intimate portraits woven into iconic heritage landscapes.',
+    image: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=1400&q=85&auto=format',
   },
   {
-    name: 'Destination',
-    description: 'From sun-kissed Mediterranean coasts to misty Himalayan valleys. Love knows no borders.',
-    image: 'https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?w=900&q=80',
+    name: 'Destination & Heritage',
+    description: 'From Rajasthan palace courtyards to Kerala backwaters and misty Himalayan valleys. Art that spans traditions.',
+    image: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1400&q=85&auto=format',
   },
   {
-    name: 'Engagement',
-    description: 'That magical "yes" moment and the joy that follows. Raw emotion, beautifully preserved.',
-    image: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=900&q=80',
+    name: 'Festivals & Sangeet',
+    description: 'Vibrant Haldi, Sangeet, and cultural festivals bathed in rich colors, movement, and genuine joy.',
+    image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=1400&q=85&auto=format',
   },
   {
-    name: 'Portrait',
-    description: 'Deeply personal, artistically refined. Portraits that reveal character and tell your story.',
-    image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=900&q=80',
+    name: 'Editorial Portraiture',
+    description: 'Deeply personal, artistically refined portraits celebrating character, couture, and Indian heritage.',
+    image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=1400&q=85&auto=format',
   },
   {
-    name: 'Lifestyle',
-    description: 'Authentic moments in their natural flow. The beauty of everyday life elevated to art.',
-    image: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=900&q=80',
+    name: 'Cultural Arts & Lifestyle',
+    description: 'Classical arts, intimate gatherings, and authentic cultural celebrations elevated to fine art.',
+    image: 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=1400&q=85&auto=format',
   },
   {
-    name: 'Commercial',
-    description: 'Premium brand imagery crafted with cinematic precision. Where commerce meets artistry.',
-    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=900&q=80',
+    name: 'Commercial & Couture',
+    description: 'Premium luxury brand imagery and bridal couture campaigns crafted with cinematic precision.',
+    image: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1400&q=85&auto=format',
   },
 ];
 

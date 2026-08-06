@@ -7,10 +7,12 @@ import ScrollIndicator from './ScrollIndicator';
 import { fadeInUp } from '@/lib/animations';
 
 const slideshowImages = [
-  'https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=80',
-  'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=1920&q=80',
-  'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=1920&q=80',
-  'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1920&q=80',
+  'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1920&q=80', // Royal Indian Bride & Bridal Lehenga
+  'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=1920&q=80', // Vibrant Holi Festival of Colors
+  'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1920&q=80', // Palace Celebration in Udaipur
+  'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=1920&q=80', // Elegant Indian Saree & Heritage Portrait
+  'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=1920&q=80', // Golden Hour Ceremony in Varanasi
+  'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=1920&q=80', // Indian Classical Heritage Celebration
 ];
 
 // Sample public royalty-free ambient video
@@ -20,7 +22,7 @@ interface HeroProps {
   mode?: 'video' | 'slideshow';
 }
 
-export default function Hero({ mode = 'video' }: HeroProps) {
+export default function Hero({ mode = 'slideshow' }: HeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const isInView = useInView(containerRef, { once: true });
@@ -119,7 +121,7 @@ export default function Hero({ mode = 'video' }: HeroProps) {
           style={{
             background: 'none',
             border: 'none',
-            color: heroMode === 'video' ? '#BFA46F' : '#F8F5EF',
+            color: heroMode === 'video' ? 'var(--accent-hero)' : '#FCF7F6',
             fontSize: '0.7rem',
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
@@ -130,13 +132,13 @@ export default function Hero({ mode = 'video' }: HeroProps) {
         >
           Film
         </button>
-        <span style={{ color: 'rgba(248,245,239,0.3)', fontSize: '0.7rem' }}>|</span>
+        <span style={{ color: 'rgba(252,247,246,0.3)', fontSize: '0.7rem' }}>|</span>
         <button
           onClick={() => setHeroMode('slideshow')}
           style={{
             background: 'none',
             border: 'none',
-            color: heroMode === 'slideshow' ? '#BFA46F' : '#F8F5EF',
+            color: heroMode === 'slideshow' ? 'var(--accent-hero)' : '#FCF7F6',
             fontSize: '0.7rem',
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
@@ -165,7 +167,7 @@ export default function Hero({ mode = 'video' }: HeroProps) {
           animate={isInView ? 'visible' : 'hidden'}
           className="text-editorial-sm font-body"
           style={{
-            color: 'var(--accent)',
+            color: 'var(--accent-hero)',
             marginBottom: '1.5rem',
           }}
         >
@@ -178,7 +180,7 @@ export default function Hero({ mode = 'video' }: HeroProps) {
           transition={{ duration: 1, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="font-heading text-editorial-xl"
           style={{
-            color: '#F8F5EF',
+            color: '#FCF7F6',
             marginBottom: '2rem',
             fontWeight: 300,
             fontStyle: 'italic',
@@ -195,10 +197,10 @@ export default function Hero({ mode = 'video' }: HeroProps) {
           transition={{ duration: 0.8, delay: 0.7 }}
           style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}
         >
-          <a href="/booking" className="btn-premium" style={{ color: '#F8F5EF', borderColor: '#BFA46F' }}>
+          <a href="/booking" className="btn-premium" style={{ color: '#FCF7F6', borderColor: 'var(--accent-secondary)' }}>
             Request Availability
           </a>
-          <a href="#stories" className="btn-premium" style={{ color: '#F8F5EF', borderColor: 'rgba(248,245,239,0.3)' }}>
+          <a href="#stories" className="btn-premium" style={{ color: '#FCF7F6', borderColor: 'rgba(252,247,246,0.3)' }}>
             Explore Stories
           </a>
         </motion.div>

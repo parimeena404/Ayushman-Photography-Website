@@ -7,23 +7,23 @@ import { staggerContainer, fadeInUp } from '@/lib/animations';
 const stories = [
   {
     title: 'Anika & Rohan',
-    subtitle: 'A Tuscan Affair',
-    location: 'Florence, Italy',
-    image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&q=80',
+    subtitle: 'Royal Palace Celebration',
+    location: 'Jaipur, Rajasthan',
+    image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1400&q=85&auto=format',
     aspect: 'tall',
   },
   {
-    title: 'Mira & James',
-    subtitle: 'Golden Hour Romance',
-    location: 'Santorini, Greece',
-    image: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=80',
+    title: 'Priya & Kabir',
+    subtitle: 'Golden Hour Haldi & Sangeet',
+    location: 'Udaipur, Rajasthan',
+    image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=1400&q=85&auto=format',
     aspect: 'wide',
   },
   {
     title: 'Leila & Arjun',
-    subtitle: 'Palace of Dreams',
+    subtitle: 'Lake Palace Heritage Affair',
     location: 'Udaipur, India',
-    image: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1400&q=85&auto=format',
     aspect: 'tall',
   },
 ];

@@ -5,15 +5,15 @@ import { useRef, useState } from 'react';
 import { staggerContainer, fadeInUp } from '@/lib/animations';
 
 const images = [
-  { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=500&q=80', alt: 'Wedding ceremony' },
-  { src: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=500&q=80', alt: 'Bride portrait' },
-  { src: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=500&q=80', alt: 'Golden hour couple' },
-  { src: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=500&q=80', alt: 'Destination wedding' },
-  { src: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=500&q=80', alt: 'Pre-wedding shoot' },
-  { src: 'https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?w=500&q=80', alt: 'Coastal love story' },
-  { src: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=500&q=80', alt: 'Engagement ring' },
-  { src: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=500&q=80', alt: 'Lifestyle moment' },
-  { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&q=80', alt: 'Portrait session' },
+  { src: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1200&q=85&auto=format', alt: 'Royal Indian Bride' },
+  { src: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=1200&q=85&auto=format', alt: 'Holi Colors Celebration' },
+  { src: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1200&q=85&auto=format', alt: 'Palace Wedding' },
+  { src: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=1200&q=85&auto=format', alt: 'Saree Heritage Portrait' },
+  { src: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=1200&q=85&auto=format', alt: 'Ghats Golden Hour' },
+  { src: 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=1200&q=85&auto=format', alt: 'Classical Heritage Dance' },
+  { src: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=1200&q=85&auto=format', alt: 'Sunset Couple Portrait' },
+  { src: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1200&q=85&auto=format', alt: 'Jaipur Palace Architecture' },
+  { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=85&auto=format', alt: 'Mandap Ceremony' },
 ];
 
 export default function InstagramGrid() {

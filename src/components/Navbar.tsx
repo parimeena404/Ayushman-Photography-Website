@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useTheme } from '@/context/ThemeContext';
@@ -18,12 +19,15 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const pathname = usePathname();
   const { scrollDirection, isAtTop } = useScrollDirection();
   const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const isVisible = scrollDirection === 'up' || isAtTop;
-  const isTransparent = isAtTop && !menuOpen;
+  const isHomePage = pathname === '/';
+  const isTransparent = isHomePage && isAtTop && !menuOpen;
+  // Always keep visible on inner pages or when scrolling up/top
+  const isVisible = !isHomePage || scrollDirection === 'up' || isAtTop;
 
   return (
     <>
@@ -38,6 +42,7 @@ export default function Navbar() {
           right: 0,
           zIndex: 100,
           backgroundColor: isTransparent ? 'transparent' : 'var(--bg-primary)',
+          backdropFilter: isTransparent ? 'none' : 'blur(16px)',
           borderBottom: isTransparent ? 'none' : '1px solid var(--divider)',
           transition: 'background-color 0.4s ease, border-bottom 0.4s ease',
         }}
@@ -91,7 +96,7 @@ export default function Navbar() {
                   transition: 'color 0.3s ease',
                 }}
                 onMouseEnter={(e) => {
-                  (e.target as HTMLElement).style.color = 'var(--accent)';
+                  (e.target as HTMLElement).style.color = 'var(--accent-hero)';
                 }}
                 onMouseLeave={(e) => {
                   (e.target as HTMLElement).style.color = isTransparent
@@ -103,7 +108,16 @@ export default function Navbar() {
               </a>
             ))}
 
-            <a href="/booking" className="btn-premium" style={{ padding: '0.5rem 1.25rem', fontSize: '0.7rem' }}>
+            <a
+              href="/booking"
+              className="btn-premium"
+              style={{
+                padding: '0.5rem 1.25rem',
+                fontSize: '0.7rem',
+                color: isTransparent ? '#FCF7F6' : 'var(--text-primary)',
+                borderColor: isTransparent ? 'var(--accent-secondary)' : 'var(--accent)',
+              }}
+            >
               Inquire
             </a>
 

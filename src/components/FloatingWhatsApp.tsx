@@ -1,9 +1,9 @@
 'use client';
 
 export default function FloatingWhatsApp() {
-  const phoneNumber = '+919876543210';
+  const phoneNumber = '+919479784979';
   const defaultMessage = encodeURIComponent(
-    'Hello Lumière Studio, I would like to inquire about wedding photography availability.'
+    'Hello Ayushman Cards n Graphics, I would like to inquire about wedding invitations, graphics & photography.'
   );
 
   return (
@@ -20,23 +20,23 @@ export default function FloatingWhatsApp() {
         width: '52px',
         height: '52px',
         borderRadius: '50%',
-        backgroundColor: '#0F231B',
-        border: '1px solid rgba(191, 164, 111, 0.4)',
+        backgroundColor: 'var(--bg-dark)',
+        border: '1px solid var(--accent)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: '#BFA46F',
+        color: 'var(--accent-hero)',
         boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
         transition: 'transform 0.3s ease, border-color 0.3s ease, color 0.3s ease',
         textDecoration: 'none',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'scale(1.08)';
-        e.currentTarget.style.borderColor = '#BFA46F';
+        e.currentTarget.style.borderColor = 'var(--accent-secondary)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = 'scale(1)';
-        e.currentTarget.style.borderColor = 'rgba(191, 164, 111, 0.4)';
+        e.currentTarget.style.borderColor = 'var(--accent)';
       }}
     >
       <svg

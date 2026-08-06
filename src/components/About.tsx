@@ -5,18 +5,18 @@ import { useRef } from 'react';
 import { staggerContainer, fadeInUp, fadeInLeft, fadeInRight, lineGrow } from '@/lib/animations';
 
 const milestones = [
-  { year: '2014', text: 'Founded the studio with a single camera and a vision' },
-  { year: '2017', text: 'First international destination wedding in Tuscany' },
-  { year: '2019', text: 'Published in Vogue India & Harper\'s Bazaar' },
-  { year: '2021', text: 'Named among Asia\'s Top 50 Wedding Photographers' },
-  { year: '2024', text: '500+ love stories captured across 20 countries' },
+  { year: '2001', text: 'Established Ayushman Cards n Graphics in Ujjain as complete printing pioneers' },
+  { year: '2008', text: 'Expanded into luxury Indian wedding cards & custom typography design' },
+  { year: '2015', text: 'Launched fine art wedding photography, royal event & press graphics' },
+  { year: '2020', text: 'State-of-the-art digital printing, banners, flex & high-definition media production' },
+  { year: '2025', text: '24+ years of creative excellence serving thousands of families & events across India' },
 ];
 
 const awards = [
-  'Fearless Photographers Award',
-  'WPPI Silver',
-  'Better Photography — Photographer of the Year',
-  'International Wedding Photographer of the Year — Finalist',
+  'Complete Printing Solutions — Excellence Award',
+  'Premier Indian Wedding Card Designer — MP Choice',
+  'Heritage Event & Fine Art Photography Studio',
+  'Trusted Business Icon — Ujjain',
 ];
 
 export default function About() {
@@ -37,13 +37,13 @@ export default function About() {
             className="text-editorial-sm font-body"
             style={{ color: 'var(--accent)', marginBottom: '1rem' }}
           >
-            About
+            About Studio
           </p>
           <h2
             className="font-heading text-editorial-lg"
             style={{ color: 'var(--text-primary)', fontWeight: 300 }}
           >
-            The Artist Behind the Lens
+            We Are Printers & Creatives By Heart
           </h2>
         </motion.div>
 
@@ -61,8 +61,8 @@ export default function About() {
           {/* Portrait */}
           <motion.div variants={fadeInLeft}>
             <img
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80"
-              alt="Photographer portrait"
+              src="https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=800&q=85&auto=format"
+              alt="Ayushman Cards n Graphics Craftsmanship"
               style={{
                 width: '100%',
                 aspectRatio: '3/4',
@@ -84,9 +84,7 @@ export default function About() {
                 marginBottom: '2.5rem',
               }}
             >
-              Photography, for me, has never been about perfect compositions or posed smiles. 
-              It is about the quiet tremble of a hand reaching for another, the way light 
-              catches a tear of joy, the unspoken promises held in a single glance.
+              Since 2001, <strong>Ayushman Cards n Graphics</strong> has been Ujjain&rsquo;s premier destination for complete printing solutions, fine art wedding invitations, visiting cards, posters, flex, banners, and royal event photography.
             </p>
 
             <p
@@ -98,9 +96,7 @@ export default function About() {
                 marginBottom: '2.5rem',
               }}
             >
-              Every couple carries a universe of stories within them. My role is simply to 
-              listen — through the lens — and give those stories a form that will endure 
-              long after the flowers have faded and the music has stopped.
+              Founded with passion and dedicated craftsmanship, we blend traditional Indian aesthetics with modern digital graphics and cinematic photography to make every celebration unforgettable.
             </p>
 
             {/* Philosophy quote */}
@@ -121,8 +117,7 @@ export default function About() {
                   lineHeight: 1.5,
                 }}
               >
-                &ldquo;I don&rsquo;t capture moments. I preserve the feeling of being alive 
-                within them.&rdquo;
+                &ldquo;We don&rsquo;t just print paper or take photos. We craft memories that families cherish for generations.&rdquo;
               </p>
             </div>
 
@@ -134,7 +129,7 @@ export default function About() {
                 letterSpacing: '0.1em',
               }}
             >
-              — Arjun Mehta, Founder & Lead Photographer
+              — Ayushman Cards n Graphics Studio Team
             </p>
           </motion.div>
         </div>

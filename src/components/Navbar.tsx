@@ -62,7 +62,7 @@ export default function Navbar() {
             href="/"
             className="font-heading"
             style={{
-              fontSize: '1.5rem',
+              fontSize: '1.35rem',
               fontWeight: 600,
               color: isTransparent ? 'var(--text-light)' : 'var(--text-primary)',
               textDecoration: 'none',
@@ -70,7 +70,7 @@ export default function Navbar() {
               transition: 'color 0.4s ease',
             }}
           >
-            Lumière
+            Ayushman <span style={{ fontSize: '0.85rem', fontWeight: 400, opacity: 0.85, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Cards n Graphics</span>
           </a>
 
           {/* Desktop Nav Links */}

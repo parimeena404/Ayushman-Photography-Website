@@ -24,20 +24,23 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Lumière Studio — Luxury Wedding & Portrait Photography',
+  title: 'Ayushman Cards n Graphics — Printing & Photography Studio Ujjain (Since 2001)',
   description:
-    'An award-winning photography studio specializing in luxury weddings, destination celebrations, and editorial portraiture. Timeless imagery crafted with emotion and artistry.',
+    'Ayushman Cards n Graphics in Ujjain. Complete Printing Solutions & Fine Art Photography since 2001. Luxury Wedding Cards, Visiting Cards, Posters, Flex, Banners, and Royal Photography by Rajesh Saatoliya & Shourya Saatoliya.',
   keywords: [
-    'luxury wedding photography',
-    'destination wedding photographer',
-    'editorial photography',
-    'fine art weddings',
-    'portrait photography',
+    'Ayushman Cards n Graphics',
+    'Wedding Cards Ujjain',
+    'Printing Press Freeganj Ujjain',
+    'Rajesh Saatoliya Ujjain',
+    'Shourya Saatoliya Ujjain',
+    'Complete Printing Solutions Ujjain',
+    'Wedding Photography Ujjain',
+    'Banners and Flex Printing Ujjain',
   ],
   openGraph: {
-    title: 'Lumière Studio — Luxury Wedding & Portrait Photography',
+    title: 'Ayushman Cards n Graphics — Printing & Photography Studio Ujjain',
     description:
-      'Timeless imagery crafted with emotion and artistry. Award-winning photography for luxury weddings and destinations worldwide.',
+      'We Are Printers & Creatives By Heart — Since 2001. Luxury Wedding Cards, Fine Art Photography, Corporate Banners & Flex in Freeganj, Ujjain.',
     type: 'website',
     locale: 'en_US',
   },

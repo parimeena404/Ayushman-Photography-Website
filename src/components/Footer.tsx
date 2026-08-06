@@ -49,27 +49,39 @@ export default function Footer() {
               href="/"
               className="font-heading"
               style={{
-                fontSize: '2.25rem',
-                color: '#F8F5EF',
+                fontSize: '1.75rem',
+                color: 'var(--text-light)',
                 textDecoration: 'none',
-                fontWeight: 300,
+                fontWeight: 400,
                 letterSpacing: '0.05em',
                 display: 'block',
-                marginBottom: '1rem',
+                marginBottom: '0.5rem',
               }}
             >
-              Lumière
+              Ayushman <span style={{ fontSize: '0.9rem', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Cards n Graphics</span>
             </a>
             <p
               className="font-body"
               style={{
-                fontSize: '0.9rem',
-                color: 'rgba(248,245,239,0.6)',
-                lineHeight: 1.8,
-                maxWidth: '300px',
+                fontSize: '0.75rem',
+                color: 'var(--accent-secondary)',
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                marginBottom: '1rem',
               }}
             >
-              An award-winning international photography studio preserving timeless moments across Italy, Greece, India, France, and worldwide.
+              We Are Printers & Creatives By Heart · Since 2001
+            </p>
+            <p
+              className="font-body"
+              style={{
+                fontSize: '0.85rem',
+                color: 'rgba(248,245,239,0.65)',
+                lineHeight: 1.8,
+                maxWidth: '320px',
+              }}
+            >
+              Complete Printing & Photography Solutions — Luxury Wedding Cards, Fine Art Photography, Corporate Graphics & Banners in Ujjain.
             </p>
           </div>
 
@@ -79,7 +91,7 @@ export default function Footer() {
               className="font-body"
               style={{
                 fontSize: '0.8rem',
-                color: 'var(--accent)',
+                color: 'var(--accent-secondary)',
                 letterSpacing: '0.15em',
                 textTransform: 'uppercase',
                 marginBottom: '1.25rem',
@@ -105,7 +117,7 @@ export default function Footer() {
                     fontSize: '0.85rem',
                     transition: 'color 0.3s',
                   }}
-                  onMouseEnter={(e) => ((e.target as HTMLElement).style.color = 'var(--accent)')}
+                  onMouseEnter={(e) => ((e.target as HTMLElement).style.color = 'var(--accent-hero)')}
                   onMouseLeave={(e) =>
                     ((e.target as HTMLElement).style.color = 'rgba(248, 245, 239, 0.7)')
                   }
@@ -116,52 +128,48 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Col 3: Studios */}
+          {/* Col 3: Studio Location */}
           <div>
             <p
               className="font-body"
               style={{
                 fontSize: '0.8rem',
-                color: 'var(--accent)',
+                color: 'var(--accent-secondary)',
                 letterSpacing: '0.15em',
                 textTransform: 'uppercase',
                 marginBottom: '1.25rem',
               }}
             >
-              Studios
-            </p>
-            <p className="font-body" style={{ fontSize: '0.85rem', color: 'rgba(248,245,239,0.7)', lineHeight: 1.8, marginBottom: '1rem' }}>
-              <strong>Mumbai Studio:</strong><br />
-              42 Artisan Lane, Bandra West, Mumbai
+              Main Studio Address
             </p>
             <p className="font-body" style={{ fontSize: '0.85rem', color: 'rgba(248,245,239,0.7)', lineHeight: 1.8 }}>
-              <strong>Florence Office:</strong><br />
-              Via dei Serragli 18, Firenze, Italy
+              <strong>63, Varruchi Marg, Freeganj,</strong><br />
+              Madhav Nagar, Ujjain, (M.P.)
             </p>
           </div>
 
-          {/* Col 4: Contact & Social */}
+          {/* Col 4: Contacts */}
           <div>
             <p
               className="font-body"
               style={{
                 fontSize: '0.8rem',
-                color: 'var(--accent)',
+                color: 'var(--accent-secondary)',
                 letterSpacing: '0.15em',
                 textTransform: 'uppercase',
                 marginBottom: '1.25rem',
               }}
             >
-              Direct Contact
+              Direct Contacts
             </p>
-            <p className="font-body" style={{ fontSize: '0.85rem', color: 'rgba(248,245,239,0.7)', marginBottom: '0.5rem' }}>
-              hello@lumiere.studio
+            <p className="font-body" style={{ fontSize: '0.85rem', color: 'rgba(248,245,239,0.7)', lineHeight: 1.8, marginBottom: '0.35rem' }}>
+              +91 94797 84979
             </p>
-            <p className="font-body" style={{ fontSize: '0.85rem', color: 'rgba(248,245,239,0.7)', marginBottom: '1.5rem' }}>
-              +91 98765 43210
+            <p className="font-body" style={{ fontSize: '0.85rem', color: 'rgba(248,245,239,0.7)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
+              +91 98930 22451
             </p>
             <div style={{ display: 'flex', gap: '1.25rem' }}>
-              {['Instagram', 'Pinterest', 'Vimeo', 'Facebook'].map((social) => (
+              {['Instagram', 'WhatsApp', 'Facebook'].map((social) => (
                 <a
                   key={social}
                   href="#"
@@ -172,7 +180,7 @@ export default function Footer() {
                     fontSize: '0.8rem',
                     transition: 'color 0.3s',
                   }}
-                  onMouseEnter={(e) => ((e.target as HTMLElement).style.color = 'var(--accent)')}
+                  onMouseEnter={(e) => ((e.target as HTMLElement).style.color = 'var(--accent-hero)')}
                   onMouseLeave={(e) =>
                     ((e.target as HTMLElement).style.color = 'rgba(248,245,239,0.7)')
                   }
@@ -210,14 +218,14 @@ export default function Footer() {
               letterSpacing: '0.1em',
             }}
           >
-            © 2025 Lumière Studio. All rights reserved. Crafted with timeless intention.
+            © 2025 Ayushman Cards n Graphics. Since 2001. All rights reserved.
           </p>
           <div style={{ display: 'flex', gap: '1.5rem' }}>
             <a href="/faq" className="font-body" style={{ color: 'rgba(248,245,239,0.4)', fontSize: '0.75rem', textDecoration: 'none' }}>
               Privacy Policy
             </a>
             <a href="/faq" className="font-body" style={{ color: 'rgba(248,245,239,0.4)', fontSize: '0.75rem', textDecoration: 'none' }}>
-              Terms of Service
+              Terms & Services
             </a>
           </div>
         </motion.div>

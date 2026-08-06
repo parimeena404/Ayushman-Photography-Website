@@ -56,29 +56,30 @@ export default function Preloader() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="font-heading"
             style={{
-              fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+              fontSize: 'clamp(2rem, 4vw, 3.2rem)',
               color: '#F8F5EF',
-              fontWeight: 300,
-              letterSpacing: '0.1em',
+              fontWeight: 400,
+              letterSpacing: '0.05em',
+              textAlign: 'center',
             }}
           >
-            Lumière
+            Ayushman <span style={{ fontSize: '0.5em', fontWeight: 300, display: 'block', textTransform: 'uppercase', letterSpacing: '0.15em', marginTop: '0.5rem', color: '#C5969D' }}>Cards n Graphics</span>
           </motion.h1>
 
-          {/* Quote */}
+          {/* Tagline */}
           <motion.p
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
+            animate={{ opacity: 0.7 }}
             transition={{ duration: 0.8, delay: 0.5 }}
             className="font-body"
             style={{
-              fontSize: '0.85rem',
+              fontSize: '0.8rem',
               color: '#F8F5EF',
               letterSpacing: '0.15em',
-              fontStyle: 'italic',
+              textTransform: 'uppercase',
             }}
           >
-            Every frame remembers.
+            We Are Printers & Creatives By Heart · Since 2001
           </motion.p>
 
           {/* Progress line */}

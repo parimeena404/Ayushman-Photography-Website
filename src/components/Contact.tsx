@@ -154,6 +154,9 @@ export default function Contact() {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2.5rem' }} className="form-row">
               <input
                 type="date"
                 placeholder="Event Date"
@@ -161,7 +164,6 @@ export default function Contact() {
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               />
-            </div>
               <select
                 className="input-luxury font-body"
                 value={formData.eventType}

@@ -1,6 +1,11 @@
 import type { Metadata } from 'next';
 import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
 import ClientBody from '@/components/ClientBody';
+import CursorGlow from '@/components/CursorGlow';
+import FilmGrain from '@/components/FilmGrain';
+import Preloader from '@/components/Preloader';
+import MusicToggle from '@/components/MusicToggle';
+import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import './globals.css';
 
 const cormorant = Cormorant_Garamond({
@@ -47,7 +52,12 @@ export default function RootLayout({
     <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`} suppressHydrationWarning>
       <body>
         <ClientBody>
+          <Preloader />
+          <CursorGlow />
+          <FilmGrain />
           {children}
+          <MusicToggle />
+          <FloatingWhatsApp />
         </ClientBody>
       </body>
     </html>

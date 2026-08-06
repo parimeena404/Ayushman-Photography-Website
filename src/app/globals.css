@@ -1,0 +1,235 @@
+@import "tailwindcss";
+
+/* ── Custom Theme Variables ── */
+:root {
+  --forest: #0F231B;
+  --ivory: #F8F5EF;
+  --gold: #BFA46F;
+  --stone: #E7E2DA;
+  --charcoal: #262626;
+
+  /* Light mode defaults */
+  --bg-primary: #F8F5EF;
+  --bg-secondary: #E7E2DA;
+  --bg-dark: #0F231B;
+  --text-primary: #262626;
+  --text-secondary: #5a5a5a;
+  --text-light: #F8F5EF;
+  --accent: #BFA46F;
+  --divider: rgba(191, 164, 111, 0.3);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0F231B;
+  --bg-secondary: #1a3329;
+  --bg-dark: #0a1812;
+  --text-primary: #F8F5EF;
+  --text-secondary: #c4bfb5;
+  --text-light: #F8F5EF;
+  --accent: #BFA46F;
+  --divider: rgba(191, 164, 111, 0.2);
+}
+
+/* ── Base Resets ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.7;
+  overflow-x: hidden;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+::selection {
+  background-color: var(--accent);
+  color: var(--bg-primary);
+}
+
+/* ── Typography Utilities ── */
+.font-heading {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+}
+
+.font-body {
+  font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* ── Editorial Typography ── */
+.text-editorial-xl {
+  font-size: clamp(3rem, 6vw, 7rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.text-editorial-lg {
+  font-size: clamp(2rem, 4vw, 4.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+
+.text-editorial-md {
+  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.text-editorial-sm {
+  font-size: clamp(0.75rem, 1vw, 0.875rem);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 500;
+}
+
+/* ── Thin Divider ── */
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--accent) 50%,
+    transparent 100%
+  );
+  opacity: 0.4;
+}
+
+/* ── Premium Button ── */
+.btn-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2.5rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: color 0.4s ease, background-color 0.4s ease;
+}
+
+.btn-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: var(--accent);
+  transition: left 0.4s ease;
+  z-index: -1;
+}
+
+.btn-premium:hover {
+  color: var(--bg-primary);
+}
+
+.btn-premium:hover::before {
+  left: 0;
+}
+
+/* ── Form Inputs ── */
+.input-luxury {
+  width: 100%;
+  padding: 1rem 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--divider);
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input-luxury:focus {
+  border-bottom-color: var(--accent);
+}
+
+.input-luxury::placeholder {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
+/* ── Image Reveal ── */
+.image-reveal {
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 1s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.image-reveal.revealed {
+  clip-path: inset(0 0 0 0);
+}
+
+/* ── Scrollbar Styling ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+/* ── Masonry Grid ── */
+.masonry-grid {
+  columns: 3;
+  column-gap: 1rem;
+}
+
+.masonry-grid > * {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .masonry-grid {
+    columns: 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .masonry-grid {
+    columns: 1;
+  }
+}
+
+/* ── Section spacing ── */
+.section-padding {
+  padding: clamp(4rem, 10vh, 8rem) clamp(1.5rem, 5vw, 6rem);
+}
+
+/* ── Smooth page transitions ── */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}

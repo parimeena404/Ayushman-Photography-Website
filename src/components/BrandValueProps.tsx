@@ -7,7 +7,17 @@ export default function BrandValueProps() {
     <section style={{ padding: 'clamp(3rem, 6vh, 4.5rem) 0', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-light)' }}>
       <div className="container-wide">
         {/* Main SEO Header & Description */}
-        <div style={{ textAlign: 'center', maxWidth: '850px', margin: '0 auto clamp(2.5rem, 5vh, 3.5rem)' }}>
+        <div style={{ textAlign: 'center', maxWidth: '880px', margin: '0 auto clamp(2.5rem, 5vh, 3.5rem)' }}>
+          {/* Official Logo */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="Ayushman Cards n Graphics Logo"
+              style={{ height: '60px', width: 'auto' }}
+            />
+          </div>
+
           <h2
             style={{
               fontFamily: "'Playfair Display', serif",
@@ -17,7 +27,7 @@ export default function BrandValueProps() {
               marginBottom: '0.75rem',
             }}
           >
-            Ayushman Photography Studio: Central India&apos;s Premier Photography & Printing Brand
+            Ayushman Cards n Graphics: Ujjain&apos;s Trusted Printing & Photography Studio Since 2001
           </h2>
           <p
             style={{
@@ -27,7 +37,7 @@ export default function BrandValueProps() {
               lineHeight: 1.8,
             }}
           >
-            For more than 25 years, Ayushman Photography Studio has helped couples, families, and brands preserve their most cherished memories and project a professional identity. Whether you need luxury wedding photography, cinematic films, portrait sessions, or handcrafted photo albums, we deliver museum-quality perfection.
+            Located at 63 Varuchi Marg, Freeganj, Ujjain, Ayushman Cards n Graphics has been Central India&apos;s premier destination for fine art photography, Indian festive celebrations, wedding cinematography, luxury invitation cards, and commercial printing. We combine traditional warmth with modern digital craftsmanship.
           </p>
         </div>
 
@@ -55,10 +65,10 @@ export default function BrandValueProps() {
           >
             <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🏷️</div>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.15rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-              Flexible Packages @ Best Prices
+              Complete Printing & Photography Under One Roof
             </h3>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-              We offer customizable photography packages designed to suit intimate ceremonies as well as grand destination weddings, ensuring maximum value without compromising quality.
+              From pre-wedding shoots, Diwali & festive event coverage to wedding card printing, banners, visiting cards, and flush mount photo albums in Freeganj, Ujjain.
             </p>
           </motion.div>
 
@@ -76,12 +86,12 @@ export default function BrandValueProps() {
               boxShadow: 'var(--shadow-subtle)',
             }}
           >
-            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>✨</div>
+            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🪔</div>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.15rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-              High Quality Colors & Cinema Edits
+              Indian Festive & Cultural Expertise
             </h3>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-              Our dedicated editing suite utilizes industry-leading color grading, skin retouching, and audio design to produce magazine-ready photographs and Hollywood-grade films.
+              Specialized photography for Indian festivals including Diwali, Holi, Navratri Garba, Ganesh Utsav, and cultural heritage ceremonies across Madhya Pradesh.
             </p>
           </motion.div>
 
@@ -99,12 +109,12 @@ export default function BrandValueProps() {
               boxShadow: 'var(--shadow-subtle)',
             }}
           >
-            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🛡️</div>
+            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>📞</div>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.15rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-              100% Satisfaction Guarantee
+              Direct Studio Support & Helpline
             </h3>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-              We stand by every shoot and print we deliver. If you&apos;re not completely delighted with your photographs or album quality, we will make it right with easy revisions or replacements.
+              Call or WhatsApp our team directly at <strong>9479784979</strong> or <strong>9893022451</strong> for instant booking quotes, album design assistance, or custom event packages.
             </p>
           </motion.div>
         </div>

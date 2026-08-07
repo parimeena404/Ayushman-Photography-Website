@@ -1,22 +1,21 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
 import Link from 'next/link';
 
 const categoriesMenu = [
   { label: 'View All', href: '/#portfolio' },
+  { label: '🪔 Indian Festivals', href: '/#festivals' },
   { label: 'Wedding Photography', href: '/#portfolio' },
   { label: 'Pre-Wedding Shoots', href: '/#portfolio' },
   { label: 'Cinematography & Films', href: '/films' },
   { label: 'Portrait Photography', href: '/#portfolio' },
   { label: 'Fashion & Lookbooks', href: '/#portfolio' },
   { label: 'Commercial & Brands', href: '/#portfolio' },
-  { label: 'Photo Albums & Prints', href: '/#products' },
+  { label: 'Festive Cards & Prints', href: '/#products' },
   { label: 'Drone Shoots', href: '/#portfolio' },
-  { label: 'Event Coverage', href: '/#portfolio' },
   { label: 'Pricing Packages', href: '/#packages' },
 ];
 
@@ -25,26 +24,19 @@ export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const [copiedCode, setCopiedCode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-  const [favCount, setFavCount] = useState(0);
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText('AYUSHMAN15');
+    navigator.clipboard.writeText('FESTIVE20');
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
-
   return (
     <header style={{ position: 'sticky', top: 0, zIndex: 1000, background: 'var(--bg-card)', boxShadow: 'var(--shadow-subtle)' }}>
-      {/* 1. Sitewide Promo Bar */}
+      {/* 1. Sitewide Festive Announcement Bar */}
       <div
         style={{
-          background: 'linear-gradient(90deg, #1A1A1A 0%, #2D2722 50%, #1A1A1A 100%)',
+          background: 'linear-gradient(90deg, #990000 0%, #D40000 50%, #990000 100%)',
           color: '#FFFFFF',
           padding: '0.45rem 1rem',
           fontSize: '0.78125rem',
@@ -54,25 +46,25 @@ export default function Navbar() {
           justifyContent: 'center',
           gap: '0.75rem',
           textAlign: 'center',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          borderBottom: '1px solid rgba(255,255,255,0.15)',
         }}
       >
         <span>
-          🎁 <strong>Wedding Season Special!</strong> Flat 15% OFF on Pre-Wedding & Album Packages | Code: <strong style={{ color: 'var(--gold-light)' }}>AYUSHMAN15</strong>
+          🪔 <strong>Indian Festive Season Special!</strong> Flat 20% OFF on Festive Family Shoots & Custom Invitation Cards | Code: <strong style={{ color: '#FFD700' }}>FESTIVE20</strong>
         </span>
         <button
           onClick={handleCopyCode}
           style={{
-            background: 'var(--gold)',
-            color: '#1A1A1A',
+            background: '#FFD700',
+            color: '#800000',
             border: 'none',
             borderRadius: '4px',
-            padding: '0.15rem 0.6rem',
+            padding: '0.18rem 0.65rem',
             fontSize: '0.7rem',
-            fontWeight: 700,
+            fontWeight: 800,
             cursor: 'pointer',
             fontFamily: "'Manrope', sans-serif",
-            transition: 'background 0.2s ease',
+            transition: 'all 0.2s ease',
           }}
         >
           {copiedCode ? 'Copied!' : 'Copy Code'}
@@ -92,45 +84,29 @@ export default function Navbar() {
           gap: '1.5rem',
         }}
       >
-        {/* Brand Logo */}
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', flexShrink: 0 }}>
-          <div
+        {/* Official Ayushman Brand Logo */}
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', flexShrink: 0 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.png"
+            alt="Ayushman Cards n Graphics Official Logo"
             style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '50%',
-              background: 'var(--gold)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#1A1A1A',
-              fontFamily: "'Playfair Display', serif",
-              fontWeight: 800,
-              fontSize: '1.15rem',
-              boxShadow: 'var(--shadow-subtle)',
+              height: '42px',
+              width: 'auto',
+              objectFit: 'contain',
             }}
-          >
-            A
-          </div>
-          <div style={{ lineHeight: 1.15 }}>
-            <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: '1.25rem', color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
-              Ayushman
-            </div>
-            <div style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.55rem', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--gold)', fontWeight: 700 }}>
-              Photography Studio
-            </div>
-          </div>
+          />
         </Link>
 
         {/* Centered Search Bar */}
-        <div style={{ flex: '1 1 500px', maxWidth: '550px', position: 'relative' }} className="desktop-search">
+        <div style={{ flex: '1 1 480px', maxWidth: '520px', position: 'relative' }} className="desktop-search">
           <form
             onSubmit={(e) => { e.preventDefault(); if (searchQuery.trim()) window.location.href = `/#portfolio`; }}
             style={{ display: 'flex', alignItems: 'center' }}
           >
             <input
               type="text"
-              placeholder="Search wedding packages, portraits, photo albums..."
+              placeholder="Search Diwali shoots, wedding cards, portraits, photo albums..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -155,9 +131,9 @@ export default function Navbar() {
                 width: '34px',
                 height: '34px',
                 borderRadius: '50%',
-                background: 'var(--gold)',
+                background: '#D40000',
                 border: 'none',
-                color: '#1A1A1A',
+                color: '#FFFFFF',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -173,9 +149,9 @@ export default function Navbar() {
 
         {/* Right Header Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.75rem, 1.5vw, 1.5rem)', flexShrink: 0 }}>
-          {/* Help Support Line */}
+          {/* Official Contact Phone Lines */}
           <a
-            href="tel:+919425300000"
+            href="tel:9479784979"
             className="desktop-only"
             style={{
               display: 'flex',
@@ -187,12 +163,12 @@ export default function Navbar() {
               textDecoration: 'none',
             }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D40000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
             </svg>
             <div>
-              <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-tertiary)', fontWeight: 600 }}>Help Line</div>
-              <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>+91 94253 XXXXX</div>
+              <div style={{ fontSize: '0.625rem', textTransform: 'uppercase', color: 'var(--text-tertiary)', fontWeight: 700 }}>Helpline Ujjain</div>
+              <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.8125rem' }}>9479784979 | 9893022451</div>
             </div>
           </a>
 
@@ -243,26 +219,26 @@ export default function Navbar() {
               display: 'flex',
               alignItems: 'center',
               gap: '0.4rem',
-              background: 'var(--gold)',
-              color: '#1A1A1A',
-              padding: '0.45rem 1rem',
+              background: 'linear-gradient(135deg, #D40000 0%, #990000 100%)',
+              color: '#FFFFFF',
+              padding: '0.5rem 1.15rem',
               borderRadius: '999px',
               fontFamily: "'Manrope', sans-serif",
               fontSize: '0.8125rem',
               fontWeight: 700,
               textDecoration: 'none',
-              transition: 'transform 0.2s ease',
+              boxShadow: '0 4px 14px rgba(212, 0, 0, 0.25)',
             }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
             </svg>
-            <span>Book Now</span>
+            <span>Book Session</span>
           </Link>
         </div>
       </div>
 
-      {/* 3. Vistaprint-Style Mega Category Navigation Bar */}
+      {/* 3. Mega Category Navigation Bar */}
       <div
         style={{
           borderBottom: '1px solid var(--border-light)',
@@ -279,7 +255,7 @@ export default function Navbar() {
             padding: '0 clamp(1rem, 3vw, 2.5rem)',
             display: 'flex',
             alignItems: 'center',
-            gap: '1.75rem',
+            gap: '1.6rem',
             whiteSpace: 'nowrap',
           }}
         >
@@ -292,18 +268,18 @@ export default function Navbar() {
                 padding: '0.65rem 0',
                 fontFamily: "'Inter', sans-serif",
                 fontSize: '0.8125rem',
-                fontWeight: idx === 0 ? 700 : 500,
-                color: idx === 0 ? 'var(--gold)' : 'var(--text-secondary)',
+                fontWeight: idx === 1 ? 700 : 500,
+                color: idx === 1 ? '#D40000' : 'var(--text-secondary)',
                 textDecoration: 'none',
                 borderBottom: '2px solid transparent',
                 transition: 'all 0.2s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--text-primary)';
-                e.currentTarget.style.borderBottomColor = 'var(--gold)';
+                e.currentTarget.style.color = '#D40000';
+                e.currentTarget.style.borderBottomColor = '#D40000';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = idx === 0 ? 'var(--gold)' : 'var(--text-secondary)';
+                e.currentTarget.style.color = idx === 1 ? '#D40000' : 'var(--text-secondary)';
                 e.currentTarget.style.borderBottomColor = 'transparent';
               }}
             >

@@ -6,23 +6,22 @@ const footerColumns = [
   {
     title: 'Let us help',
     links: [
-      { label: 'My Account & Bookings', href: '/dashboard' },
-      { label: 'Contact Us / Customer Care', href: '/#contact' },
-      { label: 'Bulk Event Inquiries', href: '/#contact' },
+      { label: 'Book Photography Session', href: '/booking' },
+      { label: 'Contact Studio Freeganj', href: '/#contact' },
+      { label: 'Indian Festivals Gallery', href: '/#festivals' },
+      { label: 'Custom Shaadi Cards Quote', href: '/#contact' },
       { label: 'Frequently Asked Questions', href: '/faq' },
       { label: 'Pricing & Packages', href: '/#packages' },
-      { label: 'Track Order Status', href: '/dashboard' },
     ],
   },
   {
     title: 'Our Company',
     links: [
-      { label: 'About Ayushman Studio', href: '/about' },
-      { label: 'Our Photography Team', href: '/about' },
-      { label: 'Careers & Internships', href: '#' },
-      { label: 'Press & Media Features', href: '#' },
-      { label: 'Sustainability & Ethics', href: '#' },
-      { label: 'Annual Client Showcase', href: '/stories' },
+      { label: 'About Ayushman Cards n Graphics', href: '/about' },
+      { label: 'Our Photographers & Designers', href: '/about' },
+      { label: 'Ujjain Studio (Since 2001)', href: '/about' },
+      { label: 'Press & Festival Showcase', href: '#' },
+      { label: 'Client Love Stories', href: '/stories' },
     ],
   },
   {
@@ -30,10 +29,9 @@ const footerColumns = [
     links: [
       { label: 'Terms & Conditions', href: '#' },
       { label: 'Privacy & Cookie Policy', href: '#' },
-      { label: 'Copyright & Copyright Matters', href: '#' },
-      { label: 'Patents & Trademarks', href: '#' },
+      { label: 'Copyright & IP Rights', href: '#' },
       { label: 'Cancellation & Refund Policy', href: '#' },
-      { label: 'Delivery & Shipping Terms', href: '#' },
+      { label: 'Album Delivery & Shipping', href: '#' },
     ],
   },
 ];
@@ -61,7 +59,7 @@ export default function Footer() {
                 textTransform: 'uppercase',
                 letterSpacing: '0.15em',
                 fontWeight: 700,
-                color: 'var(--gold)',
+                color: '#D40000',
                 marginBottom: '1.25rem',
               }}
             >
@@ -92,7 +90,7 @@ export default function Footer() {
       </div>
 
       {/* Footer Bottom Bar */}
-      <div style={{ padding: '1.75rem 0', background: '#080808' }}>
+      <div style={{ padding: '2rem 0', background: '#080808' }}>
         <div
           className="container-wide"
           style={{
@@ -100,36 +98,24 @@ export default function Footer() {
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
-            gap: '1.25rem',
+            gap: '1.5rem',
           }}
         >
-          {/* Brand Logo & Copyright */}
+          {/* Brand Logo, Address & Copyright */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-              <div
-                style={{
-                  width: '26px',
-                  height: '26px',
-                  borderRadius: '50%',
-                  background: 'var(--gold)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#1A1A1A',
-                  fontFamily: "'Playfair Display', serif",
-                  fontWeight: 800,
-                  fontSize: '0.8rem',
-                }}
-              >
-                A
-              </div>
-              <span style={{ fontFamily: "'Playfair Display', serif", fontSize: '0.9375rem', fontWeight: 600, color: '#FFFFFF' }}>
-                Ayushman Photography Studio
-              </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.6rem' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.png"
+                alt="Ayushman Cards n Graphics Logo"
+                style={{ height: '36px', width: 'auto' }}
+              />
             </div>
-            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
-              © 2001-{new Date().getFullYear()} Ayushman Photography Studio. All rights reserved.<br />
-              Unless stated otherwise, prices are exclusive of delivery and applicable Taxes.
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78125rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, maxWidth: '480px' }}>
+              <strong>Ayushman Cards n Graphics</strong><br />
+              📍 63 Varuchi Marg, Freeganj, Ujjain, Madhya Pradesh 456001<br />
+              📞 Helpline: 9479784979 | 9893022451<br />
+              © 2001-{new Date().getFullYear()} Ayushman Cards n Graphics. All rights reserved.
             </div>
           </div>
 
@@ -152,13 +138,13 @@ export default function Footer() {
                 cursor: 'pointer',
               }}
             >
-              🌐 India (INR ₹)
+              🇮🇳 India (Ujjain MP)
             </button>
 
             {/* Social Media Links */}
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               {[
-                { name: 'Instagram', path: 'M7.8 2h8.4C19 2 22 5 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C5 22 2 19 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z' },
+                { name: 'Instagram', path: 'M7.8 2h8.4C19 2 22 5 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C5 22 2 19 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z' },
                 { name: 'Facebook', path: 'M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z' },
                 { name: 'YouTube', path: 'M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33zM9.75 15.02V8.48l5.75 3.27-5.75 3.27z' },
               ].map((social) => (
@@ -178,7 +164,7 @@ export default function Footer() {
                     textDecoration: 'none',
                     transition: 'all 0.2s ease',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#D40000'; e.currentTarget.style.color = '#D40000'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

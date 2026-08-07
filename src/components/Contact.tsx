@@ -11,7 +11,7 @@ export default function Contact() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Thank you for your inquiry! We\'ll get back to you within 24 hours.');
+    alert('Thank you for your inquiry! We will get back to you within 24 hours.');
     setFormData({ name: '', email: '', phone: '', service: '', message: '' });
   };
 
@@ -20,8 +20,8 @@ export default function Contact() {
       <div className="container">
         <SectionHeader
           eyebrow="Get in Touch"
-          title="Let's Create Something Beautiful"
-          subtitle="Ready to book your session? Reach out and let's discuss your vision."
+          title="Connect With Ayushman Studio"
+          subtitle="Visit our studio in Freeganj, Ujjain, or send us a message to discuss your upcoming event, wedding, or festive photography needs."
         />
 
         <div
@@ -78,9 +78,10 @@ export default function Contact() {
                 <input
                   className="input"
                   type="tel"
-                  placeholder="+91 XXXXX XXXXX"
+                  placeholder="+91 94797 84979"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  required
                 />
               </div>
               <div>
@@ -94,13 +95,13 @@ export default function Contact() {
                   style={{ cursor: 'pointer' }}
                 >
                   <option value="">Select a service</option>
-                  <option value="wedding">Wedding Photography</option>
+                  <option value="wedding">Wedding Photography & Films</option>
+                  <option value="festivals">Indian Festival & Celebration Shoot</option>
                   <option value="prewedding">Pre-Wedding Shoot</option>
-                  <option value="portrait">Portrait Session</option>
-                  <option value="fashion">Fashion/Editorial</option>
-                  <option value="commercial">Commercial Photography</option>
-                  <option value="event">Event Coverage</option>
-                  <option value="other">Other</option>
+                  <option value="portrait">Portrait & Family Session</option>
+                  <option value="cards">Custom Invitation & Greeting Cards</option>
+                  <option value="commercial">Commercial Brand & Product Shoot</option>
+                  <option value="other">Other Query</option>
                 </select>
               </div>
             </div>
@@ -111,7 +112,7 @@ export default function Contact() {
               </label>
               <textarea
                 className="input textarea"
-                placeholder="Tell us about your event, preferred dates, and any special requirements..."
+                placeholder="Tell us about your event date, location, festive requirements, or card design needs..."
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 rows={5}
@@ -119,7 +120,7 @@ export default function Contact() {
               />
             </div>
 
-            <button type="submit" className="btn btn-primary btn-lg" style={{ alignSelf: 'flex-start' }}>
+            <button type="submit" className="btn btn-primary btn-lg" style={{ alignSelf: 'flex-start', background: '#D40000', borderColor: '#D40000', color: '#FFFFFF' }}>
               Send Inquiry
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
@@ -127,37 +128,48 @@ export default function Contact() {
             </button>
           </motion.form>
 
-          {/* Contact Info */}
+          {/* Official Contact Info */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-            style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}
+            style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}
           >
             <div
               style={{
                 background: 'var(--bg-secondary)',
                 borderRadius: 'var(--radius-lg)',
-                padding: 'clamp(1.5rem, 3vw, 2rem)',
+                padding: 'clamp(1.5rem, 3vw, 2.25rem)',
+                border: '1px solid var(--border-light)',
               }}
             >
-              <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '1.25rem' }}>
-                Studio Location
+              {/* Studio Logo */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo.png"
+                  alt="Ayushman Cards n Graphics Logo"
+                  style={{ height: '48px', width: 'auto' }}
+                />
+              </div>
+
+              <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1.25rem' }}>
+                Ayushman Cards n Graphics
               </h3>
 
               {[
-                { icon: '📍', label: 'Address', value: 'Freeganj, Ujjain, Madhya Pradesh 456010' },
-                { icon: '📞', label: 'Phone', value: '+91 94253 XXXXX' },
-                { icon: '✉️', label: 'Email', value: 'hello@ayushmanstudio.com' },
-                { icon: '🕐', label: 'Working Hours', value: 'Mon – Sat: 10:00 AM – 8:00 PM' },
+                { icon: '📍', label: 'Studio Address', value: '63 Varuchi Marg, Freeganj, Ujjain, Madhya Pradesh 456001' },
+                { icon: '📞', label: 'Phone / WhatsApp', value: '9479784979 | 9893022451' },
+                { icon: '✉️', label: 'Email Support', value: 'contact@ayushmancards.com' },
+                { icon: '🕐', label: 'Studio Hours', value: 'Mon – Sat: 10:00 AM – 9:00 PM | Sun: By Appointment' },
               ].map((item) => (
-                <div key={item.label} style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
-                  <span style={{ fontSize: '1.25rem', flexShrink: 0 }}>{item.icon}</span>
+                <div key={item.label} style={{ display: 'flex', gap: '0.85rem', marginBottom: '1.1rem' }}>
+                  <span style={{ fontSize: '1.25rem', flexShrink: 0, marginTop: '0.1rem' }}>{item.icon}</span>
                   <div>
-                    <div style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-tertiary)', fontWeight: 600, marginBottom: '0.125rem' }}>
+                    <div style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.6875rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#D40000', fontWeight: 700, marginBottom: '0.125rem' }}>
                       {item.label}
                     </div>
-                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'var(--text-primary)', lineHeight: 1.5 }}>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.90625rem', color: 'var(--text-primary)', lineHeight: 1.5, fontWeight: 500 }}>
                       {item.value}
                     </div>
                   </div>
@@ -165,7 +177,7 @@ export default function Contact() {
               ))}
             </div>
 
-            {/* Map Placeholder */}
+            {/* Studio Map */}
             <div
               style={{
                 width: '100%',
@@ -173,60 +185,20 @@ export default function Contact() {
                 borderRadius: 'var(--radius-lg)',
                 overflow: 'hidden',
                 background: 'var(--bg-tertiary)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
               }}
             >
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3669.1!2d75.7849!3d23.1828!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjPCsDEwJzU4LjEiTiA3NcKwNDcnMDUuNiJF!5e0!3m2!1sen!2sin!4v1"
                 width="100%"
                 height="100%"
-                style={{ border: 0, filter: 'saturate(0.8)' }}
+                style={{ border: 0, filter: 'contrast(1.05)' }}
                 loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Studio Location"
+                title="Ayushman Cards n Graphics Location"
               />
-            </div>
-
-            {/* Social Media */}
-            <div>
-              <h4 style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-tertiary)', fontWeight: 600, marginBottom: '0.75rem' }}>
-                Follow Us
-              </h4>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                {['Instagram', 'Facebook', 'YouTube', 'Pinterest'].map((social) => (
-                  <a
-                    key={social}
-                    href="#"
-                    style={{
-                      padding: '0.5rem 1rem',
-                      borderRadius: '999px',
-                      border: '1.5px solid var(--border-medium)',
-                      fontFamily: "'Manrope', sans-serif",
-                      fontSize: '0.75rem',
-                      fontWeight: 500,
-                      color: 'var(--text-secondary)',
-                      textDecoration: 'none',
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    {social}
-                  </a>
-                ))}
-              </div>
             </div>
           </motion.div>
         </div>
       </div>
-
-      <style jsx>{`
-        @media (max-width: 768px) {
-          section > div > div:last-of-type {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }

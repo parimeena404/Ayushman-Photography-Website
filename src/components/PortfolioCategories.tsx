@@ -4,9 +4,10 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import SectionHeader from './SectionHeader';
 
-const categories = ['All', 'Portrait', 'Indian Festivals', 'Wedding', 'Fashion', 'Commercial', 'Travel'];
+const categories = ['All', 'Commercial', 'Portrait', 'Indian Festivals', 'Wedding', 'Fashion', 'Travel'];
 
 const portfolioItems = [
+  { src: '/images/commercial/product1.png', category: 'Commercial', title: '📱 3D Mobile Fashion & Product Showcase', aspect: 'tall' },
   { src: '/images/portrait/portrait1.png', category: 'Portrait', title: '🖤 Monochrome Candid Male Portrait', aspect: 'tall' },
   { src: '/images/portrait/portrait2.png', category: 'Portrait', title: '🌅 Golden Hour Warm Studio Headshot', aspect: 'tall' },
   { src: '/images/portrait/portrait3.png', category: 'Portrait', title: '✨ Studio Double Exposure Fashion Portrait', aspect: 'tall' },
@@ -52,9 +53,9 @@ export default function PortfolioCategories() {
     <section id="portfolio" className="section-padding" style={{ background: 'var(--bg-primary)' }}>
       <div className="container-wide">
         <SectionHeader
-          eyebrow="Fine Art Portraits & Weddings Gallery"
+          eyebrow="Commercial & Fine Art Gallery"
           title="Portfolio Showcase"
-          subtitle="Explore our fine art portrait photography, studio double exposure headshots, royal Indian weddings, Diwali Deepotsav, and cultural heritage sessions."
+          subtitle="Explore 3D mobile product photography, fine art portraiture, studio headshots, royal Indian weddings, Diwali Deepotsav, and cultural heritage sessions."
         />
 
         {/* Filter Tabs */}

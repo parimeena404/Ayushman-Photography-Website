@@ -29,70 +29,37 @@ export interface Film {
   location: string;
   category: string;
   thumbnail: string;
-  videoUrl: string;
+  videoUrl?: string;
   duration: string;
 }
 
 export const films: Film[] = [
   {
     id: 'film-1',
-    title: '🎬 Vintage Film Strip Reel Story',
-    couple: 'Ayushman Studio Showcase',
-    location: 'Freeganj, Ujjain MP',
-    category: 'Behind the Scenes',
-    thumbnail: '/images/keepsakes/film1.jpg',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    duration: '4:32',
-  },
-  {
-    id: 'film-2',
-    title: '🤝 Gathbandhan Sacred Vows Ritual',
+    title: '🤝 Gathbandhan Sacred Vows Ritual Film',
     couple: 'Anika & Rohan',
-    location: 'Jaipur, Rajasthan',
+    location: 'Jaipur Palace, Rajasthan',
     category: 'Wedding Films',
     thumbnail: '/images/wedding/wedding6.png',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    duration: '5:18',
-  },
-  {
-    id: 'film-3',
-    title: '👰 Royal Varmala Rose Petal Canopy',
-    couple: 'Priya & Kabir',
-    location: 'Udaipur, Rajasthan',
-    category: 'Wedding Films',
-    thumbnail: '/images/wedding/wedding5.jpg',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    duration: '6:45',
-  },
-  {
-    id: 'film-4',
-    title: '✨ Stone Jali Sunset Heritage Teaser',
-    couple: 'Sofia & Karan',
-    location: 'Varanasi, India',
-    category: 'Pre-Wedding Films',
-    thumbnail: '/images/wedding/wedding1.jpg',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    duration: '3:20',
-  },
-  {
-    id: 'film-5',
-    title: '🚁 Heritage Aerial 4K Drone Flight',
-    couple: 'Royal Venue Flight',
-    location: 'Ujjain & Indore MP',
-    category: 'Drone Footage',
-    thumbnail: 'https://images.unsplash.com/photo-1506947411487-a56738267384?w=1400&q=85&auto=format',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
     duration: '4:15',
   },
   {
-    id: 'film-6',
-    title: '💃 Royal Palace Garba Night Cinema',
-    couple: 'Heritage Festive Night',
-    location: 'Jaipur Palace',
+    id: 'film-2',
+    title: '⛵ Sunset Voyage & Aerial Destination Film',
+    couple: 'Royal Destination Feature',
+    location: 'Ujjain & Heritage Lakes MP',
+    category: 'Drone Footage',
+    thumbnail: '/images/festivals/rainbow-sails.png',
+    duration: '3:45',
+  },
+  {
+    id: 'film-3',
+    title: '💃 Royal Palace Garba Night Cinema Highlight',
+    couple: 'Festive Heritage Special',
+    location: 'Ujjain, Madhya Pradesh',
     category: 'Highlight Films',
     thumbnail: '/images/festivals/palace-dance.jpg',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    duration: '3:50',
+    duration: '5:20',
   },
 ];
 

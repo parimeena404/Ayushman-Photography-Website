@@ -1,0 +1,70 @@
+// Prisma schema for Ayushman Cards n Graphics
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  password  String
+  phone     String?
+  role      String    @default("CLIENT") // CLIENT or ADMIN
+  bookings  Booking[]
+  inquiries Inquiry[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Booking {
+  id                String   @id @default(cuid())
+  userId            String?
+  user              User?    @relation(fields: [userId], references: [id])
+  customerName      String
+  customerEmail     String
+  customerPhone     String
+  eventType         String
+  eventDate         String
+  city              String?
+  address           String?
+  notes             String?
+  packageType       String
+  totalAmount       Float
+  depositAmount     Float
+  paymentStatus     String   @default("PENDING") // PENDING, PAID, FAILED
+  razorpayOrderId   String?  @unique
+  razorpayPaymentId String?
+  razorpaySignature String?
+  status            String   @default("NEW")     // NEW, CONFIRMED, COMPLETED, CANCELLED
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Inquiry {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  name      String
+  email     String
+  phone     String
+  eventType String
+  date      String?
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model ServicePackage {
+  id           String   @id @default(cuid())
+  title        String
+  category     String   // Printing, Photography, Graphics, Banners
+  price        Float
+  depositPrice Float
+  description  String
+  features     String
+  createdAt    DateTime @default(now())
+}

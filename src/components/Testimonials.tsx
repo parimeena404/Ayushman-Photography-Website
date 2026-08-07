@@ -1,158 +1,160 @@
 'use client';
 
+import { useState, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
-import { fadeInUp } from '@/lib/animations';
+import SectionHeader from './SectionHeader';
 
 const testimonials = [
   {
-    quote:
-      'They didn\'t just photograph our wedding — they captured the feeling of it. Every time I look at our images, I\'m transported back to that golden afternoon in Tuscany. It\'s like holding a piece of time.',
-    name: 'Anika & Rohan',
-    event: 'Destination Wedding · Florence',
+    name: 'Sneha & Rahul Sharma',
+    event: 'Wedding Photography',
+    location: 'Udaipur',
+    rating: 5,
+    text: 'Ayushman Studio captured our wedding with such artistry that every time we look at our photos, we relive that magical day. Their attention to detail and ability to capture candid moments is unmatched.',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80',
   },
   {
-    quote:
-      'What struck me most was their stillness. In the midst of all the chaos and joy, they moved like shadows — quiet, present, and impossibly perceptive. The result is a collection of images that feel more like poetry than photographs.',
-    name: 'Mira & James',
-    event: 'Wedding · Santorini',
+    name: 'Priya Verma',
+    event: 'Portrait Session',
+    location: 'Ujjain',
+    rating: 5,
+    text: 'The portrait session was an experience in itself. They made me feel so comfortable and the results were absolutely stunning. These photos will be treasured forever.',
+    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80',
   },
   {
-    quote:
-      'We wanted authenticity, and that\'s exactly what we received. No forced smiles, no awkward poses. Just us — raw, real, and radiant. These photographs are our most treasured possession.',
-    name: 'Leila & Arjun',
-    event: 'Pre-Wedding · Udaipur',
+    name: 'Aditya & Kavya Patel',
+    event: 'Pre-Wedding Shoot',
+    location: 'Goa',
+    rating: 5,
+    text: 'Our pre-wedding shoot in Goa was a dream come true. The team went above and beyond to capture breathtaking shots at golden hour. Every image looks like a movie poster.',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80',
   },
   {
-    quote:
-      'From the first call to the final gallery, everything felt curated and intentional. Working with them is less like hiring a photographer and more like collaborating with an artist who truly understands your story.',
-    name: 'Sofia & Karan',
-    event: 'Engagement · Paris',
+    name: 'Meera Joshi',
+    event: 'Fashion Editorial',
+    location: 'Mumbai',
+    rating: 5,
+    text: 'Working with Ayushman for our fashion campaign was a game-changer. Their creative direction and technical expertise produced images that elevated our entire brand.',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
   },
 ];
 
-export default function Testimonials() {
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
-  const [current, setCurrent] = useState(0);
+function Stars({ count }: { count: number }) {
+  return (
+    <div style={{ display: 'flex', gap: '0.2rem' }}>
+      {Array.from({ length: count }).map((_, i) => (
+        <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#C9A86C" stroke="none">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      ))}
+    </div>
+  );
+}
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % testimonials.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
+export default function Testimonials() {
+  const [active, setActive] = useState(0);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-60px' });
 
   return (
-    <section id="testimonials" className="section-padding" ref={sectionRef}>
-      <motion.div
-        initial="hidden"
-        animate={isInView ? 'visible' : 'hidden'}
-        variants={fadeInUp}
-        style={{
-          maxWidth: '900px',
-          margin: '0 auto',
-          textAlign: 'center',
-        }}
-      >
-        {/* Section heading */}
-        <p
-          className="text-editorial-sm font-body"
-          style={{ color: 'var(--accent)', marginBottom: '1rem' }}
-        >
-          Kind Words
-        </p>
-        <h2
-          className="font-heading text-editorial-lg"
-          style={{
-            color: 'var(--text-primary)',
-            fontWeight: 300,
-            marginBottom: '4rem',
-          }}
-        >
-          What They Say
-        </h2>
+    <section ref={ref} className="section-padding" style={{ background: 'var(--bg-secondary)' }}>
+      <div className="container">
+        <SectionHeader
+          eyebrow="Testimonials"
+          title="What Our Clients Say"
+          subtitle="4.9 out of 5 stars from over 200+ reviews. Your trust is our greatest achievement."
+        />
 
-        {/* Testimonial carousel */}
-        <div style={{ minHeight: '280px', position: 'relative' }}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={current}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -30 }}
-              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >
-              {/* Quote */}
-              <p
-                className="font-heading"
-                style={{
-                  fontSize: 'clamp(1.25rem, 2.2vw, 1.75rem)',
-                  color: 'var(--text-primary)',
-                  fontWeight: 300,
-                  fontStyle: 'italic',
-                  lineHeight: 1.7,
-                  marginBottom: '2.5rem',
-                }}
-              >
-                &ldquo;{testimonials[current].quote}&rdquo;
-              </p>
-
-              {/* Name */}
-              <p
-                className="font-body"
-                style={{
-                  color: 'var(--accent)',
-                  fontSize: '0.95rem',
-                  fontWeight: 500,
-                  letterSpacing: '0.05em',
-                  marginBottom: '0.5rem',
-                }}
-              >
-                {testimonials[current].name}
-              </p>
-              <p
-                className="font-body"
-                style={{
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.8rem',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                {testimonials[current].event}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Dots indicator */}
-        <div
+        {/* Rating Summary */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
           style={{
             display: 'flex',
+            alignItems: 'center',
             justifyContent: 'center',
-            gap: '0.75rem',
-            marginTop: '3rem',
+            gap: '1rem',
+            marginBottom: 'clamp(2rem, 4vw, 3rem)',
           }}
         >
-          {testimonials.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrent(i)}
-              aria-label={`Go to testimonial ${i + 1}`}
-              style={{
-                width: i === current ? '2rem' : '0.5rem',
-                height: '0.5rem',
-                borderRadius: '1rem',
-                backgroundColor: i === current ? 'var(--accent)' : 'var(--divider)',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.4s ease',
-              }}
-            />
-          ))}
+          <div style={{ display: 'flex', gap: '0.2rem' }}>
+            {[1,2,3,4,5].map((s) => (
+              <svg key={s} width="20" height="20" viewBox="0 0 24 24" fill="#C9A86C" stroke="none">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            ))}
+          </div>
+          <span style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>4.9</span>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'var(--text-tertiary)' }}>from 200+ reviews</span>
+        </motion.div>
+
+        {/* Testimonial Cards */}
+        <div style={{ position: 'relative', maxWidth: '700px', margin: '0 auto' }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="card-elevated"
+              style={{ padding: 'clamp(1.75rem, 4vw, 2.5rem)', textAlign: 'center' }}
+            >
+              <Stars count={testimonials[active].rating} />
+
+              <p
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: 'clamp(1.0625rem, 2vw, 1.25rem)',
+                  fontStyle: 'italic',
+                  color: 'var(--text-primary)',
+                  lineHeight: 1.7,
+                  margin: '1.5rem 0',
+                }}
+              >
+                &ldquo;{testimonials[active].text}&rdquo;
+              </p>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
+                <img
+                  src={testimonials[active].avatar}
+                  alt={testimonials[active].name}
+                  style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--gold-muted)' }}
+                />
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9375rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                    {testimonials[active].name}
+                  </div>
+                  <div style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+                    {testimonials[active].event} · {testimonials[active].location}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Navigation */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1.5rem' }}>
+            {testimonials.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActive(i)}
+                aria-label={`Testimonial ${i + 1}`}
+                style={{
+                  width: i === active ? '32px' : '8px',
+                  height: '8px',
+                  borderRadius: '4px',
+                  background: i === active ? 'var(--gold)' : 'var(--border-medium)',
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer',
+                  border: 'none',
+                }}
+              />
+            ))}
+          </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

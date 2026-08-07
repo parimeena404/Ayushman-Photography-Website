@@ -1,212 +1,313 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { gsap } from 'gsap';
-import ScrollIndicator from './ScrollIndicator';
-import { fadeInUp } from '@/lib/animations';
+import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
-const slideshowImages = [
-  'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1920&q=80', // Royal Indian Bride & Bridal Lehenga
-  'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=1920&q=80', // Vibrant Holi Festival of Colors
-  'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1920&q=80', // Palace Celebration in Udaipur
-  'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=1920&q=80', // Elegant Indian Saree & Heritage Portrait
-  'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=1920&q=80', // Golden Hour Ceremony in Varanasi
-  'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=1920&q=80', // Indian Classical Heritage Celebration
+const slides = [
+  {
+    image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=1920&q=80',
+    eyebrow: 'LUXURY WEDDING PHOTOGRAPHY',
+    title: 'Where Every Moment\nBecomes a Masterpiece',
+    subtitle: 'We craft timeless visual stories that celebrate love, beauty, and the art of being alive.',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=80',
+    eyebrow: 'CINEMATIC STORYTELLING',
+    title: 'Your Love Story,\nBeautifully Told',
+    subtitle: 'From intimate portraits to grand celebrations, every frame is a work of art.',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1920&q=80',
+    eyebrow: 'SINCE 2001',
+    title: 'Two Decades of\nCapturing Emotions',
+    subtitle: 'Trusted by over 500 families to preserve their most cherished memories.',
+  },
 ];
 
-// Sample public royalty-free ambient video
-const backgroundVideo = 'https://assets.mixkit.co/videos/preview/mixkit-bride-and-groom-walking-in-a-field-at-sunset-41544-large.mp4';
+export default function Hero() {
+  const [active, setActive] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-interface HeroProps {
-  mode?: 'video' | 'slideshow';
-}
-
-export default function Hero({ mode = 'slideshow' }: HeroProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const isInView = useInView(containerRef, { once: true });
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [heroMode, setHeroMode] = useState<'video' | 'slideshow'>(mode);
-
-  // Slideshow auto-advance
   useEffect(() => {
-    if (heroMode === 'slideshow') {
-      const timer = setInterval(() => {
-        setActiveSlide((prev) => (prev + 1) % slideshowImages.length);
-      }, 5000);
-      return () => clearInterval(timer);
-    }
-  }, [heroMode]);
+    setIsLoaded(true);
+    intervalRef.current = setInterval(() => {
+      setActive((prev) => (prev + 1) % slides.length);
+    }, 6000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
+
+  const goToSlide = (index: number) => {
+    setActive(index);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setActive((prev) => (prev + 1) % slides.length);
+    }, 6000);
+  };
 
   return (
     <section
-      ref={containerRef}
       id="hero"
       style={{
         position: 'relative',
         width: '100%',
         height: '100vh',
+        minHeight: '600px',
         overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
       }}
     >
-      {/* Background Media */}
-      {heroMode === 'video' ? (
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
+      {/* Background Images with Ken Burns */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={active}
+          initial={{ scale: 1.1, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
           style={{
             position: 'absolute',
             inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
+            zIndex: 0,
           }}
         >
-          <source src={backgroundVideo} type="video/mp4" />
-        </video>
-      ) : (
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeSlide}
-            initial={{ opacity: 0, scale: 1.05 }}
-            animate={{ opacity: 1, scale: 1.15 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 2, ease: 'easeOut' }}
+          <div
             style={{
               position: 'absolute',
               inset: 0,
-              backgroundImage: `url('${slideshowImages[activeSlide]}')`,
+              backgroundImage: `url(${slides[active].image})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
+              animation: 'kenBurns 12s ease-in-out infinite alternate',
             }}
           />
-        </AnimatePresence>
-      )}
+        </motion.div>
+      </AnimatePresence>
 
-      {/* Soft Dark Overlay */}
+      {/* Gradient Overlay */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background:
-            'linear-gradient(to bottom, rgba(15, 35, 27, 0.45) 0%, rgba(15, 35, 27, 0.75) 100%)',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.55) 100%)',
+          zIndex: 1,
         }}
       />
 
-      {/* Mode Switcher Toggle Button */}
+      {/* Content */}
       <div
-        style={{
-          position: 'absolute',
-          top: '6rem',
-          right: '2rem',
-          zIndex: 30,
-          display: 'flex',
-          gap: '0.5rem',
-          backgroundColor: 'rgba(15, 35, 27, 0.6)',
-          backdropFilter: 'blur(10px)',
-          padding: '0.25rem 0.5rem',
-          borderRadius: '20px',
-          border: '1px solid rgba(191, 164, 111, 0.3)',
-        }}
-      >
-        <button
-          onClick={() => setHeroMode('video')}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: heroMode === 'video' ? 'var(--accent-hero)' : '#FCF7F6',
-            fontSize: '0.7rem',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            cursor: 'pointer',
-            padding: '0.25rem 0.5rem',
-            opacity: heroMode === 'video' ? 1 : 0.6,
-          }}
-        >
-          Film
-        </button>
-        <span style={{ color: 'rgba(252,247,246,0.3)', fontSize: '0.7rem' }}>|</span>
-        <button
-          onClick={() => setHeroMode('slideshow')}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: heroMode === 'slideshow' ? 'var(--accent-hero)' : '#FCF7F6',
-            fontSize: '0.7rem',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            cursor: 'pointer',
-            padding: '0.25rem 0.5rem',
-            opacity: heroMode === 'slideshow' ? 1 : 0.6,
-          }}
-        >
-          Gallery
-        </button>
-      </div>
-
-      {/* Main Content */}
-      <div
+        className="container-wide"
         style={{
           position: 'relative',
-          zIndex: 10,
-          textAlign: 'center',
-          maxWidth: '960px',
-          padding: '0 2rem',
+          zIndex: 2,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          paddingBottom: 'clamp(4rem, 8vh, 7rem)',
         }}
       >
-        <motion.p
-          variants={fadeInUp}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-          className="text-editorial-sm font-body"
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+            style={{ maxWidth: '700px' }}
+          >
+            {/* Eyebrow */}
+            <div
+              style={{
+                fontFamily: "'Manrope', sans-serif",
+                fontSize: '0.7rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.25em',
+                color: 'var(--gold-light)',
+                marginBottom: '1rem',
+                fontWeight: 600,
+              }}
+            >
+              {slides[active].eyebrow}
+            </div>
+
+            {/* Title */}
+            <h1
+              style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: 'clamp(2.5rem, 5.5vw, 4.5rem)',
+                lineHeight: 1.08,
+                fontWeight: 700,
+                color: '#FFFFFF',
+                letterSpacing: '-0.02em',
+                marginBottom: '1.25rem',
+                whiteSpace: 'pre-line',
+              }}
+            >
+              {slides[active].title}
+            </h1>
+
+            {/* Subtitle */}
+            <p
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 'clamp(0.9375rem, 1.5vw, 1.125rem)',
+                lineHeight: 1.7,
+                color: 'rgba(255, 255, 255, 0.75)',
+                marginBottom: '2rem',
+                maxWidth: '520px',
+              }}
+            >
+              {slides[active].subtitle}
+            </p>
+
+            {/* CTAs */}
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <Link
+                href="/booking"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.875rem 2rem',
+                  background: 'var(--gold)',
+                  color: '#1A1A1A',
+                  fontFamily: "'Manrope', sans-serif",
+                  fontWeight: 700,
+                  fontSize: '0.875rem',
+                  letterSpacing: '0.04em',
+                  borderRadius: '999px',
+                  textDecoration: 'none',
+                  transition: 'all 0.3s ease',
+                  border: '2px solid var(--gold)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--gold-dark)';
+                  e.currentTarget.style.borderColor = 'var(--gold-dark)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 8px 30px rgba(201,168,108,0.35)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'var(--gold)';
+                  e.currentTarget.style.borderColor = 'var(--gold)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                Book Your Session
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </Link>
+
+              <Link
+                href="/#portfolio"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.875rem 2rem',
+                  background: 'transparent',
+                  color: '#FFFFFF',
+                  fontFamily: "'Manrope', sans-serif",
+                  fontWeight: 600,
+                  fontSize: '0.875rem',
+                  letterSpacing: '0.04em',
+                  borderRadius: '999px',
+                  textDecoration: 'none',
+                  transition: 'all 0.3s ease',
+                  border: '2px solid rgba(255,255,255,0.35)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#fff';
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)';
+                  e.currentTarget.style.background = 'transparent';
+                }}
+              >
+                View Portfolio
+              </Link>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Slide Indicators */}
+        <div
           style={{
-            color: 'var(--accent-hero)',
-            marginBottom: '1.5rem',
+            display: 'flex',
+            gap: '0.5rem',
+            marginTop: '2.5rem',
           }}
         >
-          International Fine Art & Cinematic Studio
-        </motion.p>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 1, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="font-heading text-editorial-xl"
-          style={{
-            color: '#FCF7F6',
-            marginBottom: '2rem',
-            fontWeight: 300,
-            fontStyle: 'italic',
-          }}
-        >
-          Every Frame
-          <br />
-          Remembers
-        </motion.h1>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.7 }}
-          style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}
-        >
-          <a href="/booking" className="btn-premium" style={{ color: '#FCF7F6', borderColor: 'var(--accent-secondary)' }}>
-            Request Availability
-          </a>
-          <a href="#stories" className="btn-premium" style={{ color: '#FCF7F6', borderColor: 'rgba(252,247,246,0.3)' }}>
-            Explore Stories
-          </a>
-        </motion.div>
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goToSlide(i)}
+              aria-label={`Go to slide ${i + 1}`}
+              style={{
+                width: i === active ? '40px' : '12px',
+                height: '3px',
+                borderRadius: '2px',
+                background: i === active ? 'var(--gold)' : 'rgba(255,255,255,0.35)',
+                transition: 'all 0.4s ease',
+                cursor: 'pointer',
+                border: 'none',
+              }}
+            />
+          ))}
+        </div>
       </div>
 
-      <ScrollIndicator />
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isLoaded ? 1 : 0 }}
+        transition={{ delay: 2, duration: 1 }}
+        style={{
+          position: 'absolute',
+          bottom: '2rem',
+          right: 'clamp(1.25rem, 4vw, 3rem)',
+          zIndex: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '0.5rem',
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "'Manrope', sans-serif",
+            fontSize: '0.6rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.2em',
+            color: 'rgba(255,255,255,0.5)',
+            writingMode: 'vertical-rl',
+          }}
+        >
+          Scroll
+        </span>
+        <motion.div
+          animate={{ y: [0, 6, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+          style={{
+            width: '1px',
+            height: '30px',
+            background: 'linear-gradient(to bottom, rgba(255,255,255,0.5), transparent)',
+          }}
+        />
+      </motion.div>
+
+      {/* Ken Burns Animation */}
+      <style jsx>{`
+        @keyframes kenBurns {
+          0% { transform: scale(1); }
+          100% { transform: scale(1.08); }
+        }
+      `}</style>
     </section>
   );
 }

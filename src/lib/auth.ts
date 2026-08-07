@@ -1,0 +1,57 @@
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { cookies } from 'next/headers';
+import { db } from './db';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'AyushmanCardsnGraphics_JWT_Secret_2025';
+const COOKIE_NAME = 'auth_token';
+
+export async function hashPassword(password: string): Promise<string> {
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(password, salt);
+}
+
+export async function comparePassword(password: string, hashed: string): Promise<boolean> {
+  return bcrypt.compare(password, hashed);
+}
+
+export function signToken(payload: { userId: string; email: string; role: string; name: string }): string {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+}
+
+export function verifyToken(token: string): { userId: string; email: string; role: string; name: string } | null {
+  try {
+    return jwt.verify(token, JWT_SECRET) as any;
+  } catch (err) {
+    return null;
+  }
+}
+
+export async function getCurrentUser() {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get(COOKIE_NAME)?.value;
+    if (!token) return null;
+
+    const payload = verifyToken(token);
+    if (!payload?.userId) return null;
+
+    const user = await db.user.findUnique({
+      where: { id: payload.userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+
+    return user;
+  } catch (err) {
+    return null;
+  }
+}
+
+export { COOKIE_NAME };

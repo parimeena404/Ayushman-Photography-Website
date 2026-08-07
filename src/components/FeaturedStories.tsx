@@ -1,186 +1,181 @@
 'use client';
 
-import { motion, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
-import { staggerContainer, fadeInUp } from '@/lib/animations';
+import { motion, useInView } from 'framer-motion';
+import SectionHeader from './SectionHeader';
+import Link from 'next/link';
 
 const stories = [
   {
-    title: 'Anika & Rohan',
-    subtitle: 'Royal Palace Celebration',
-    location: 'Jaipur, Rajasthan',
-    image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1400&q=85&auto=format',
-    aspect: 'tall',
-  },
-  {
-    title: 'Priya & Kabir',
-    subtitle: 'Golden Hour Haldi & Sangeet',
+    title: 'Aarav & Meera',
+    type: 'Destination Wedding',
     location: 'Udaipur, Rajasthan',
-    image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=1400&q=85&auto=format',
-    aspect: 'wide',
+    image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=700&q=80',
+    quote: 'They captured every emotion we didn\'t even know we felt.',
   },
   {
-    title: 'Leila & Arjun',
-    subtitle: 'Lake Palace Heritage Affair',
-    location: 'Udaipur, India',
-    image: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1400&q=85&auto=format',
-    aspect: 'tall',
+    title: 'Rohan & Priya',
+    type: 'Traditional Wedding',
+    location: 'Ujjain, Madhya Pradesh',
+    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=700&q=80',
+    quote: 'The most beautiful photos we\'ve ever seen. Pure magic.',
+  },
+  {
+    title: 'Arjun & Ananya',
+    type: 'Pre-Wedding Shoot',
+    location: 'Goa',
+    image: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=700&q=80',
+    quote: 'Every frame looks like it belongs in a magazine.',
+  },
+  {
+    title: 'Vikram & Ishita',
+    type: 'Royal Wedding',
+    location: 'Jaipur, Rajasthan',
+    image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=700&q=80',
+    quote: 'An experience that exceeded every expectation.',
   },
 ];
 
 export default function FeaturedStories() {
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-60px' });
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollBy = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const amount = direction === 'left' ? -400 : 400;
+      scrollContainerRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+  };
 
   return (
-    <section id="stories" className="section-padding" ref={sectionRef}>
-      <motion.div
-        variants={staggerContainer}
-        initial="hidden"
-        animate={isInView ? 'visible' : 'hidden'}
-        style={{ maxWidth: '1400px', margin: '0 auto' }}
-      >
-        {/* Section heading */}
-        <motion.div variants={fadeInUp} style={{ marginBottom: '4rem' }}>
-          <p
-            className="text-editorial-sm font-body"
-            style={{ color: 'var(--accent)', marginBottom: '1rem' }}
-          >
-            Featured Stories
-          </p>
-          <h2
-            className="font-heading text-editorial-lg"
-            style={{ color: 'var(--text-primary)', fontWeight: 300 }}
-          >
-            Love, Beautifully Told
-          </h2>
-        </motion.div>
-
-        {/* Asymmetrical Grid */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '2rem',
-          }}
-          className="stories-grid"
-        >
-          {/* Large left image */}
-          <motion.div variants={fadeInUp} style={{ gridRow: 'span 2' }}>
-            <StoryCard story={stories[0]} height="100%" />
-          </motion.div>
-
-          {/* Two stacked right images */}
-          <motion.div variants={fadeInUp}>
-            <StoryCard story={stories[1]} height="100%" />
-          </motion.div>
-          <motion.div variants={fadeInUp}>
-            <StoryCard story={stories[2]} height="100%" />
-          </motion.div>
+    <section className="section-padding" style={{ background: 'var(--bg-secondary)' }}>
+      <div className="container-wide">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
+          <div>
+            <p className="text-eyebrow" style={{ marginBottom: '0.5rem' }}>Love Stories</p>
+            <h2 className="text-h1">Client Stories</h2>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button
+              onClick={() => scrollBy('left')}
+              style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '50%',
+                border: '1.5px solid var(--border-medium)',
+                background: 'var(--bg-card)',
+                color: 'var(--text-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-medium)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <button
+              onClick={() => scrollBy('right')}
+              style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '50%',
+                border: '1.5px solid var(--border-medium)',
+                background: 'var(--bg-card)',
+                color: 'var(--text-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-medium)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
         </div>
-      </motion.div>
+
+        <div
+          ref={scrollContainerRef}
+          style={{
+            display: 'flex',
+            gap: 'clamp(1rem, 2vw, 1.5rem)',
+            overflowX: 'auto',
+            scrollSnapType: 'x mandatory',
+            scrollbarWidth: 'none',
+            paddingBottom: '0.5rem',
+          }}
+        >
+          {stories.map((story, i) => (
+            <motion.div
+              key={story.title}
+              ref={i === 0 ? ref : undefined}
+              initial={{ opacity: 0, x: 30 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: i * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="card-elevated"
+              style={{
+                minWidth: 'clamp(300px, 35vw, 380px)',
+                scrollSnapAlign: 'start',
+                flexShrink: 0,
+              }}
+            >
+              <div style={{ overflow: 'hidden', aspectRatio: '4/3' }}>
+                <div
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    backgroundImage: `url(${story.image})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    transition: 'transform 0.6s ease',
+                  }}
+                  className="story-img"
+                />
+              </div>
+              <div style={{ padding: 'clamp(1.25rem, 2vw, 1.75rem)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                  <div>
+                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.125rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                      {story.title}
+                    </h3>
+                    <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--gold)', fontWeight: 600, marginTop: '0.125rem' }}>
+                      {story.type}
+                    </p>
+                  </div>
+                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+                    {story.location}
+                  </span>
+                </div>
+                <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', fontStyle: 'italic', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '1rem' }}>
+                  &ldquo;{story.quote}&rdquo;
+                </p>
+                <Link
+                  href="/stories"
+                  style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.8125rem', fontWeight: 600, color: 'var(--gold)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                >
+                  Read Their Story
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </Link>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
 
       <style jsx global>{`
-        @media (max-width: 768px) {
-          .stories-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .stories-grid > div:first-child {
-            grid-row: span 1 !important;
-          }
-        }
+        .card-elevated:hover .story-img { transform: scale(1.05); }
+        div::-webkit-scrollbar { display: none; }
       `}</style>
     </section>
-  );
-}
-
-function StoryCard({ story, height }: { story: typeof stories[0]; height: string }) {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        position: 'relative',
-        height,
-        minHeight: '350px',
-        overflow: 'hidden',
-        cursor: 'pointer',
-      }}
-    >
-      <motion.div
-        animate={{ scale: hovered ? 1.05 : 1 }}
-        transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: `url('${story.image}')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      />
-
-      {/* Gradient overlay */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(to top, rgba(15,35,27,0.7) 0%, transparent 60%)',
-        }}
-      />
-
-      {/* Content — always visible on mobile, hover reveal on desktop */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : 20 }}
-        transition={{ duration: 0.4 }}
-        style={{
-          position: 'absolute',
-          bottom: '2rem',
-          left: '2rem',
-          right: '2rem',
-          zIndex: 2,
-        }}
-        className="story-content"
-      >
-        <p
-          className="text-editorial-sm font-body"
-          style={{ color: 'var(--accent)', marginBottom: '0.5rem' }}
-        >
-          {story.location}
-        </p>
-        <h3
-          className="font-heading"
-          style={{
-            fontSize: 'clamp(1.5rem, 2.5vw, 2rem)',
-            color: '#F8F5EF',
-            fontWeight: 300,
-            lineHeight: 1.2,
-          }}
-        >
-          {story.title}
-        </h3>
-        <p
-          className="font-body"
-          style={{
-            color: 'rgba(248,245,239,0.7)',
-            fontSize: '0.9rem',
-            marginTop: '0.25rem',
-          }}
-        >
-          {story.subtitle}
-        </p>
-      </motion.div>
-
-      <style jsx global>{`
-        @media (max-width: 768px) {
-          .story-content {
-            opacity: 1 !important;
-            transform: none !important;
-          }
-        }
-      `}</style>
-    </div>
   );
 }

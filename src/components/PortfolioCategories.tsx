@@ -1,207 +1,225 @@
 'use client';
 
-import { motion, useInView, useScroll, useTransform } from 'framer-motion';
-import { useRef, useState } from 'react';
-import { staggerContainer, fadeInUp, fadeInLeft, fadeInRight } from '@/lib/animations';
+import { useState, useRef } from 'react';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+import SectionHeader from './SectionHeader';
 
-const categories = [
-  {
-    name: 'Royal Weddings',
-    description: 'Timeless Indian wedding celebrations captured with an editorial eye. Every ritual, every emotion, every sacred vow.',
-    image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1400&q=85&auto=format',
-  },
-  {
-    name: 'Pre-Wedding & Couples',
-    description: 'The quiet anticipation before the grand day. Intimate portraits woven into iconic heritage landscapes.',
-    image: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=1400&q=85&auto=format',
-  },
-  {
-    name: 'Destination & Heritage',
-    description: 'From Rajasthan palace courtyards to Kerala backwaters and misty Himalayan valleys. Art that spans traditions.',
-    image: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1400&q=85&auto=format',
-  },
-  {
-    name: 'Festivals & Sangeet',
-    description: 'Vibrant Haldi, Sangeet, and cultural festivals bathed in rich colors, movement, and genuine joy.',
-    image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=1400&q=85&auto=format',
-  },
-  {
-    name: 'Editorial Portraiture',
-    description: 'Deeply personal, artistically refined portraits celebrating character, couture, and Indian heritage.',
-    image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=1400&q=85&auto=format',
-  },
-  {
-    name: 'Cultural Arts & Lifestyle',
-    description: 'Classical arts, intimate gatherings, and authentic cultural celebrations elevated to fine art.',
-    image: 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=1400&q=85&auto=format',
-  },
-  {
-    name: 'Commercial & Couture',
-    description: 'Premium luxury brand imagery and bridal couture campaigns crafted with cinematic precision.',
-    image: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1400&q=85&auto=format',
-  },
+const categories = ['All', 'Wedding', 'Portrait', 'Fashion', 'Commercial', 'Events', 'Travel'];
+
+const portfolioItems = [
+  { src: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=600&q=80', category: 'Wedding', title: 'Royal Rajasthani Wedding', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80', category: 'Portrait', title: 'Studio Portrait', aspect: 'wide' },
+  { src: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80', category: 'Fashion', title: 'Haute Couture Editorial', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80', category: 'Wedding', title: 'Sunset Ceremony', aspect: 'wide' },
+  { src: 'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=600&q=80', category: 'Commercial', title: 'Brand Campaign', aspect: 'square' },
+  { src: 'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=600&q=80', category: 'Travel', title: 'Golden Hour Vista', aspect: 'wide' },
+  { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80', category: 'Portrait', title: 'Creative Headshot', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600&q=80', category: 'Wedding', title: 'Intimate Vows', aspect: 'square' },
+  { src: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80', category: 'Events', title: 'Grand Gala Evening', aspect: 'wide' },
+  { src: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=600&q=80', category: 'Wedding', title: 'Pre-Wedding Romance', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80', category: 'Commercial', title: 'Product Showcase', aspect: 'square' },
+  { src: 'https://images.unsplash.com/photo-1506947411487-a56738267384?w=600&q=80', category: 'Travel', title: 'Aerial Perspective', aspect: 'wide' },
 ];
 
 export default function PortfolioCategories() {
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
+  const [filter, setFilter] = useState('All');
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-60px' });
+
+  const filteredItems = filter === 'All' ? portfolioItems : portfolioItems.filter((item) => item.category === filter);
 
   return (
-    <section
-      id="portfolio"
-      className="section-padding"
-      ref={sectionRef}
-      style={{ backgroundColor: 'var(--bg-secondary)' }}
-    >
-      <motion.div
-        variants={staggerContainer}
-        initial="hidden"
-        animate={isInView ? 'visible' : 'hidden'}
-        style={{ maxWidth: '1400px', margin: '0 auto' }}
-      >
-        {/* Section heading */}
-        <motion.div
-          variants={fadeInUp}
-          style={{ marginBottom: '5rem', textAlign: 'center' }}
-        >
-          <p
-            className="text-editorial-sm font-body"
-            style={{ color: 'var(--accent)', marginBottom: '1rem' }}
-          >
-            Portfolio
-          </p>
-          <h2
-            className="font-heading text-editorial-lg"
-            style={{ color: 'var(--text-primary)', fontWeight: 300 }}
-          >
-            Explore Our Work
-          </h2>
-        </motion.div>
+    <section id="portfolio" className="section-padding" style={{ background: 'var(--bg-primary)' }}>
+      <div className="container-wide">
+        <SectionHeader
+          eyebrow="Our Work"
+          title="Portfolio Showcase"
+          subtitle="A curated collection of our finest work across diverse genres and styles."
+        />
 
-        {/* Category Items — alternating layout */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6rem' }}>
-          {categories.map((cat, i) => (
-            <CategoryItem key={cat.name} category={cat} index={i} reversed={i % 2 !== 0} />
+        {/* Filter Tabs */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            marginBottom: 'clamp(2rem, 4vw, 3rem)',
+            flexWrap: 'wrap',
+          }}
+        >
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setFilter(cat)}
+              style={{
+                padding: '0.5rem 1.25rem',
+                fontFamily: "'Manrope', sans-serif",
+                fontSize: '0.8125rem',
+                fontWeight: filter === cat ? 700 : 500,
+                color: filter === cat ? 'var(--text-on-gold)' : 'var(--text-secondary)',
+                background: filter === cat ? 'var(--gold)' : 'transparent',
+                border: filter === cat ? '1.5px solid var(--gold)' : '1.5px solid var(--border-medium)',
+                borderRadius: '999px',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                letterSpacing: '0.02em',
+              }}
+            >
+              {cat}
+            </button>
           ))}
         </div>
-      </motion.div>
-    </section>
-  );
-}
 
-function CategoryItem({
-  category,
-  index,
-  reversed,
-}: {
-  category: typeof categories[0];
-  index: number;
-  reversed: boolean;
-}) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-80px' });
-  const [hovered, setHovered] = useState(false);
+        {/* Masonry Grid */}
+        <div ref={ref} className="masonry-grid">
+          <AnimatePresence mode="popLayout">
+            {filteredItems.map((item, i) => (
+              <motion.div
+                key={item.src}
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4, delay: i * 0.04 }}
+                style={{ cursor: 'pointer' }}
+                onClick={() => setLightboxIndex(i)}
+              >
+                <div
+                  style={{
+                    borderRadius: 'var(--radius-md)',
+                    overflow: 'hidden',
+                    position: 'relative',
+                  }}
+                >
+                  <img
+                    src={item.src}
+                    alt={item.title}
+                    loading="lazy"
+                    style={{
+                      width: '100%',
+                      display: 'block',
+                      aspectRatio: item.aspect === 'tall' ? '3/4' : item.aspect === 'wide' ? '4/3' : '1/1',
+                      objectFit: 'cover',
+                      transition: 'transform 0.6s ease',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.04)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                  />
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%)',
+                      opacity: 0,
+                      transition: 'opacity 0.3s ease',
+                      display: 'flex',
+                      alignItems: 'flex-end',
+                      padding: '1rem',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.opacity = '1'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.opacity = '0'; }}
+                  >
+                    <div>
+                      <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '0.9375rem', fontWeight: 600, color: '#fff' }}>
+                        {item.title}
+                      </div>
+                      <div style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.7rem', color: 'var(--gold-light)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                        {item.category}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start end', 'end start'],
-  });
-  const parallaxY = useTransform(scrollYProgress, [0, 1], [40, -40]);
+        {/* View All Button */}
+        <div style={{ textAlign: 'center', marginTop: 'clamp(2rem, 4vw, 3rem)' }}>
+          <button className="btn btn-outline btn-md">
+            View Full Portfolio
+          </button>
+        </div>
+      </div>
 
-  const imageVariant = reversed ? fadeInRight : fadeInLeft;
-  const textVariant = reversed ? fadeInLeft : fadeInRight;
-
-  return (
-    <motion.div
-      ref={ref}
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '1.2fr 1fr',
-        gap: 'clamp(2rem, 5vw, 5rem)',
-        alignItems: 'center',
-        direction: reversed ? 'rtl' : 'ltr',
-      }}
-      className="portfolio-item"
-    >
-      {/* Image */}
-      <motion.div
-        variants={imageVariant}
-        initial="hidden"
-        animate={isInView ? 'visible' : 'hidden'}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        style={{
-          position: 'relative',
-          overflow: 'hidden',
-          cursor: 'pointer',
-          direction: 'ltr',
-        }}
-      >
-        <motion.div
-          style={{ y: parallaxY }}
-        >
-          <motion.img
-            src={category.image}
-            alt={category.name}
-            animate={{ scale: hovered ? 1.05 : 1 }}
-            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+      {/* Lightbox */}
+      <AnimatePresence>
+        {lightboxIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={() => setLightboxIndex(null)}
             style={{
-              width: '100%',
-              height: 'auto',
-              aspectRatio: '4/3',
-              objectFit: 'cover',
-              display: 'block',
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              background: 'rgba(0,0,0,0.92)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '2rem',
+              cursor: 'pointer',
             }}
-            loading="lazy"
-          />
-        </motion.div>
-      </motion.div>
-
-      {/* Text */}
-      <motion.div
-        variants={textVariant}
-        initial="hidden"
-        animate={isInView ? 'visible' : 'hidden'}
-        style={{ direction: 'ltr' }}
-      >
-        <p
-          className="text-editorial-sm font-body"
-          style={{ color: 'var(--accent)', marginBottom: '1rem' }}
-        >
-          0{index + 1}
-        </p>
-        <h3
-          className="font-heading"
-          style={{
-            fontSize: 'clamp(2rem, 3.5vw, 3.5rem)',
-            color: 'var(--text-primary)',
-            fontWeight: 300,
-            marginBottom: '1.5rem',
-            lineHeight: 1.1,
-          }}
-        >
-          {category.name}
-        </h3>
-        <p
-          className="font-body"
-          style={{
-            color: 'var(--text-secondary)',
-            fontSize: '1rem',
-            lineHeight: 1.8,
-            maxWidth: '400px',
-            marginBottom: '2rem',
-          }}
-        >
-          {category.description}
-        </p>
-        <a
-          href="#"
-          className="btn-premium"
-          style={{ fontSize: '0.75rem', padding: '0.85rem 2rem' }}
-        >
-          View Gallery
-        </a>
-      </motion.div>
-    </motion.div>
+          >
+            <motion.img
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              src={filteredItems[lightboxIndex]?.src.replace('w=600', 'w=1200')}
+              alt={filteredItems[lightboxIndex]?.title}
+              style={{
+                maxWidth: '90vw',
+                maxHeight: '85vh',
+                objectFit: 'contain',
+                borderRadius: 'var(--radius-md)',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button
+              onClick={() => setLightboxIndex(null)}
+              style={{
+                position: 'absolute',
+                top: '1.5rem',
+                right: '1.5rem',
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.1)',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.25rem',
+                cursor: 'pointer',
+                border: 'none',
+              }}
+            >
+              ✕
+            </button>
+            {/* Nav Arrows */}
+            {lightboxIndex > 0 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex - 1); }}
+                style={{ position: 'absolute', left: '1.5rem', top: '50%', transform: 'translateY(-50%)', width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', cursor: 'pointer', border: 'none' }}
+              >
+                ‹
+              </button>
+            )}
+            {lightboxIndex < filteredItems.length - 1 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex + 1); }}
+                style={{ position: 'absolute', right: '1.5rem', top: '50%', transform: 'translateY(-50%)', width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', cursor: 'pointer', border: 'none' }}
+              >
+                ›
+              </button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
   );
 }

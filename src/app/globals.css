@@ -1,41 +1,118 @@
 @import "tailwindcss";
 
-/* ── Custom Theme Variables ── */
+/* ══════════════════════════════════════════════
+   LUXURY PHOTOGRAPHY STUDIO — DESIGN SYSTEM
+   Inspired by Vistaprint's premium design language
+   ══════════════════════════════════════════════ */
+
+/* ── Color Palette ── */
 :root {
-  /* Dusty Vintage Rose (Light Theme) */
-  --bg-primary: #FCF7F6;
-  --bg-secondary: #F5ECEB;
-  --bg-card: #FFFDFC;
-  --bg-dark: #2A1E20;
-  --text-primary: #22201F;
-  --text-secondary: #8A525C;
-  --text-light: #FCF7F6;
-  --accent: #A06A73;
-  --accent-secondary: #C5969D;
-  --accent-deep: #7E4852;
-  --accent-hero: #E8BEC4;
-  --accent-highlight: #A06A73;
-  --divider: rgba(160, 106, 115, 0.15);
+  /* Backgrounds */
+  --bg-primary: #FDFBF9;
+  --bg-secondary: #F7F3EE;
+  --bg-tertiary: #EDE8E1;
+  --bg-card: #FFFFFF;
+  --bg-dark: #1A1A1A;
+  --bg-darker: #0D0D0D;
+  --bg-overlay: rgba(13, 13, 13, 0.55);
+
+  /* Text */
+  --text-primary: #1A1A1A;
+  --text-secondary: #5A5A5A;
+  --text-tertiary: #8A8A8A;
+  --text-light: #FDFBF9;
+  --text-on-gold: #1A1A1A;
+
+  /* Accent */
+  --gold: #C9A86C;
+  --gold-light: #D4BA85;
+  --gold-dark: #A8883F;
+  --gold-muted: rgba(201, 168, 108, 0.15);
+
+  /* Borders & Dividers */
+  --border-light: rgba(26, 26, 26, 0.08);
+  --border-medium: rgba(26, 26, 26, 0.15);
+  --border-gold: rgba(201, 168, 108, 0.3);
+  --divider: rgba(26, 26, 26, 0.08);
+
+  /* Shadows */
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+  --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-gold: 0 4px 20px rgba(201, 168, 108, 0.25);
+
+  /* Spacing Scale */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
+  --space-32: 8rem;     /* 128px */
+
+  /* Layout */
+  --container-sm: 768px;
+  --container-md: 1024px;
+  --container-lg: 1280px;
+  --container-xl: 1440px;
+  --nav-height: 72px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-reveal: cubic-bezier(0.77, 0, 0.175, 1);
+  --duration-fast: 0.2s;
+  --duration-normal: 0.35s;
+  --duration-slow: 0.6s;
 }
 
+/* ── Dark Theme ── */
 [data-theme="dark"] {
-  /* Midnight Blue (Dark Theme) */
-  --bg-primary: #0E1624;
-  --bg-secondary: #162133;
-  --bg-card: #1E2A3F;
-  --bg-dark: #0A0F1A;
+  --bg-primary: #0D0D0D;
+  --bg-secondary: #161616;
+  --bg-tertiary: #1E1E1E;
+  --bg-card: #1A1A1A;
+  --bg-dark: #0A0A0A;
+  --bg-darker: #050505;
+  --bg-overlay: rgba(0, 0, 0, 0.65);
+
   --text-primary: #F5F2EC;
-  --text-secondary: #9DB7D6;
+  --text-secondary: #A0A0A0;
+  --text-tertiary: #6A6A6A;
   --text-light: #F5F2EC;
-  --accent: #6E8FB8;
-  --accent-secondary: #9DB7D6;
-  --accent-deep: #4A6D96;
-  --accent-hero: #B8D1F0;
-  --accent-highlight: #6E8FB8;
-  --divider: rgba(110, 143, 184, 0.2);
+
+  --gold: #D4BA85;
+  --gold-light: #E0C997;
+  --gold-dark: #C9A86C;
+  --gold-muted: rgba(212, 186, 133, 0.12);
+
+  --border-light: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.12);
+  --border-gold: rgba(212, 186, 133, 0.25);
+  --divider: rgba(255, 255, 255, 0.06);
+
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.5);
+  --shadow-gold: 0 4px 20px rgba(212, 186, 133, 0.15);
 }
 
-/* ── Base Resets ── */
+/* ══════════════════════════════════════════════
+   BASE RESETS
+   ══════════════════════════════════════════════ */
+
 *,
 *::before,
 *::after {
@@ -53,140 +130,402 @@ html {
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: 16px;
   line-height: 1.7;
   overflow-x: hidden;
-  transition: background-color 0.5s ease, color 0.5s ease;
+  transition: background-color 0.4s var(--ease-out), color 0.4s var(--ease-out);
 }
 
 ::selection {
-  background-color: var(--accent);
-  color: var(--bg-primary);
+  background-color: var(--gold);
+  color: var(--text-on-gold);
 }
 
-/* ── Typography Utilities ── */
-.font-heading {
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* ══════════════════════════════════════════════
+   TYPOGRAPHY
+   ══════════════════════════════════════════════ */
+
+.font-display {
+  font-family: 'Playfair Display', 'Georgia', serif;
+}
+
+.font-editorial {
   font-family: 'Cormorant Garamond', 'Georgia', serif;
 }
 
 .font-body {
-  font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
 }
 
-/* ── Editorial Typography ── */
-.text-editorial-xl {
-  font-size: clamp(3rem, 6vw, 7rem);
-  line-height: 1.05;
+.font-ui {
+  font-family: 'Manrope', 'Inter', sans-serif;
+}
+
+/* Heading Scale — Vistaprint-inspired hierarchy */
+.text-hero {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.75rem, 5.5vw, 5rem);
+  line-height: 1.08;
   letter-spacing: -0.02em;
+  font-weight: 700;
 }
 
-.text-editorial-lg {
-  font-size: clamp(2rem, 4vw, 4.5rem);
-  line-height: 1.1;
+.text-h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.25rem, 4vw, 3.5rem);
+  line-height: 1.12;
   letter-spacing: -0.015em;
+  font-weight: 600;
 }
 
-.text-editorial-md {
-  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+.text-h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
   line-height: 1.2;
   letter-spacing: -0.01em;
+  font-weight: 600;
 }
 
-.text-editorial-sm {
-  font-size: clamp(0.75rem, 1vw, 0.875rem);
+.text-h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.text-h4 {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.text-eyebrow {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--gold);
 }
 
-/* ── Thin Divider ── */
-.divider-gold {
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--accent-highlight) 50%,
-    transparent 100%
-  );
-  opacity: 0.4;
+.text-body-lg {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
 }
 
-/* ── Premium Button ── */
-.btn-premium {
+.text-body {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.text-body-sm {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-tertiary);
+}
+
+.text-caption {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-tertiary);
+  letter-spacing: 0.01em;
+}
+
+/* ══════════════════════════════════════════════
+   LAYOUT UTILITIES
+   ══════════════════════════════════════════════ */
+
+.container {
+  width: 100%;
+  max-width: var(--container-lg);
+  margin: 0 auto;
+  padding-left: clamp(1.25rem, 4vw, 3rem);
+  padding-right: clamp(1.25rem, 4vw, 3rem);
+}
+
+.container-wide {
+  width: 100%;
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  padding-left: clamp(1.25rem, 4vw, 3rem);
+  padding-right: clamp(1.25rem, 4vw, 3rem);
+}
+
+.section-padding {
+  padding-top: clamp(4rem, 10vh, 7rem);
+  padding-bottom: clamp(4rem, 10vh, 7rem);
+}
+
+.section-padding-sm {
+  padding-top: clamp(2.5rem, 6vh, 4rem);
+  padding-bottom: clamp(2.5rem, 6vh, 4rem);
+}
+
+/* ══════════════════════════════════════════════
+   BUTTONS — Vistaprint-inspired CTA design
+   ══════════════════════════════════════════════ */
+
+.btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 2.5rem;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  background: transparent;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  border-radius: var(--radius-full);
   cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out);
+  white-space: nowrap;
   position: relative;
   overflow: hidden;
-  transition: color 0.4s ease, background-color 0.4s ease;
 }
 
-.btn-premium::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background-color: var(--accent-gold);
-  transition: left 0.4s ease;
-  z-index: -1;
+.btn-lg {
+  padding: 1rem 2.25rem;
+  font-size: 0.9375rem;
 }
 
-.btn-premium:hover {
-  color: #22201F;
-  border-color: var(--accent-gold);
+.btn-md {
+  padding: 0.75rem 1.75rem;
+  font-size: 0.875rem;
 }
 
-.btn-premium:hover::before {
-  left: 0;
+.btn-sm {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.8125rem;
 }
 
-/* ── Form Inputs ── */
-.input-luxury {
-  width: 100%;
-  padding: 1rem 0;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 1rem;
-  color: var(--text-primary);
+/* Primary Gold CTA */
+.btn-primary {
+  background: var(--gold);
+  color: var(--text-on-gold);
+  border: 2px solid var(--gold);
+}
+
+.btn-primary:hover {
+  background: var(--gold-dark);
+  border-color: var(--gold-dark);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-1px);
+}
+
+/* Outline Button */
+.btn-outline {
   background: transparent;
+  color: var(--text-primary);
+  border: 2px solid var(--border-medium);
+}
+
+.btn-outline:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-1px);
+}
+
+/* Ghost Button */
+.btn-ghost {
+  background: transparent;
+  color: var(--text-primary);
+  border: 2px solid transparent;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.btn-ghost:hover {
+  color: var(--gold);
+}
+
+/* Dark Button */
+.btn-dark {
+  background: var(--bg-dark);
+  color: var(--text-light);
+  border: 2px solid var(--bg-dark);
+}
+
+.btn-dark:hover {
+  background: #2A2A2A;
+  border-color: #2A2A2A;
+  transform: translateY(-1px);
+}
+
+/* ══════════════════════════════════════════════
+   CARDS — Vistaprint-style card system
+   ══════════════════════════════════════════════ */
+
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-subtle);
+  overflow: hidden;
+  transition: box-shadow var(--duration-normal) var(--ease-out),
+              transform var(--duration-normal) var(--ease-out);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card);
+  transform: translateY(-4px);
+}
+
+.card-elevated {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: box-shadow var(--duration-normal) var(--ease-out),
+              transform var(--duration-normal) var(--ease-out);
+}
+
+.card-elevated:hover {
+  box-shadow: var(--shadow-elevated);
+  transform: translateY(-6px);
+}
+
+.card-flat {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  transition: border-color var(--duration-normal) var(--ease-out),
+              box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.card-flat:hover {
+  border-color: var(--gold);
+  box-shadow: var(--shadow-subtle);
+}
+
+/* ══════════════════════════════════════════════
+   DIVIDERS
+   ══════════════════════════════════════════════ */
+
+.divider {
+  height: 1px;
+  background: var(--divider);
   border: none;
-  border-bottom: 1px solid var(--divider);
+}
+
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.4;
+  border: none;
+}
+
+/* ══════════════════════════════════════════════
+   FORM INPUTS
+   ══════════════════════════════════════════════ */
+
+.input {
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-medium);
+  border-radius: var(--radius-md);
   outline: none;
-  transition: border-color 0.3s ease;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
 }
 
-.input-luxury:focus {
-  border-bottom-color: var(--accent);
+.input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-muted);
 }
 
-.input-luxury::placeholder {
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  letter-spacing: 0.05em;
+.input::placeholder {
+  color: var(--text-tertiary);
 }
 
-/* ── Image Reveal ── */
-.image-reveal {
-  clip-path: inset(100% 0 0 0);
-  transition: clip-path 1s cubic-bezier(0.77, 0, 0.175, 1);
+.textarea {
+  resize: vertical;
+  min-height: 120px;
 }
 
-.image-reveal.revealed {
-  clip-path: inset(0 0 0 0);
+/* ══════════════════════════════════════════════
+   GRID UTILITIES
+   ══════════════════════════════════════════════ */
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-6);
 }
 
-/* ── Scrollbar Styling ── */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .grid-4 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ══════════════════════════════════════════════
+   MASONRY GALLERY
+   ══════════════════════════════════════════════ */
+
+.masonry-grid {
+  columns: 3;
+  column-gap: var(--space-4);
+}
+
+.masonry-grid > * {
+  break-inside: avoid;
+  margin-bottom: var(--space-4);
+}
+
+@media (max-width: 1024px) {
+  .masonry-grid { columns: 2; }
+}
+
+@media (max-width: 640px) {
+  .masonry-grid { columns: 1; }
+}
+
+/* ══════════════════════════════════════════════
+   SCROLLBAR
+   ══════════════════════════════════════════════ */
+
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -196,39 +535,37 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--accent);
+  background: var(--gold-muted);
   border-radius: 3px;
 }
 
-/* ── Masonry Grid ── */
-.masonry-grid {
-  columns: 3;
-  column-gap: 1rem;
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
 }
 
-.masonry-grid > * {
-  break-inside: avoid;
-  margin-bottom: 1rem;
+/* ══════════════════════════════════════════════
+   ANIMATIONS & TRANSITIONS
+   ══════════════════════════════════════════════ */
+
+.image-reveal {
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 1s var(--ease-reveal);
 }
 
-@media (max-width: 1024px) {
-  .masonry-grid {
-    columns: 2;
-  }
+.image-reveal.revealed {
+  clip-path: inset(0 0 0 0);
 }
 
-@media (max-width: 640px) {
-  .masonry-grid {
-    columns: 1;
-  }
+/* Image hover zoom (for cards) */
+.img-zoom {
+  transition: transform 0.6s var(--ease-out);
 }
 
-/* ── Section spacing ── */
-.section-padding {
-  padding: clamp(4rem, 10vh, 8rem) clamp(1.5rem, 5vw, 6rem);
+.img-zoom:hover {
+  transform: scale(1.05);
 }
 
-/* ── Smooth page transitions ── */
+/* Smooth page transitions */
 .page-transition-enter {
   opacity: 0;
   transform: translateY(20px);
@@ -238,4 +575,35 @@ body {
   opacity: 1;
   transform: translateY(0);
   transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* Gold underline link effect */
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--gold);
+  transition: width var(--duration-normal) var(--ease-out);
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+   ══════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 64px;
+  }
 }

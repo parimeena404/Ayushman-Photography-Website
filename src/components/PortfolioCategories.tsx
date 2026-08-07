@@ -7,6 +7,7 @@ import SectionHeader from './SectionHeader';
 const categories = ['All', 'Commercial', 'Portrait', 'Indian Festivals', 'Wedding', 'Fashion', 'Travel'];
 
 const portfolioItems = [
+  { src: '/images/commercial/airpods-desert.png', category: 'Commercial', title: '🎧 Experience Stunning Visuals — AirPods Desert Campaign', aspect: 'square' },
   { src: '/images/commercial/command-key-studio.png', category: 'Commercial', title: '⌨️ Everything Starts Inside — Miniature Studio Concept', aspect: 'tall' },
   { src: '/images/commercial/excavator-muscle.png', category: 'Commercial', title: '🚜 Industrial Equipment Muscle Concept Photography', aspect: 'tall' },
   { src: '/images/commercial/product1.png', category: 'Commercial', title: '📱 3D Mobile Fashion & Product Showcase', aspect: 'tall' },
@@ -58,7 +59,7 @@ export default function PortfolioCategories() {
         <SectionHeader
           eyebrow="Commercial & Creative Photography Gallery"
           title="Portfolio Showcase"
-          subtitle="Explore miniature creative concept shoots, industrial equipment commercial photography, 3D mobile product displays, fine art portraits, royal Indian weddings, and festive sessions."
+          subtitle="Explore AirPods desert commercial campaigns, miniature creative concept shoots, 3D mobile product displays, fine art portraits, royal Indian weddings, and festive sessions."
         />
 
         {/* Filter Tabs */}

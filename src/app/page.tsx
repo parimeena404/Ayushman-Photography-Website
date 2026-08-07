@@ -76,15 +76,24 @@ const popularPackages: ProductItem[] = [
 const trendingServices: ProductItem[] = [
   {
     id: 'trend-1',
-    title: '🤝 Gathbandhan Sacred Vows Ritual Film',
+    title: '🎬 Vintage Film Strip Reel Cinema Story',
     badge: 'FILM @ ₹35,000',
     price: '₹35,000',
     unit: '5 Min Highlight',
     category: 'Cinematography',
-    image: '/images/wedding/wedding6.png',
+    image: '/images/keepsakes/film1.jpg',
   },
   {
     id: 'trend-2',
+    title: '🤝 Gathbandhan Sacred Vows Ritual Film',
+    badge: 'RITUAL @ ₹28,000',
+    price: '₹28,000',
+    unit: 'Wedding Rituals',
+    category: 'Cinematography',
+    image: '/images/wedding/wedding6.png',
+  },
+  {
+    id: 'trend-3',
     title: '🌅 Sunset Jharokha Archway Couple Shoot',
     badge: 'HERITAGE @ ₹25,000',
     price: '₹25,000',
@@ -93,7 +102,7 @@ const trendingServices: ProductItem[] = [
     image: '/images/wedding/wedding2.png',
   },
   {
-    id: 'trend-3',
+    id: 'trend-4',
     title: '4K Aerial Drone Event Photography Flight',
     badge: 'FLIGHT @ ₹18,000',
     price: '₹18,000',
@@ -101,54 +110,54 @@ const trendingServices: ProductItem[] = [
     category: 'Drone Photography',
     image: 'https://images.unsplash.com/photo-1506947411487-a56738267384?w=500&q=80',
   },
-  {
-    id: 'trend-4',
-    title: '⛵ Sunset Voyage & Destination Photography',
-    badge: 'DESTINATION @ ₹30,000',
-    price: '₹30,000',
-    unit: 'Sunset Voyage',
-    category: 'Destination',
-    image: '/images/festivals/rainbow-sails.png',
-  },
 ];
 
 // 3. Indian Festive Greeting Cards, Albums & Prints (Vistaprint Carousel 3)
 const photoKeepsakes: ProductItem[] = [
   {
     id: 'card-1',
-    title: '✉️ Luxury Shaadi & Festive Invitation Cards',
-    badge: 'BUY 100 @ ₹4,500',
-    price: '₹4,500',
-    unit: '100 Custom Cards',
-    category: 'Cards n Graphics',
-    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
+    title: '💌 "Love You To The Moon" Handcrafted Greeting Card',
+    badge: 'BUY 10 @ ₹1,500',
+    price: '₹1,500',
+    unit: '10 Custom Pop-up Cards',
+    category: 'Greeting Cards',
+    image: '/images/keepsakes/card2.png',
   },
   {
-    id: 'album-1',
-    title: '👰 Handcrafted Royal Wedding Flush Album',
-    badge: 'BUY 1 @ ₹9,500',
-    price: '₹9,500',
-    unit: '40 Silk Pages',
-    category: 'Albums',
-    image: '/images/wedding/wedding5.jpg',
+    id: 'card-2',
+    title: '📰 "The Forever Times" Custom Wedding Newspaper Album',
+    badge: 'BUY 50 @ ₹6,500',
+    price: '₹6,500',
+    unit: 'Custom Shaadi Newspaper',
+    category: 'Newspaper Albums',
+    image: '/images/keepsakes/card3.png',
   },
   {
-    id: 'album-2',
-    title: '🪔 Royal Diwali & Heritage Canvas Print',
-    badge: 'BUY 1 @ ₹2,500',
-    price: '₹2,500',
-    unit: '20×30 Inch Print',
-    category: 'Canvas Prints',
-    image: '/images/festivals/diwali-deepotsav.jpg',
+    id: 'card-3',
+    title: '📖 Custom "Our Love Story" Newspaper Album Page',
+    badge: 'BUY 1 @ ₹2,200',
+    price: '₹2,200',
+    unit: 'Framed Print Page',
+    category: 'Newspaper Prints',
+    image: '/images/keepsakes/card4.png',
   },
   {
-    id: 'album-3',
-    title: 'Custom Framed Gold Foil Heritage Portrait',
-    badge: 'BUY 1 @ ₹3,200',
-    price: '₹3,200',
-    unit: 'Wood & Glass Frame',
-    category: 'Framed Prints',
-    image: '/images/wedding/wedding1.jpg',
+    id: 'card-4',
+    title: '🪔 Festive Candle Camera Photo Note Cards',
+    badge: 'BUY 20 @ ₹2,000',
+    price: '₹2,000',
+    unit: 'Festive Note Cards',
+    category: 'Festive Cards',
+    image: '/images/keepsakes/card1.png',
+  },
+  {
+    id: 'card-5',
+    title: '🎬 Vintage Film Strip Reel Photo Frame Collage',
+    badge: 'BUY 1 @ ₹3,500',
+    price: '₹3,500',
+    unit: 'Handcrafted Frame Collage',
+    category: 'Film Collages',
+    image: '/images/keepsakes/film1.jpg',
   },
 ];
 
@@ -173,7 +182,7 @@ export default function Home() {
         {/* Vistaprint Product Carousel 2: Trending Services & Cinema */}
         <ProductCarousel
           sectionTitle="Trending Services & Cinema Films"
-          sectionSubtitle="Explore 4K cinematography, heritage light shoots, drone flights & same-day edits"
+          sectionSubtitle="Explore 4K cinematography, heritage light shoots, drone flights & film reel stories"
           items={trendingServices}
         />
 
@@ -182,8 +191,8 @@ export default function Home() {
 
         {/* Vistaprint Product Carousel 3: Festive Cards, Albums & Prints */}
         <ProductCarousel
-          sectionTitle="Festive Invitation Cards, Luxury Albums & Prints"
-          sectionSubtitle="Custom printed Shaadi cards, Diwali greeting prints, velvet photo albums & canvas art"
+          sectionTitle="Festive Invitation Cards, Custom Newspapers & Keepsake Prints"
+          sectionSubtitle="Handcrafted pop-up cards, 'The Forever Times' Shaadi newspapers, camera candle note cards & film strip collages"
           items={photoKeepsakes}
         />
 

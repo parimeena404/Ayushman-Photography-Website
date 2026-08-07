@@ -12,6 +12,22 @@ interface VideoPlayerProps {
 export default function VideoPlayer({ isOpen, videoUrl, title, onClose }: VideoPlayerProps) {
   if (!isOpen) return null;
 
+  const isYouTube = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be');
+  const isVimeo = videoUrl.includes('vimeo.com');
+
+  const getEmbedUrl = (url: string) => {
+    if (url.includes('youtube.com/watch?v=')) {
+      return url.replace('watch?v=', 'embed/') + '?autoplay=1';
+    }
+    if (url.includes('youtu.be/')) {
+      return url.replace('youtu.be/', 'youtube.com/embed/') + '?autoplay=1';
+    }
+    if (url.includes('vimeo.com/')) {
+      return url.replace('vimeo.com/', 'player.vimeo.com/video/') + '?autoplay=1';
+    }
+    return url;
+  };
+
   return (
     <AnimatePresence>
       <motion.div
@@ -70,16 +86,27 @@ export default function VideoPlayer({ isOpen, videoUrl, title, onClose }: VideoP
             backgroundColor: '#000',
             boxShadow: '0 25px 50px -12px rgba(0,0,0,0.7)',
             overflow: 'hidden',
+            borderRadius: '8px',
           }}
         >
-          <video
-            autoPlay
-            controls
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-          >
-            <source src={videoUrl} type="video/mp4" />
-            Your browser does not support HTML5 video.
-          </video>
+          {isYouTube || isVimeo ? (
+            <iframe
+              src={getEmbedUrl(videoUrl)}
+              title={title}
+              style={{ width: '100%', height: '100%', border: 'none' }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          ) : (
+            <video
+              autoPlay
+              controls
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            >
+              <source src={videoUrl} type="video/mp4" />
+              Your browser does not support HTML5 video.
+            </video>
+          )}
         </div>
       </motion.div>
     </AnimatePresence>

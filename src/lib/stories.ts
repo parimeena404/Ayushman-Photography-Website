@@ -1,4 +1,4 @@
-// Story data for the photography portfolio
+// Story & Films data for the photography portfolio
 export interface StoryImage {
   src: string;
   alt: string;
@@ -22,104 +22,6 @@ export interface Story {
   category: string;
 }
 
-export const stories: Story[] = [
-  {
-    slug: 'anika-and-rohan',
-    title: 'A Royal Rajasthani Affair',
-    subtitle: 'Where ancient palace courtyards witnessed a magnificent love story',
-    couple: 'Anika & Rohan',
-    location: 'Jaipur, Rajasthan',
-    venue: 'City Palace & Rambagh',
-    date: 'September 2024',
-    coverImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1920&q=85&auto=format',
-    introduction: 'Under the golden skies of Jaipur, Anika and Rohan exchanged vows in a grand royal ceremony. The ancient palace walls echoed with music, and the courtyards stood as silent witnesses to a celebration that brought together centuries of Indian heritage, royal elegance, and profound emotion.',
-    quote: 'They didn\'t just photograph our wedding — they captured the feeling of it. Every time I look at our images, I\'m transported back to that golden afternoon.',
-    quoteAuthor: 'Anika',
-    category: 'Royal Wedding',
-    images: [
-      { src: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1400&q=85&auto=format', alt: 'Bride in royal lehenga', layout: 'full' },
-      { src: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=1400&q=85&auto=format', alt: 'Sangeet & Haldi celebrations', layout: 'half' },
-      { src: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1400&q=85&auto=format', alt: 'Palace wedding vows', layout: 'half' },
-      { src: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=1400&q=85&auto=format', alt: 'Ghats ceremony', layout: 'full' },
-      { src: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=1400&q=85&auto=format', alt: 'Heritage saree portrait', layout: 'third' },
-      { src: 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=1400&q=85&auto=format', alt: 'Cultural dance performance', layout: 'third' },
-      { src: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1400&q=85&auto=format', alt: 'Palace sunset portrait', layout: 'third' },
-    ],
-  },
-  {
-    slug: 'mira-and-james',
-    title: 'Golden Hour Romance',
-    subtitle: 'A love letter written in light against the Aegean Sea',
-    couple: 'Mira & James',
-    location: 'Santorini, Greece',
-    venue: 'Aenaon Villas',
-    date: 'June 2024',
-    coverImage: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=1920&q=85&auto=format',
-    introduction: 'Perched high above the caldera with the Aegean stretching endlessly below, Mira and James celebrated their love in a ceremony painted entirely in golden light. Every moment felt suspended in time — the gentle Mediterranean breeze, the warmth of the setting sun, and the quiet magic of two souls becoming one.',
-    quote: 'What struck me most was their stillness. In the midst of all the chaos and joy, they moved like shadows — quiet, present, and impossibly perceptive.',
-    quoteAuthor: 'Mira',
-    category: 'Destination Wedding',
-    images: [
-      { src: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=1400&q=85&auto=format', alt: 'Cliffside ceremony', layout: 'full' },
-      { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1400&q=85&auto=format', alt: 'Bridal portrait', layout: 'half' },
-      { src: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=1400&q=85&auto=format', alt: 'Sunset couple portrait', layout: 'half' },
-      { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1400&q=85&auto=format', alt: 'Golden hour embrace', layout: 'full' },
-    ],
-  },
-  {
-    slug: 'leila-and-arjun',
-    title: 'Palace of Dreams',
-    subtitle: 'Royal grandeur meets intimate emotion in the city of lakes',
-    couple: 'Leila & Arjun',
-    location: 'Udaipur, India',
-    venue: 'Taj Lake Palace',
-    date: 'December 2023',
-    coverImage: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1920&q=85&auto=format',
-    introduction: 'Surrounded by the shimmering waters of Lake Pichola, Leila and Arjun\'s wedding was a celebration of heritage, art, and an extraordinary love. Three days of festivities unfolded across the palace — each moment more breathtaking than the last, from the intimate mehndi ceremony to the grand reception under a canopy of ten thousand marigolds.',
-    quote: 'We wanted authenticity, and that\'s exactly what we received. No forced smiles, no awkward poses. Just us — raw, real, and radiant.',
-    quoteAuthor: 'Leila',
-    category: 'Wedding',
-    images: [
-      { src: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1400&q=85&auto=format', alt: 'Palace grounds', layout: 'full' },
-      { src: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=1400&q=85&auto=format', alt: 'Sangeet ceremony', layout: 'half' },
-      { src: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1400&q=85&auto=format', alt: 'Lake backdrop', layout: 'half' },
-      { src: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=1400&q=85&auto=format', alt: 'Reception details', layout: 'third' },
-      { src: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=1400&q=85&auto=format', alt: 'Jewelry closeup', layout: 'third' },
-      { src: 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=1400&q=85&auto=format', alt: 'Couple silhouette', layout: 'third' },
-      { src: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1400&q=85&auto=format', alt: 'Grand finale', layout: 'full' },
-    ],
-  },
-  {
-    slug: 'sofia-and-karan',
-    title: 'Heritage Reverie',
-    subtitle: 'An engagement beneath the arches of ancient India',
-    couple: 'Sofia & Karan',
-    location: 'Varanasi, India',
-    venue: 'Taj Nadesar Palace',
-    date: 'April 2024',
-    coverImage: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=1920&q=85&auto=format',
-    introduction: 'On a quiet morning along the sacred ghats of Varanasi, before the day fully woke, Sofia and Karan walked together as the golden light illuminated ancient stone and timeless waters. Every frame became a testament to love, heritage, and serene beauty.',
-    quote: 'From the first call to the final gallery, everything felt curated and intentional. Working with them is less like hiring a photographer and more like collaborating with an artist.',
-    quoteAuthor: 'Sofia',
-    category: 'Engagement',
-    images: [
-      { src: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=1400&q=85&auto=format', alt: 'Morning along the ghats', layout: 'full' },
-      { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1400&q=85&auto=format', alt: 'Portrait by archways', layout: 'half' },
-      { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1400&q=85&auto=format', alt: 'Palace garden moment', layout: 'half' },
-      { src: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=1400&q=85&auto=format', alt: 'Golden light embrace', layout: 'full' },
-    ],
-  },
-];
-
-export function getStoryBySlug(slug: string): Story | undefined {
-  return stories.find((s) => s.slug === slug);
-}
-
-export function getRelatedStories(currentSlug: string, count = 2): Story[] {
-  return stories.filter((s) => s.slug !== currentSlug).slice(0, count);
-}
-
-// Films data
 export interface Film {
   id: string;
   title: string;
@@ -134,67 +36,97 @@ export interface Film {
 export const films: Film[] = [
   {
     id: 'film-1',
-    title: 'A Royal Rajasthani Love Story',
-    couple: 'Anika & Rohan',
-    location: 'Jaipur, Rajasthan',
-    category: 'Wedding Films',
-    thumbnail: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1400&q=85&auto=format',
+    title: '🎬 Vintage Film Strip Reel Story',
+    couple: 'Ayushman Studio Showcase',
+    location: 'Freeganj, Ujjain MP',
+    category: 'Behind the Scenes',
+    thumbnail: '/images/keepsakes/film1.jpg',
     videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
     duration: '4:32',
   },
   {
     id: 'film-2',
-    title: 'Colors of Sangeet & Haldi',
-    couple: 'Priya & Kabir',
-    location: 'Udaipur, Rajasthan',
-    category: 'Highlight Films',
-    thumbnail: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=1400&q=85&auto=format',
+    title: '🤝 Gathbandhan Sacred Vows Ritual',
+    couple: 'Anika & Rohan',
+    location: 'Jaipur, Rajasthan',
+    category: 'Wedding Films',
+    thumbnail: '/images/wedding/wedding6.png',
     videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    duration: '3:18',
+    duration: '5:18',
   },
   {
     id: 'film-3',
-    title: 'Royal Lake Palace Celebrations',
-    couple: 'Leila & Arjun',
-    location: 'Udaipur, India',
+    title: '👰 Royal Varmala Rose Petal Canopy',
+    couple: 'Priya & Kabir',
+    location: 'Udaipur, Rajasthan',
     category: 'Wedding Films',
-    thumbnail: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1400&q=85&auto=format',
+    thumbnail: '/images/wedding/wedding5.jpg',
     videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    duration: '5:45',
+    duration: '6:45',
   },
   {
     id: 'film-4',
-    title: 'Ghats at Dawn',
+    title: '✨ Stone Jali Sunset Heritage Teaser',
     couple: 'Sofia & Karan',
     location: 'Varanasi, India',
     category: 'Pre-Wedding Films',
-    thumbnail: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=1400&q=85&auto=format',
+    thumbnail: '/images/wedding/wedding1.jpg',
     videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    duration: '2:56',
+    duration: '3:20',
   },
   {
     id: 'film-5',
-    title: 'Heritage Aerial Perspectives',
-    couple: 'Various',
-    location: 'Jaipur & Udaipur',
+    title: '🚁 Heritage Aerial 4K Drone Flight',
+    couple: 'Royal Venue Flight',
+    location: 'Ujjain & Indore MP',
     category: 'Drone Footage',
-    thumbnail: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1400&q=85&auto=format',
+    thumbnail: 'https://images.unsplash.com/photo-1506947411487-a56738267384?w=1400&q=85&auto=format',
     videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    duration: '6:12',
+    duration: '4:15',
   },
   {
     id: 'film-6',
-    title: 'Behind the Lens: India Tour',
-    couple: 'Studio Team',
-    location: 'Mumbai & Rajasthan',
-    category: 'Behind the Scenes',
-    thumbnail: 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=1400&q=85&auto=format',
+    title: '💃 Royal Palace Garba Night Cinema',
+    couple: 'Heritage Festive Night',
+    location: 'Jaipur Palace',
+    category: 'Highlight Films',
+    thumbnail: '/images/festivals/palace-dance.jpg',
     videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    duration: '3:40',
+    duration: '3:50',
   },
 ];
 
-// FAQ data
+export const stories: Story[] = [
+  {
+    slug: 'anika-and-rohan',
+    title: 'A Royal Rajasthani Affair',
+    subtitle: 'Where ancient palace courtyards witnessed a magnificent love story',
+    couple: 'Anika & Rohan',
+    location: 'Jaipur, Rajasthan',
+    venue: 'City Palace & Rambagh',
+    date: 'September 2024',
+    coverImage: '/images/wedding/wedding5.jpg',
+    introduction: 'Under the golden skies of Jaipur, Anika and Rohan exchanged vows in a grand royal ceremony. The ancient palace walls echoed with music, and the courtyards stood as silent witnesses to a celebration that brought together centuries of Indian heritage, royal elegance, and profound emotion.',
+    quote: 'They didn\'t just photograph our wedding — they captured the feeling of it. Every time I look at our images, I\'m transported back to that golden afternoon.',
+    quoteAuthor: 'Anika',
+    category: 'Royal Wedding',
+    images: [
+      { src: '/images/wedding/wedding5.jpg', alt: 'Varmala Rose Petal Canopy', layout: 'full' },
+      { src: '/images/wedding/wedding1.jpg', alt: 'Stone Jali Silhouette', layout: 'half' },
+      { src: '/images/wedding/wedding3.jpg', alt: 'Ivy Steps Couple', layout: 'half' },
+      { src: '/images/wedding/wedding4.jpg', alt: 'Palace Night Walk', layout: 'full' },
+    ],
+  },
+];
+
+export function getStoryBySlug(slug: string): Story | undefined {
+  return stories.find((s) => s.slug === slug);
+}
+
+export function getRelatedStories(currentSlug: string): Story[] {
+  return stories.filter((s) => s.slug !== currentSlug).slice(0, 3);
+}
+
 export interface FAQItem {
   question: string;
   answer: string;
@@ -205,51 +137,15 @@ export const faqs: FAQItem[] = [
   {
     category: 'Booking',
     question: 'How far in advance should I book?',
-    answer: 'We recommend booking 8-12 months in advance for weddings, especially during peak season (October to March). For destination weddings, we suggest reaching out even earlier — 12-18 months — to ensure availability and allow time for travel planning.',
-  },
-  {
-    category: 'Booking',
-    question: 'Do you travel for destination weddings?',
-    answer: 'Absolutely. We have photographed weddings across 20+ countries, from Tuscany and Santorini to Bali and the Scottish Highlands. Travel costs are quoted separately based on the destination, and we handle all logistics so you can focus on your celebration.',
+    answer: 'We recommend booking 8-12 months in advance for weddings, especially during peak season (October to March). For destination weddings, we suggest reaching out even earlier.',
   },
   {
     category: 'Pricing',
     question: 'What are your packages and pricing?',
-    answer: 'Our collections start at ₹3,50,000 for intimate weddings and range upward based on coverage days, team size, deliverables, and destination. We believe in transparent pricing — reach out through our booking page for a detailed proposal tailored to your event.',
-  },
-  {
-    category: 'Pricing',
-    question: 'Is there a deposit required?',
-    answer: 'Yes, we require a 30% retainer fee to secure your date, with the balance due two weeks before the event. For destination weddings, we may request an additional travel advance.',
-  },
-  {
-    category: 'Process',
-    question: 'How many photos will we receive?',
-    answer: 'For a full-day wedding, you can expect 400-800 carefully curated and hand-edited images. We believe in delivering a refined gallery rather than thousands of unedited shots — every image in your collection is one we\'re proud of.',
-  },
-  {
-    category: 'Process',
-    question: 'When will we receive our photos?',
-    answer: 'Your curated online gallery is typically delivered within 6-8 weeks. A selection of 30-50 highlights is shared within 72 hours so you have something beautiful to share while we work on the full collection.',
-  },
-  {
-    category: 'Process',
-    question: 'Do you shoot video as well?',
-    answer: 'Yes, we offer cinematic wedding films alongside photography. Our film team works seamlessly with our photographers to ensure nothing is missed. We offer highlight films (3-5 minutes), feature films (15-30 minutes), and documentary edits.',
-  },
-  {
-    category: 'Albums',
-    question: 'Do you offer printed albums?',
-    answer: 'We offer handcrafted Italian leather albums, fine-art museum-quality prints, and luxury coffee-table books. Each album is designed by us, reviewed by you, and printed on archival-grade paper that will last generations.',
-  },
-  {
-    category: 'Albums',
-    question: 'Can we order prints?',
-    answer: 'Absolutely. Your online gallery includes an integrated print shop where you and your family can order fine-art prints, canvases, and framed pieces directly — all color-managed and printed on museum-grade paper.',
+    answer: 'Our collections start at ₹15,000 for festive shoots and ₹45,000 for full-day wedding coverage.',
   },
 ];
 
-// Blog data
 export interface BlogPost {
   slug: string;
   title: string;
@@ -263,29 +159,11 @@ export interface BlogPost {
 export const blogPosts: BlogPost[] = [
   {
     slug: 'golden-hour-photography-guide',
-    title: 'The Art of Golden Hour',
-    excerpt: 'Why the last hour of sunlight transforms ordinary moments into extraordinary memories.',
+    title: 'The Art of Golden Hour Photography',
+    excerpt: 'Why the last hour of sunlight transforms ordinary wedding and festive moments into extraordinary memories.',
     date: 'January 15, 2025',
     category: 'Photography Tips',
-    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80',
-    content: 'Golden hour — that fleeting window of warm, diffused light just before sunset — is a photographer\'s most treasured ally. Unlike the harsh overhead light of midday, golden hour wraps subjects in a soft, warm embrace that flatters skin tones, creates depth through long shadows, and paints the sky in gradients of amber and rose.\n\nFor wedding photography, timing the couple\'s portrait session during golden hour can elevate images from beautiful to breathtaking. We always work with our couples to build a timeline that protects this window — usually 45 minutes to an hour before sunset.\n\nThe key is preparation. Scout your location beforehand. Know where the light falls. Have your compositions planned so you can work quickly and keep the energy flowing. Golden hour waits for no one, and the most magical light often lasts only 15-20 minutes.',
-  },
-  {
-    slug: 'choosing-destination-wedding-venue',
-    title: 'Choosing Your Destination Wedding Venue',
-    excerpt: 'A photographer\'s perspective on what makes a venue truly unforgettable.',
-    date: 'December 20, 2024',
-    category: 'Wedding Planning',
-    image: 'https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?w=800&q=80',
-    content: 'After photographing over 500 weddings across 20 countries, we\'ve learned that the most photogenic venues share certain qualities that go beyond aesthetics.\n\nNatural light is paramount. Venues with large windows, open courtyards, or outdoor ceremony spaces allow us to work with the kind of soft, directional light that creates emotional, timeless images.\n\nArchitectural character matters. Whether it\'s the weathered stone of a Tuscan villa, the clean lines of a modernist gallery, or the ornate arches of a Rajasthani palace — texture and character in the backdrop add depth to every frame.\n\nPrivacy creates authenticity. Venues that offer secluded spaces for the couple allow for intimate, unguarded moments that produce the most powerful photographs.',
-  },
-  {
-    slug: 'why-film-inspired-editing',
-    title: 'Why We Edit with Film-Inspired Tones',
-    excerpt: 'The philosophy behind our warm, timeless editing style and why it matters for your legacy.',
-    date: 'November 8, 2024',
-    category: 'Behind the Scenes',
-    image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&q=80',
-    content: 'In an era of trendy presets and heavy filters, we\'ve made a deliberate choice: our editing style is rooted in the warmth and soul of analog film photography.\n\nWhy? Because trends fade, but the qualities that made film photography beautiful — its rich skin tones, its gentle grain, its warm shadows and creamy highlights — are timeless. A photograph edited in this style looks as beautiful today as it will in thirty years.\n\nEvery image we deliver is hand-edited. We never batch-apply presets. Each photograph is treated individually, with careful attention to color balance, exposure, and mood — ensuring the final gallery tells your story with consistency and emotional truth.',
+    image: '/images/wedding/wedding2.png',
+    content: 'Golden hour wraps subjects in a soft, warm embrace that flatters skin tones and paints the sky in gradients of amber and gold.',
   },
 ];

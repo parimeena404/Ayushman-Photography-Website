@@ -15,12 +15,13 @@ export interface ProductItem {
 }
 
 interface ProductCarouselProps {
+  id?: string;
   sectionTitle: string;
   sectionSubtitle?: string;
   items: ProductItem[];
 }
 
-export default function ProductCarousel({ sectionTitle, sectionSubtitle, items }: ProductCarouselProps) {
+export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, items }: ProductCarouselProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-40px' });
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -32,7 +33,7 @@ export default function ProductCarousel({ sectionTitle, sectionSubtitle, items }
   };
 
   return (
-    <section style={{ padding: 'clamp(2.5rem, 5vh, 4rem) 0', background: 'var(--bg-primary)', borderBottom: '1px solid var(--border-light)' }}>
+    <section id={id} style={{ padding: 'clamp(2.5rem, 5vh, 4rem) 0', background: 'var(--bg-primary)', borderBottom: '1px solid var(--border-light)' }}>
       <div className="container-wide">
         {/* Section Header with Navigation Arrows */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1.5rem' }}>

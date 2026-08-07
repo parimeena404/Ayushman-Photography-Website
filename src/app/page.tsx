@@ -152,6 +152,15 @@ const photoKeepsakes: ProductItem[] = [
   },
   {
     id: 'card-5',
+    title: '📮 Winter Mailbox Custom Printed Cards & Envelopes',
+    badge: 'BUY 50 @ ₹3,500',
+    price: '₹3,500',
+    unit: 'Winter Card Set',
+    category: 'Print Envelopes',
+    image: '/images/keepsakes/snow-mailbox.jpg',
+  },
+  {
+    id: 'card-6',
     title: '🎬 Vintage Film Strip Reel Photo Frame Collage',
     badge: 'BUY 1 @ ₹3,500',
     price: '₹3,500',
@@ -191,6 +200,7 @@ export default function Home() {
 
         {/* Vistaprint Product Carousel 3: Festive Cards, Albums & Prints */}
         <ProductCarousel
+          id="products"
           sectionTitle="Festive Invitation Cards, Custom Newspapers & Keepsake Prints"
           sectionSubtitle="Handcrafted pop-up cards, 'The Forever Times' Shaadi newspapers, camera candle note cards & film strip collages"
           items={photoKeepsakes}

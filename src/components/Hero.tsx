@@ -6,28 +6,40 @@ import Link from 'next/link';
 
 const slides = [
   {
-    image: 'https://images.unsplash.com/photo-1605886106691-d576a1656fce?w=1920&q=80',
-    eyebrow: '🪔 INDIAN FESTIVE CELEBRATIONS',
+    image: '/images/festivals/diwali-deepotsav.jpg',
+    eyebrow: '🪔 DIWALI DEEPOTSAV CELEBRATIONS',
     title: 'Capturing The Divine\nLight of Indian Festivals',
-    subtitle: 'From Diwali Deepotsav and Holi color bursts to Navratri Garba nights and royal family portraits.',
+    subtitle: 'From lit haveli courtyards and flower rangolis to sparklers and cherished family celebrations.',
   },
   {
-    image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=1920&q=80',
-    eyebrow: 'LUXURY WEDDING PHOTOGRAPHY',
-    title: 'Where Every Moment\nBecomes a Masterpiece',
-    subtitle: 'We craft timeless visual stories that celebrate love, heritage, and royal Indian weddings.',
+    image: '/images/festivals/makar-sankranti.png',
+    eyebrow: '🪁 MAKAR SANKRANTI & UTTARAYAN',
+    title: 'Colors of Joy,\nSweets & Flying Kites',
+    subtitle: 'Documenting traditional festive greetings, golden hour celebrations, and family moments.',
   },
   {
-    image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=1920&q=80',
-    eyebrow: 'HOLI FESTIVAL OF COLORS',
-    title: 'Vibrant Joy &\nAuthentic Cultural Colors',
-    subtitle: 'Specialized festive photography capturing joyous moments with family and loved ones.',
+    image: '/images/festivals/lohri-bonfire.jpg',
+    eyebrow: '🔥 LOHRI & HARVEST FESTIVALS',
+    title: 'Joyous Festive Fires,\nBhangra & Music Nights',
+    subtitle: 'Capturing the warmth, vibrant attire, and energetic dance around festival bonfires.',
   },
   {
-    image: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=1920&q=80',
-    eyebrow: 'NAVRATRI & GARBA NIGHTS',
-    title: 'Rhythm, Heritage &\nFestive Elegance',
-    subtitle: 'High-speed event photography documenting traditional attire, dance, and cultural splendor.',
+    image: '/images/festivals/palace-dance.jpg',
+    eyebrow: '💃 ROYAL HERITAGE & GARBA DANCE',
+    title: 'Grace, Elegance &\nArchitectural Splendor',
+    subtitle: 'Fine art photography of twirling dancers inside ornate mosaic palace halls.',
+  },
+  {
+    image: '/images/festivals/stained-glass.jpg',
+    eyebrow: '✨ HERITAGE & ARCHITECTURAL LIGHT',
+    title: 'Colors of Tradition,\nCrystallized in Time',
+    subtitle: 'Capturing magnificent stained glass reflections and royal Indian architecture.',
+  },
+  {
+    image: '/images/festivals/rainbow-sails.png',
+    eyebrow: '⛵ SUNSET DESTINATIONS & FINE ART',
+    title: 'Fine Art Visuals,\nDestinations & Dreams',
+    subtitle: 'Artistic photography celebrating golden hour landscapes and picturesque voyages.',
   },
 ];
 
@@ -69,7 +81,7 @@ export default function Hero() {
       <AnimatePresence mode="wait">
         <motion.div
           key={active}
-          initial={{ scale: 1.1, opacity: 0 }}
+          initial={{ scale: 1.08, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -97,7 +109,7 @@ export default function Hero() {
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.7) 100%)',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.75) 100%)',
           zIndex: 1,
         }}
       />
@@ -150,7 +162,7 @@ export default function Hero() {
                 letterSpacing: '-0.02em',
                 marginBottom: '1.25rem',
                 whiteSpace: 'pre-line',
-                textShadow: '0 4px 20px rgba(0,0,0,0.4)',
+                textShadow: '0 4px 20px rgba(0,0,0,0.5)',
               }}
             >
               {slides[active].title}
@@ -162,9 +174,10 @@ export default function Hero() {
                 fontFamily: "'Inter', sans-serif",
                 fontSize: 'clamp(0.9375rem, 1.5vw, 1.125rem)',
                 lineHeight: 1.7,
-                color: 'rgba(255, 255, 255, 0.85)',
+                color: 'rgba(255, 255, 255, 0.88)',
                 marginBottom: '2rem',
                 maxWidth: '540px',
+                textShadow: '0 2px 10px rgba(0,0,0,0.5)',
               }}
             >
               {slides[active].subtitle}

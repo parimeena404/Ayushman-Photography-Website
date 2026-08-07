@@ -5,16 +5,16 @@ import { useRef } from 'react';
 import Link from 'next/link';
 
 const circleCategories = [
-  { name: '🪔 Diwali & Deepotsav', image: 'https://images.unsplash.com/photo-1605886106691-d576a1656fce?w=300&q=80', badge: 'Festive Special' },
+  { name: '🪔 Diwali Deepotsav', image: '/images/festivals/diwali-deepotsav.jpg', badge: 'Diwali Special' },
+  { name: '🔥 Lohri & Bonfire', image: '/images/festivals/lohri-bonfire.jpg', badge: 'Festive Fire' },
+  { name: '💃 Royal Garba Dance', image: '/images/festivals/palace-dance.jpg', badge: 'Heritage' },
+  { name: '🪁 Makar Sankranti', image: '/images/festivals/makar-sankranti.png', badge: 'Kite Fest' },
   { name: '🎨 Holi Color Fest', image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=300&q=80', badge: 'Vibrant' },
-  { name: '💃 Navratri & Garba', image: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=300&q=80', badge: 'Celebration' },
-  { name: '🌺 Ganesh Utsav', image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=300&q=80' },
   { name: '👸 Royal Weddings', image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=300&q=80', badge: 'Popular' },
-  { name: '💍 Pre-Wedding Shoots', image: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=300&q=80' },
-  { name: '🎬 4K Cinematography', image: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=300&q=80', badge: '4K Film' },
-  { name: '📷 Studio Portraits', image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&q=80' },
+  { name: '💍 Pre-Wedding', image: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=300&q=80' },
+  { name: '⛵ Sunset Destinations', image: '/images/festivals/rainbow-sails.png', badge: 'Travel' },
+  { name: '✨ Stained Glass Art', image: '/images/festivals/stained-glass.jpg', badge: 'Architecture' },
   { name: '✉️ Festive Cards', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=300&q=80', badge: 'Printing' },
-  { name: '🖼️ Canvas Prints', image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=300&q=80' },
 ];
 
 export default function ExploreCategories() {
@@ -37,7 +37,7 @@ export default function ExploreCategories() {
               Explore Categories & Indian Festivals
             </h2>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8125rem', color: 'var(--text-tertiary)' }}>
-              Discover our Indian festive celebration photography, wedding shoots & luxury printing services
+              Quick browse our Diwali, Lohri, Makar Sankranti, Navratri & Wedding photography collections
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>

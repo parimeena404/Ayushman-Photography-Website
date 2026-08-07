@@ -6,16 +6,16 @@ import SectionHeader from './SectionHeader';
 import Link from 'next/link';
 
 const categories = [
-  { name: 'Wedding Photography', image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=600&q=80', count: '200+ Stories' },
-  { name: 'Pre-Wedding', image: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=600&q=80', count: '150+ Shoots' },
-  { name: 'Portrait', image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80', count: '300+ Sessions' },
-  { name: 'Fashion', image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80', count: '80+ Projects' },
-  { name: 'Commercial', image: 'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=600&q=80', count: '120+ Brands' },
-  { name: 'Events', image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80', count: '250+ Events' },
-  { name: 'Drone', image: 'https://images.unsplash.com/photo-1506947411487-a56738267384?w=600&q=80', count: '60+ Flights' },
-  { name: 'Travel', image: 'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=600&q=80', count: '40+ Destinations' },
-  { name: 'Product', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80', count: '100+ Catalogs' },
-  { name: 'Lifestyle', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80', count: '90+ Stories' },
+  { name: '🪔 Diwali Deepotsav', image: 'https://images.unsplash.com/photo-1605886106691-d576a1656fce?w=600&q=80', count: '100+ Diwali Shoots' },
+  { name: '🎨 Holi Color Fest', image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=600&q=80', count: '80+ Holi Shoots' },
+  { name: '💃 Navratri Garba', image: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=600&q=80', count: '120+ Garba Nights' },
+  { name: '🌺 Ganesh Utsav', image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=600&q=80', count: '90+ Festivals' },
+  { name: '👸 Royal Weddings', image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=600&q=80', count: '250+ Stories' },
+  { name: '💍 Pre-Wedding', image: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=600&q=80', count: '150+ Shoots' },
+  { name: '📷 Studio Portrait', image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80', count: '300+ Sessions' },
+  { name: '✨ Fashion Editorial', image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80', count: '80+ Projects' },
+  { name: '🏢 Commercial Shoots', image: 'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=600&q=80', count: '120+ Brands' },
+  { name: '✉️ Shaadi Cards & Prints', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&q=80', count: '500+ Card Orders' },
 ];
 
 export default function CategoryCards() {
@@ -26,9 +26,9 @@ export default function CategoryCards() {
     <section className="section-padding" style={{ background: 'var(--bg-primary)' }}>
       <div className="container-wide">
         <SectionHeader
-          eyebrow="Our Expertise"
-          title="Explore Our Photography"
-          subtitle="From intimate portraits to grand celebrations, we specialize in capturing every genre with artistic precision."
+          eyebrow="Indian Festive & Studio Portfolio"
+          title="Explore Photography & Festive Collections"
+          subtitle="From glowing Diwali Deepotsav lights and vibrant Holi color bursts to royal Indian weddings and custom invitation printing."
         />
 
         <div
@@ -46,7 +46,7 @@ export default function CategoryCards() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{
                 duration: 0.5,
-                delay: i * 0.06,
+                delay: i * 0.05,
                 ease: [0.25, 0.46, 0.45, 0.94],
               }}
             >
@@ -76,7 +76,7 @@ export default function CategoryCards() {
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 50%, transparent 100%)',
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, transparent 100%)',
                     transition: 'background 0.3s ease',
                   }}
                 />
@@ -92,10 +92,11 @@ export default function CategoryCards() {
                   <div
                     style={{
                       fontFamily: "'Playfair Display', serif",
-                      fontSize: 'clamp(0.8rem, 1.2vw, 1.0625rem)',
-                      fontWeight: 600,
+                      fontSize: 'clamp(0.85rem, 1.2vw, 1.0625rem)',
+                      fontWeight: 700,
                       color: '#fff',
                       marginBottom: '0.125rem',
+                      lineHeight: 1.25,
                     }}
                   >
                     {cat.name}
@@ -106,8 +107,8 @@ export default function CategoryCards() {
                       fontSize: '0.65rem',
                       textTransform: 'uppercase',
                       letterSpacing: '0.1em',
-                      color: 'var(--gold-light)',
-                      fontWeight: 500,
+                      color: '#FFD700',
+                      fontWeight: 600,
                     }}
                   >
                     {cat.count}

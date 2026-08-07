@@ -1,38 +1,37 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import SectionHeader from './SectionHeader';
 import Link from 'next/link';
 
 const stories = [
+  {
+    title: '🪔 Diwali Deepotsav Shoot',
+    type: 'Festive Family Story',
+    location: 'Freeganj, Ujjain',
+    image: 'https://images.unsplash.com/photo-1605886106691-d576a1656fce?w=700&q=80',
+    quote: 'Ayushman Studio captured our family Diwali puja with such warmth and divine radiance.',
+  },
   {
     title: 'Aarav & Meera',
     type: 'Destination Wedding',
     location: 'Udaipur, Rajasthan',
     image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=700&q=80',
-    quote: 'They captured every emotion we didn\'t even know we felt.',
+    quote: 'They captured every emotion we didn\'t even know we felt on our special day.',
+  },
+  {
+    title: '🎨 Vibrant Holi Celebration',
+    type: 'Cultural Festival Shoot',
+    location: 'Mathura & Ujjain',
+    image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=700&q=80',
+    quote: 'The colors in our photographs look so authentic and alive. Unforgettable work!',
   },
   {
     title: 'Rohan & Priya',
     type: 'Traditional Wedding',
     location: 'Ujjain, Madhya Pradesh',
     image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=700&q=80',
-    quote: 'The most beautiful photos we\'ve ever seen. Pure magic.',
-  },
-  {
-    title: 'Arjun & Ananya',
-    type: 'Pre-Wedding Shoot',
-    location: 'Goa',
-    image: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=700&q=80',
-    quote: 'Every frame looks like it belongs in a magazine.',
-  },
-  {
-    title: 'Vikram & Ishita',
-    type: 'Royal Wedding',
-    location: 'Jaipur, Rajasthan',
-    image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=700&q=80',
-    quote: 'An experience that exceeded every expectation.',
+    quote: 'The most beautiful wedding photos we\'ve ever seen. Pure magic.',
   },
 ];
 
@@ -53,8 +52,8 @@ export default function FeaturedStories() {
       <div className="container-wide">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
           <div>
-            <p className="text-eyebrow" style={{ marginBottom: '0.5rem' }}>Love Stories</p>
-            <h2 className="text-h1">Client Stories</h2>
+            <p className="text-eyebrow" style={{ marginBottom: '0.5rem', color: '#D40000' }}>Festive & Wedding Stories</p>
+            <h2 className="text-h1">Client Stories & Celebrations</h2>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button
@@ -72,7 +71,7 @@ export default function FeaturedStories() {
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#D40000'; e.currentTarget.style.color = '#D40000'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-medium)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -94,7 +93,7 @@ export default function FeaturedStories() {
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#D40000'; e.currentTarget.style.color = '#D40000'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-medium)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -145,10 +144,10 @@ export default function FeaturedStories() {
               <div style={{ padding: 'clamp(1.25rem, 2vw, 1.75rem)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
                   <div>
-                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.125rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.125rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                       {story.title}
                     </h3>
-                    <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--gold)', fontWeight: 600, marginTop: '0.125rem' }}>
+                    <p style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#D40000', fontWeight: 700, marginTop: '0.125rem' }}>
                       {story.type}
                     </p>
                   </div>
@@ -161,9 +160,9 @@ export default function FeaturedStories() {
                 </p>
                 <Link
                   href="/stories"
-                  style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.8125rem', fontWeight: 600, color: 'var(--gold)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                  style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.8125rem', fontWeight: 700, color: '#D40000', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
                 >
-                  Read Their Story
+                  Read Story
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </Link>
               </div>

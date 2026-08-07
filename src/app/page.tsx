@@ -23,7 +23,7 @@ const popularPackages: ProductItem[] = [
     price: '₹15,000',
     unit: 'Festive Special',
     category: 'Festivals',
-    image: 'https://images.unsplash.com/photo-1605886106691-d576a1656fce?w=500&q=80',
+    image: '/images/festivals/diwali-deepotsav.jpg',
   },
   {
     id: 'pop-1',
@@ -36,30 +36,30 @@ const popularPackages: ProductItem[] = [
   },
   {
     id: 'fest-2',
-    title: '🎨 Vibrant Holi Color Festival Shoot',
+    title: '🪁 Makar Sankranti Kite Festival Shoot',
     badge: 'BOOK 1 @ ₹18,000',
     price: '₹18,000',
     unit: 'Outdoor Session',
-    category: 'Holi Fest',
-    image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=500&q=80',
-  },
-  {
-    id: 'pop-2',
-    title: 'Royal Rajasthan Destination Wedding',
-    badge: 'BOOK NOW @ ₹1,20,000',
-    price: '₹1,20,000',
-    unit: '2-Day Coverage',
-    category: 'Destination',
-    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=500&q=80',
+    category: 'Makar Sankranti',
+    image: '/images/festivals/makar-sankranti.png',
   },
   {
     id: 'fest-3',
-    title: '💃 Navratri Garba & Dandiya Event Coverage',
+    title: '🔥 Lohri Bonfire & Punjabi Folk Dance',
+    badge: 'BOOK NOW @ ₹20,000',
+    price: '₹20,000',
+    unit: 'Night Coverage',
+    category: 'Lohri Fest',
+    image: '/images/festivals/lohri-bonfire.jpg',
+  },
+  {
+    id: 'fest-4',
+    title: '💃 Royal Navratri Garba & Palace Dance',
     badge: 'BOOK NOW @ ₹22,000',
     price: '₹22,000',
-    unit: 'Night Coverage',
+    unit: 'Garba Night',
     category: 'Navratri',
-    image: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=500&q=80',
+    image: '/images/festivals/palace-dance.jpg',
   },
   {
     id: 'pop-3',
@@ -85,12 +85,12 @@ const trendingServices: ProductItem[] = [
   },
   {
     id: 'trend-2',
-    title: '🌺 Ganesh Utsav & Cultural Celebration Coverage',
-    badge: 'FESTIVE @ ₹16,000',
-    price: '₹16,000',
-    unit: 'Festival Event',
-    category: 'Ganesh Utsav',
-    image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=500&q=80',
+    title: '✨ Heritage Palace Architecture & Light Shoot',
+    badge: 'HERITAGE @ ₹25,000',
+    price: '₹25,000',
+    unit: 'Stained Glass Art',
+    category: 'Heritage Shoot',
+    image: '/images/festivals/stained-glass.jpg',
   },
   {
     id: 'trend-3',
@@ -103,12 +103,12 @@ const trendingServices: ProductItem[] = [
   },
   {
     id: 'trend-4',
-    title: 'Same-Day Edit Video Reel Delivery',
-    badge: 'SAME DAY @ ₹15,000',
-    price: '₹15,000',
-    unit: 'Insta Reel / Teaser',
-    category: 'Fast Edit',
-    image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=500&q=80',
+    title: '⛵ Sunset Voyage & Destination Photography',
+    badge: 'DESTINATION @ ₹30,000',
+    price: '₹30,000',
+    unit: 'Sunset Voyage',
+    category: 'Destination',
+    image: '/images/festivals/rainbow-sails.png',
   },
   {
     id: 'trend-5',
@@ -125,7 +125,7 @@ const trendingServices: ProductItem[] = [
 const photoKeepsakes: ProductItem[] = [
   {
     id: 'card-1',
-    title: '✉️ Luxury Indian Wedding & Festive Invitation Cards',
+    title: '✉️ Luxury Shaadi & Festive Invitation Cards',
     badge: 'BUY 100 @ ₹4,500',
     price: '₹4,500',
     unit: '100 Custom Cards',
@@ -134,21 +134,21 @@ const photoKeepsakes: ProductItem[] = [
   },
   {
     id: 'album-1',
-    title: 'Handcrafted Flush Mount Royal Velvet Album',
+    title: '🪔 Handcrafted Royal Diwali Photo Album',
     badge: 'BUY 1 @ ₹7,500',
     price: '₹7,500',
     unit: '40 Silk Pages',
     category: 'Albums',
-    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&q=80',
+    image: '/images/festivals/diwali-deepotsav.jpg',
   },
   {
     id: 'album-2',
-    title: '🪔 Festive Family Canvas Wall Print',
+    title: '🪁 Festive Family Canvas Wall Print',
     badge: 'BUY 1 @ ₹2,500',
     price: '₹2,500',
     unit: '20×30 Inch Print',
     category: 'Canvas Prints',
-    image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=500&q=80',
+    image: '/images/festivals/makar-sankranti.png',
   },
   {
     id: 'album-3',
@@ -191,7 +191,7 @@ export default function Home() {
         {/* Vistaprint Product Carousel 2: Trending Services & Cinema */}
         <ProductCarousel
           sectionTitle="Trending Services & Cinema Films"
-          sectionSubtitle="Explore 4K cinematography, Ganesh Utsav coverage, drone flights & same-day edits"
+          sectionSubtitle="Explore 4K cinematography, heritage light shoots, drone flights & same-day edits"
           items={trendingServices}
         />
 

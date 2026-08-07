@@ -4,9 +4,14 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import SectionHeader from './SectionHeader';
 
-const categories = ['All', 'Indian Festivals', 'Wedding', 'Portrait', 'Fashion', 'Commercial', 'Travel'];
+const categories = ['All', 'Portrait', 'Indian Festivals', 'Wedding', 'Fashion', 'Commercial', 'Travel'];
 
 const portfolioItems = [
+  { src: '/images/portrait/portrait1.png', category: 'Portrait', title: '🖤 Monochrome Candid Male Portrait', aspect: 'tall' },
+  { src: '/images/portrait/portrait2.png', category: 'Portrait', title: '🌅 Golden Hour Warm Studio Headshot', aspect: 'tall' },
+  { src: '/images/portrait/portrait3.png', category: 'Portrait', title: '✨ Studio Double Exposure Fashion Portrait', aspect: 'tall' },
+  { src: '/images/portrait/portrait4.png', category: 'Fashion', title: '🔥 Experimental Red Frosted Graphic FACE', aspect: 'tall' },
+  { src: '/images/portrait/portrait5.png', category: 'Portrait', title: '🦋 Butterfly Social Frame Fine Art', aspect: 'tall' },
   { src: '/images/wedding/wedding5.jpg', category: 'Wedding', title: '👰 Royal Varmala Rose Petal Canopy', aspect: 'tall' },
   { src: '/images/wedding/wedding1.jpg', category: 'Wedding', title: '✨ Ornate Jali Window Sunset Silhouette', aspect: 'tall' },
   { src: '/images/wedding/wedding3.jpg', category: 'Wedding', title: '💍 Heritage Ivy Palace Pre-Wedding', aspect: 'tall' },
@@ -19,9 +24,6 @@ const portfolioItems = [
   { src: '/images/festivals/palace-dance.jpg', category: 'Indian Festivals', title: '💃 Royal Palace Garba Dance Showcase', aspect: 'wide' },
   { src: '/images/festivals/stained-glass.jpg', category: 'Indian Festivals', title: '✨ Heritage Palace Stained Glass Light', aspect: 'tall' },
   { src: '/images/festivals/rainbow-sails.png', category: 'Travel', title: '⛵ Sunset Voyage Rainbow Sails', aspect: 'wide' },
-  { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80', category: 'Portrait', title: 'Studio Ethnic Portrait', aspect: 'square' },
-  { src: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80', category: 'Fashion', title: 'Haute Couture Lookbook', aspect: 'tall' },
-  { src: 'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=600&q=80', category: 'Commercial', title: 'Brand Product Campaign', aspect: 'square' },
 ];
 
 export default function PortfolioCategories() {
@@ -50,9 +52,9 @@ export default function PortfolioCategories() {
     <section id="portfolio" className="section-padding" style={{ background: 'var(--bg-primary)' }}>
       <div className="container-wide">
         <SectionHeader
-          eyebrow="Indian Weddings & Fine Art Gallery"
+          eyebrow="Fine Art Portraits & Weddings Gallery"
           title="Portfolio Showcase"
-          subtitle="Explore our fine art photography capturing royal Indian weddings, Varmala petal showers, pre-wedding silhouettes, Diwali Deepotsav, and cultural heritage shoots."
+          subtitle="Explore our fine art portrait photography, studio double exposure headshots, royal Indian weddings, Diwali Deepotsav, and cultural heritage sessions."
         />
 
         {/* Filter Tabs */}

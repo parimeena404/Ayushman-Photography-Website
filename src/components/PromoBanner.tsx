@@ -6,122 +6,171 @@ import Link from 'next/link';
 
 export default function PromoBanner() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const isInView = useInView(ref, { once: true, margin: '-60px' });
 
   return (
-    <section
-      ref={ref}
-      style={{
-        background: 'linear-gradient(135deg, #1A1A1A 0%, #2A2420 50%, #1A1A1A 100%)',
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        className="container-wide"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          minHeight: '420px',
-          alignItems: 'center',
-        }}
-      >
-        {/* Content */}
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          animate={isInView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+    <section ref={ref} style={{ padding: 'clamp(2rem, 5vh, 3.5rem) 0', background: 'var(--bg-secondary)' }}>
+      <div className="container-wide">
+        {/* Vistaprint-Style Side-by-Side Split Banners */}
+        <div
           style={{
-            padding: 'clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem)',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 'clamp(1rem, 2.5vw, 2rem)',
           }}
         >
-          <div
+          {/* Left Banner: Photo Albums & Gifts */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
             style={{
-              display: 'inline-block',
-              padding: '0.4rem 1rem',
-              background: 'var(--gold)',
-              borderRadius: '999px',
-              fontFamily: "'Manrope', sans-serif",
-              fontSize: '0.7rem',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.15em',
-              color: '#1A1A1A',
-              marginBottom: '1.25rem',
+              borderRadius: 'var(--radius-lg)',
+              overflow: 'hidden',
+              position: 'relative',
+              minHeight: '340px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-end',
+              padding: 'clamp(1.5rem, 3vw, 2.5rem)',
+              backgroundImage: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, transparent 100%), url(https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&q=80)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
             }}
           >
-            Wedding Season Special
-          </div>
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              <div
+                style={{
+                  fontFamily: "'Manrope', sans-serif",
+                  fontSize: '0.7rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.15em',
+                  color: 'var(--gold-light)',
+                  fontWeight: 700,
+                  marginBottom: '0.4rem',
+                }}
+              >
+                Handcrafted Keepsakes · Starting at ₹2,500
+              </div>
 
-          <h2
+              <h3
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontSize: 'clamp(1.5rem, 2.5vw, 2.1rem)',
+                  fontWeight: 700,
+                  color: '#FFFFFF',
+                  lineHeight: 1.2,
+                  marginBottom: '1rem',
+                }}
+              >
+                Preserve Your Cherished Moments in Custom Albums
+              </h3>
+
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                {['Photo Albums', 'Canvas Prints', 'Framed Portraits'].map((label) => (
+                  <Link
+                    key={label}
+                    href="/#products"
+                    style={{
+                      background: 'rgba(255,255,255,0.18)',
+                      backdropFilter: 'blur(8px)',
+                      color: '#FFFFFF',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      padding: '0.4rem 1rem',
+                      borderRadius: '999px',
+                      fontFamily: "'Manrope', sans-serif",
+                      fontSize: '0.78125rem',
+                      fontWeight: 600,
+                      textDecoration: 'none',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {label} →
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Banner: Commercial & Fashion Shoots */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.15 }}
             style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: 'clamp(1.75rem, 3vw, 2.75rem)',
-              fontWeight: 700,
-              color: '#FFFFFF',
-              lineHeight: 1.15,
-              marginBottom: '1rem',
-              letterSpacing: '-0.01em',
+              borderRadius: 'var(--radius-lg)',
+              overflow: 'hidden',
+              position: 'relative',
+              minHeight: '340px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-end',
+              padding: 'clamp(1.5rem, 3vw, 2.5rem)',
+              backgroundImage: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, transparent 100%), url(https://images.unsplash.com/photo-1542744094-24638eff58bb?w=800&q=80)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
             }}
           >
-            20% Off Pre-Wedding<br />
-            Photography Packages
-          </h2>
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              <div
+                style={{
+                  fontFamily: "'Manrope', sans-serif",
+                  fontSize: '0.7rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.15em',
+                  color: 'var(--gold-light)',
+                  fontWeight: 700,
+                  marginBottom: '0.4rem',
+                }}
+              >
+                Brand Visuals · Starting at ₹20,000
+              </div>
 
-          <p
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '0.9375rem',
-              color: 'rgba(255,255,255,0.65)',
-              lineHeight: 1.7,
-              marginBottom: '1.75rem',
-              maxWidth: '400px',
-            }}
-          >
-            Book your dream pre-wedding shoot this season. Choose from breathtaking locations across Rajasthan, Goa, and Udaipur. Limited slots available.
-          </p>
+              <h3
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontSize: 'clamp(1.5rem, 2.5vw, 2.1rem)',
+                  fontWeight: 700,
+                  color: '#FFFFFF',
+                  lineHeight: 1.2,
+                  marginBottom: '1rem',
+                }}
+              >
+                Elevate Your Brand With Commercial & Fashion Shoots
+              </h3>
 
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <Link
-              href="/booking"
-              className="btn btn-primary btn-md"
-            >
-              Claim Offer
-            </Link>
-            <span
-              style={{
-                fontFamily: "'Manrope', sans-serif",
-                fontSize: '0.75rem',
-                color: 'rgba(255,255,255,0.4)',
-              }}
-            >
-              Valid till March 2026
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Image */}
-        <motion.div
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={isInView ? { opacity: 1, scale: 1 } : {}}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-          style={{
-            height: '100%',
-            minHeight: '360px',
-            backgroundImage: 'url(https://images.unsplash.com/photo-1529636798458-92182e662485?w=800&q=80)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                {['Brand Campaigns', 'Product Shoots', 'Lookbooks'].map((label) => (
+                  <Link
+                    key={label}
+                    href="/#services"
+                    style={{
+                      background: 'rgba(255,255,255,0.18)',
+                      backdropFilter: 'blur(8px)',
+                      color: '#FFFFFF',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      padding: '0.4rem 1rem',
+                      borderRadius: '999px',
+                      fontFamily: "'Manrope', sans-serif",
+                      fontSize: '0.78125rem',
+                      fontWeight: 600,
+                      textDecoration: 'none',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {label} →
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
 
       <style jsx>{`
         @media (max-width: 768px) {
-          section > div {
+          section > div > div {
             grid-template-columns: 1fr !important;
-          }
-          section > div > div:last-child {
-            min-height: 280px !important;
-            order: -1;
           }
         }
       `}</style>

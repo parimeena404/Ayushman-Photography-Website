@@ -3,481 +3,326 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useTheme } from '@/context/ThemeContext';
 import Link from 'next/link';
 
-const navLinks = [
-  {
-    label: 'Photography',
-    href: '/#portfolio',
-    megaMenu: [
-      { title: 'Wedding Photography', desc: 'Timeless wedding stories', href: '/#portfolio' },
-      { title: 'Pre-Wedding', desc: 'Romantic couple shoots', href: '/#portfolio' },
-      { title: 'Portrait', desc: 'Professional portraits', href: '/#portfolio' },
-      { title: 'Fashion', desc: 'Editorial & fashion', href: '/#portfolio' },
-      { title: 'Commercial', desc: 'Brand & product shoots', href: '/#portfolio' },
-      { title: 'Events', desc: 'Corporate & celebrations', href: '/#portfolio' },
-    ],
-  },
-  {
-    label: 'Services',
-    href: '/#services',
-    megaMenu: [
-      { title: 'Cinematography', desc: 'Cinematic wedding films', href: '/films' },
-      { title: 'Album Design', desc: 'Handcrafted luxury albums', href: '/#products' },
-      { title: 'Drone Photography', desc: 'Stunning aerial views', href: '/#portfolio' },
-      { title: 'Photo Editing', desc: 'Professional retouching', href: '/#services' },
-    ],
-  },
-  { label: 'Stories', href: '/stories' },
-  { label: 'About', href: '/about' },
-  { label: 'Reviews', href: '/reviews' },
-  { label: 'FAQ', href: '/faq' },
+const categoriesMenu = [
+  { label: 'View All', href: '/#portfolio' },
+  { label: 'Wedding Photography', href: '/#portfolio' },
+  { label: 'Pre-Wedding Shoots', href: '/#portfolio' },
+  { label: 'Cinematography & Films', href: '/films' },
+  { label: 'Portrait Photography', href: '/#portfolio' },
+  { label: 'Fashion & Lookbooks', href: '/#portfolio' },
+  { label: 'Commercial & Brands', href: '/#portfolio' },
+  { label: 'Photo Albums & Prints', href: '/#products' },
+  { label: 'Drone Shoots', href: '/#portfolio' },
+  { label: 'Event Coverage', href: '/#portfolio' },
+  { label: 'Pricing Packages', href: '/#packages' },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { scrollDirection, isAtTop } = useScrollDirection();
   const { theme, toggleTheme } = useTheme();
+  const [copiedCode, setCopiedCode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeMega, setActiveMega] = useState<string | null>(null);
-  const megaTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [cartCount, setCartCount] = useState(0);
+  const [favCount, setFavCount] = useState(0);
 
-  const isHomePage = pathname === '/';
-  const isTransparent = isHomePage && isAtTop && !menuOpen;
-  const isVisible = !isHomePage || scrollDirection === 'up' || isAtTop;
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText('AYUSHMAN15');
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMenuOpen(false);
-    setActiveMega(null);
   }, [pathname]);
 
-  // Lock body scroll when mobile menu is open
-  useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [menuOpen]);
-
-  const handleMegaEnter = (label: string) => {
-    if (megaTimeoutRef.current) clearTimeout(megaTimeoutRef.current);
-    setActiveMega(label);
-  };
-
-  const handleMegaLeave = () => {
-    megaTimeoutRef.current = setTimeout(() => setActiveMega(null), 150);
-  };
-
   return (
-    <>
-      <motion.header
-        initial={{ y: 0 }}
-        animate={{ y: isVisible ? 0 : -100 }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
+    <header style={{ position: 'sticky', top: 0, zIndex: 1000, background: 'var(--bg-card)', boxShadow: 'var(--shadow-subtle)' }}>
+      {/* 1. Sitewide Promo Bar */}
+      <div
         style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-          backgroundColor: isTransparent ? 'transparent' : 'var(--bg-primary)',
-          backdropFilter: isTransparent ? 'none' : 'blur(20px)',
-          borderBottom: isTransparent ? '1px solid transparent' : '1px solid var(--border-light)',
-          transition: 'background-color 0.4s ease, border-bottom 0.4s ease, backdrop-filter 0.4s ease',
+          background: 'linear-gradient(90deg, #1A1A1A 0%, #2D2722 50%, #1A1A1A 100%)',
+          color: '#FFFFFF',
+          padding: '0.45rem 1rem',
+          fontSize: '0.78125rem',
+          fontFamily: "'Manrope', sans-serif",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '0.75rem',
+          textAlign: 'center',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
         }}
       >
-        <nav
+        <span>
+          🎁 <strong>Wedding Season Special!</strong> Flat 15% OFF on Pre-Wedding & Album Packages | Code: <strong style={{ color: 'var(--gold-light)' }}>AYUSHMAN15</strong>
+        </span>
+        <button
+          onClick={handleCopyCode}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0 clamp(1.25rem, 4vw, 3rem)',
-            height: 'var(--nav-height)',
-            maxWidth: 'var(--container-xl)',
-            margin: '0 auto',
+            background: 'var(--gold)',
+            color: '#1A1A1A',
+            border: 'none',
+            borderRadius: '4px',
+            padding: '0.15rem 0.6rem',
+            fontSize: '0.7rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            fontFamily: "'Manrope', sans-serif",
+            transition: 'background 0.2s ease',
           }}
         >
-          {/* Logo */}
-          <Link
-            href="/"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              textDecoration: 'none',
-              flexShrink: 0,
-            }}
-          >
-            <div
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                background: 'var(--gold)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#1A1A1A',
-                fontFamily: "'Playfair Display', serif",
-                fontWeight: 700,
-                fontSize: '1rem',
-              }}
-            >
-              A
-            </div>
-            <div style={{ lineHeight: 1.1 }}>
-              <div
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontWeight: 600,
-                  fontSize: '1.1rem',
-                  color: isTransparent ? '#fff' : 'var(--text-primary)',
-                  transition: 'color 0.4s ease',
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                Ayushman
-              </div>
-              <div
-                style={{
-                  fontFamily: "'Manrope', sans-serif",
-                  fontSize: '0.55rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.2em',
-                  color: isTransparent ? 'rgba(255,255,255,0.7)' : 'var(--text-tertiary)',
-                  transition: 'color 0.4s ease',
-                  fontWeight: 500,
-                }}
-              >
-                Photography Studio
-              </div>
-            </div>
-          </Link>
+          {copiedCode ? 'Copied!' : 'Copy Code'}
+        </button>
+      </div>
 
-          {/* Desktop Navigation */}
+      {/* 2. Main Header Bar (Logo, Search, Support, Favorites, Sign In, Cart) */}
+      <div
+        style={{
+          padding: '0.75rem clamp(1rem, 3vw, 2.5rem)',
+          borderBottom: '1px solid var(--border-light)',
+          maxWidth: 'var(--container-xl)',
+          margin: '0 auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '1.5rem',
+        }}
+      >
+        {/* Brand Logo */}
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', flexShrink: 0 }}>
           <div
             style={{
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              background: 'var(--gold)',
               display: 'flex',
               alignItems: 'center',
-              gap: 'clamp(1.5rem, 2.5vw, 2.5rem)',
+              justifyContent: 'center',
+              color: '#1A1A1A',
+              fontFamily: "'Playfair Display', serif",
+              fontWeight: 800,
+              fontSize: '1.15rem',
+              boxShadow: 'var(--shadow-subtle)',
             }}
-            className="desktop-nav"
           >
-            {navLinks.map((link) => (
-              <div
-                key={link.label}
-                onMouseEnter={() => link.megaMenu && handleMegaEnter(link.label)}
-                onMouseLeave={() => link.megaMenu && handleMegaLeave()}
-                style={{ position: 'relative' }}
-              >
-                <Link
-                  href={link.href}
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
-                    color: isTransparent ? 'rgba(255,255,255,0.9)' : 'var(--text-secondary)',
-                    textDecoration: 'none',
-                    padding: '0.5rem 0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.25rem',
-                    position: 'relative',
-                    transition: 'color 0.3s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = isTransparent ? '#fff' : 'var(--text-primary)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = isTransparent ? 'rgba(255,255,255,0.9)' : 'var(--text-secondary)';
-                  }}
-                >
-                  {link.label}
-                  {link.megaMenu && (
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ marginTop: '1px' }}>
-                      <path d="M2.5 4L5 6.5L7.5 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  )}
-                </Link>
-
-                {/* Mega Menu Dropdown */}
-                <AnimatePresence>
-                  {link.megaMenu && activeMega === link.label && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.2 }}
-                      onMouseEnter={() => handleMegaEnter(link.label)}
-                      onMouseLeave={handleMegaLeave}
-                      style={{
-                        position: 'absolute',
-                        top: '100%',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        paddingTop: '0.75rem',
-                        zIndex: 100,
-                      }}
-                    >
-                      <div
-                        style={{
-                          background: 'var(--bg-card)',
-                          borderRadius: 'var(--radius-lg)',
-                          boxShadow: 'var(--shadow-elevated)',
-                          border: '1px solid var(--border-light)',
-                          padding: '1.25rem',
-                          minWidth: '280px',
-                          display: 'grid',
-                          gap: '0.25rem',
-                        }}
-                      >
-                        {link.megaMenu.map((item) => (
-                          <Link
-                            key={item.title}
-                            href={item.href}
-                            style={{
-                              display: 'block',
-                              padding: '0.75rem 1rem',
-                              borderRadius: 'var(--radius-md)',
-                              transition: 'background 0.2s ease',
-                              textDecoration: 'none',
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = 'var(--bg-secondary)';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = 'transparent';
-                            }}
-                          >
-                            <div
-                              style={{
-                                fontFamily: "'Inter', sans-serif",
-                                fontSize: '0.875rem',
-                                fontWeight: 600,
-                                color: 'var(--text-primary)',
-                                marginBottom: '0.125rem',
-                              }}
-                            >
-                              {item.title}
-                            </div>
-                            <div
-                              style={{
-                                fontFamily: "'Inter', sans-serif",
-                                fontSize: '0.75rem',
-                                color: 'var(--text-tertiary)',
-                              }}
-                            >
-                              {item.desc}
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ))}
+            A
           </div>
+          <div style={{ lineHeight: 1.15 }}>
+            <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: '1.25rem', color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+              Ayushman
+            </div>
+            <div style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.55rem', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--gold)', fontWeight: 700 }}>
+              Photography Studio
+            </div>
+          </div>
+        </Link>
 
-          {/* Right Side Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              aria-label="Toggle theme"
+        {/* Centered Search Bar */}
+        <div style={{ flex: '1 1 500px', maxWidth: '550px', position: 'relative' }} className="desktop-search">
+          <form
+            onSubmit={(e) => { e.preventDefault(); if (searchQuery.trim()) window.location.href = `/#portfolio`; }}
+            style={{ display: 'flex', alignItems: 'center' }}
+          >
+            <input
+              type="text"
+              placeholder="Search wedding packages, portraits, photo albums..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               style={{
-                width: '36px',
-                height: '36px',
+                width: '100%',
+                padding: '0.65rem 3rem 0.65rem 1.15rem',
+                fontFamily: "'Inter', sans-serif",
+                fontSize: '0.875rem',
+                color: 'var(--text-primary)',
+                background: 'var(--bg-secondary)',
+                border: '1.5px solid var(--border-medium)',
+                borderRadius: '999px',
+                outline: 'none',
+                transition: 'all 0.2s ease',
+              }}
+            />
+            <button
+              type="submit"
+              aria-label="Search"
+              style={{
+                position: 'absolute',
+                right: '0.35rem',
+                width: '34px',
+                height: '34px',
                 borderRadius: '50%',
+                background: 'var(--gold)',
+                border: 'none',
+                color: '#1A1A1A',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: isTransparent ? 'rgba(255,255,255,0.8)' : 'var(--text-secondary)',
-                transition: 'color 0.3s ease, background 0.3s ease',
-                background: 'transparent',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--gold-muted)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
+                cursor: 'pointer',
               }}
             >
-              {theme === 'dark' ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                </svg>
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                </svg>
-              )}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
             </button>
+          </form>
+        </div>
 
-            {/* Book Session CTA - Desktop */}
-            <Link
-              href="/booking"
-              className="btn btn-primary btn-sm desktop-only"
-              style={{
-                fontSize: '0.8125rem',
-                padding: '0.6rem 1.5rem',
-              }}
-            >
-              Book a Session
-            </Link>
-
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Toggle menu"
-              className="mobile-menu-btn"
-              style={{
-                width: '40px',
-                height: '40px',
-                display: 'none',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: menuOpen ? '0' : '5px',
-                position: 'relative',
-              }}
-            >
-              <span
-                style={{
-                  display: 'block',
-                  width: '22px',
-                  height: '1.5px',
-                  background: isTransparent && !menuOpen ? '#fff' : 'var(--text-primary)',
-                  transition: 'all 0.3s ease',
-                  transform: menuOpen ? 'rotate(45deg) translateY(0.5px)' : 'none',
-                  position: menuOpen ? 'absolute' : 'relative',
-                }}
-              />
-              <span
-                style={{
-                  display: 'block',
-                  width: '22px',
-                  height: '1.5px',
-                  background: isTransparent && !menuOpen ? '#fff' : 'var(--text-primary)',
-                  transition: 'all 0.3s ease',
-                  opacity: menuOpen ? 0 : 1,
-                }}
-              />
-              <span
-                style={{
-                  display: 'block',
-                  width: '22px',
-                  height: '1.5px',
-                  background: isTransparent && !menuOpen ? '#fff' : 'var(--text-primary)',
-                  transition: 'all 0.3s ease',
-                  transform: menuOpen ? 'rotate(-45deg) translateY(-0.5px)' : 'none',
-                  position: menuOpen ? 'absolute' : 'relative',
-                }}
-              />
-            </button>
-          </div>
-        </nav>
-      </motion.header>
-
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+        {/* Right Header Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.75rem, 1.5vw, 1.5rem)', flexShrink: 0 }}>
+          {/* Help Support Line */}
+          <a
+            href="tel:+919425300000"
+            className="desktop-only"
             style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 999,
-              background: 'var(--bg-primary)',
-              paddingTop: 'var(--nav-height)',
-              overflow: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              fontSize: '0.8125rem',
+              fontFamily: "'Inter', sans-serif",
+              color: 'var(--text-secondary)',
+              textDecoration: 'none',
             }}
           >
-            <div style={{ padding: '2rem clamp(1.5rem, 5vw, 3rem)' }}>
-              <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                {navLinks.map((link, i) => (
-                  <motion.div
-                    key={link.label}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.4, delay: i * 0.06 }}
-                  >
-                    <Link
-                      href={link.href}
-                      onClick={() => setMenuOpen(false)}
-                      style={{
-                        display: 'block',
-                        fontFamily: "'Playfair Display', serif",
-                        fontSize: '1.75rem',
-                        fontWeight: 500,
-                        color: 'var(--text-primary)',
-                        padding: '0.75rem 0',
-                        borderBottom: '1px solid var(--border-light)',
-                        textDecoration: 'none',
-                      }}
-                    >
-                      {link.label}
-                    </Link>
-                    {link.megaMenu && (
-                      <div style={{ paddingLeft: '1rem', paddingBottom: '0.5rem' }}>
-                        {link.megaMenu.map((item) => (
-                          <Link
-                            key={item.title}
-                            href={item.href}
-                            onClick={() => setMenuOpen(false)}
-                            style={{
-                              display: 'block',
-                              fontSize: '0.9375rem',
-                              color: 'var(--text-secondary)',
-                              padding: '0.4rem 0',
-                              textDecoration: 'none',
-                            }}
-                          >
-                            {item.title}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </motion.div>
-                ))}
-              </nav>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                style={{ marginTop: '2rem' }}
-              >
-                <Link
-                  href="/booking"
-                  onClick={() => setMenuOpen(false)}
-                  className="btn btn-primary btn-lg"
-                  style={{ width: '100%', justifyContent: 'center' }}
-                >
-                  Book a Session
-                </Link>
-              </motion.div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            <div>
+              <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-tertiary)', fontWeight: 600 }}>Help Line</div>
+              <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>+91 94253 XXXXX</div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </a>
 
-      {/* CSS for responsive hiding */}
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              background: 'var(--bg-secondary)',
+              border: '1px solid var(--border-light)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-secondary)',
+              cursor: 'pointer',
+            }}
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+
+          {/* Sign In */}
+          <Link
+            href="/login"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              fontFamily: "'Manrope', sans-serif",
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              textDecoration: 'none',
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span className="desktop-only">Sign In</span>
+          </Link>
+
+          {/* Cart / Bookings */}
+          <Link
+            href="/booking"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              background: 'var(--gold)',
+              color: '#1A1A1A',
+              padding: '0.45rem 1rem',
+              borderRadius: '999px',
+              fontFamily: "'Manrope', sans-serif",
+              fontSize: '0.8125rem',
+              fontWeight: 700,
+              textDecoration: 'none',
+              transition: 'transform 0.2s ease',
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            <span>Book Now</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* 3. Vistaprint-Style Mega Category Navigation Bar */}
+      <div
+        style={{
+          borderBottom: '1px solid var(--border-light)',
+          background: 'var(--bg-card)',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+        }}
+        className="desktop-only"
+      >
+        <div
+          style={{
+            maxWidth: 'var(--container-xl)',
+            margin: '0 auto',
+            padding: '0 clamp(1rem, 3vw, 2.5rem)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1.75rem',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {categoriesMenu.map((item, idx) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              style={{
+                display: 'inline-block',
+                padding: '0.65rem 0',
+                fontFamily: "'Inter', sans-serif",
+                fontSize: '0.8125rem',
+                fontWeight: idx === 0 ? 700 : 500,
+                color: idx === 0 ? 'var(--gold)' : 'var(--text-secondary)',
+                textDecoration: 'none',
+                borderBottom: '2px solid transparent',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'var(--text-primary)';
+                e.currentTarget.style.borderBottomColor = 'var(--gold)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = idx === 0 ? 'var(--gold)' : 'var(--text-secondary)';
+                e.currentTarget.style.borderBottomColor = 'transparent';
+              }}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+
       <style jsx global>{`
-        .desktop-nav { display: flex !important; }
-        .desktop-only { display: inline-flex !important; }
-        .mobile-menu-btn { display: none !important; }
+        .desktop-search { display: block; }
+        .desktop-only { display: flex !important; }
+        div::-webkit-scrollbar { display: none; }
 
-        @media (max-width: 1024px) {
-          .desktop-nav { display: none !important; }
+        @media (max-width: 900px) {
+          .desktop-search { display: none; }
           .desktop-only { display: none !important; }
-          .mobile-menu-btn { display: flex !important; }
         }
       `}</style>
-    </>
+    </header>
   );
 }

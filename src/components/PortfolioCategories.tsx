@@ -7,18 +7,21 @@ import SectionHeader from './SectionHeader';
 const categories = ['All', 'Indian Festivals', 'Wedding', 'Portrait', 'Fashion', 'Commercial', 'Travel'];
 
 const portfolioItems = [
+  { src: '/images/wedding/wedding5.jpg', category: 'Wedding', title: '👰 Royal Varmala Rose Petal Canopy', aspect: 'tall' },
+  { src: '/images/wedding/wedding1.jpg', category: 'Wedding', title: '✨ Ornate Jali Window Sunset Silhouette', aspect: 'tall' },
+  { src: '/images/wedding/wedding3.jpg', category: 'Wedding', title: '💍 Heritage Ivy Palace Pre-Wedding', aspect: 'tall' },
+  { src: '/images/wedding/wedding4.jpg', category: 'Wedding', title: '🏰 Palace Night Courtyard Royal Walk', aspect: 'tall' },
+  { src: '/images/wedding/wedding2.png', category: 'Wedding', title: '🌅 Sunset Jharokha Archway Silhouette', aspect: 'square' },
+  { src: '/images/wedding/wedding6.png', category: 'Wedding', title: '🤝 Gathbandhan Sacred Vows Ritual', aspect: 'square' },
   { src: '/images/festivals/diwali-deepotsav.jpg', category: 'Indian Festivals', title: '🪔 Diwali Deepotsav & Family Rangoli', aspect: 'tall' },
   { src: '/images/festivals/makar-sankranti.png', category: 'Indian Festivals', title: '🪁 Makar Sankranti Kite Festival & Sweets', aspect: 'wide' },
   { src: '/images/festivals/lohri-bonfire.jpg', category: 'Indian Festivals', title: '🔥 Lohri Bonfire & Punjabi Folk Dance', aspect: 'tall' },
   { src: '/images/festivals/palace-dance.jpg', category: 'Indian Festivals', title: '💃 Royal Palace Garba Dance Showcase', aspect: 'wide' },
   { src: '/images/festivals/stained-glass.jpg', category: 'Indian Festivals', title: '✨ Heritage Palace Stained Glass Light', aspect: 'tall' },
   { src: '/images/festivals/rainbow-sails.png', category: 'Travel', title: '⛵ Sunset Voyage Rainbow Sails', aspect: 'wide' },
-  { src: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=600&q=80', category: 'Wedding', title: 'Royal Rajasthani Wedding', aspect: 'tall' },
   { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80', category: 'Portrait', title: 'Studio Ethnic Portrait', aspect: 'square' },
   { src: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80', category: 'Fashion', title: 'Haute Couture Lookbook', aspect: 'tall' },
-  { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80', category: 'Wedding', title: 'Sunset Mandap Ceremony', aspect: 'wide' },
   { src: 'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=600&q=80', category: 'Commercial', title: 'Brand Product Campaign', aspect: 'square' },
-  { src: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=600&q=80', category: 'Wedding', title: 'Pre-Wedding Heritage Shoot', aspect: 'tall' },
 ];
 
 export default function PortfolioCategories() {
@@ -47,9 +50,9 @@ export default function PortfolioCategories() {
     <section id="portfolio" className="section-padding" style={{ background: 'var(--bg-primary)' }}>
       <div className="container-wide">
         <SectionHeader
-          eyebrow="Indian Festivals & Fine Art Gallery"
+          eyebrow="Indian Weddings & Fine Art Gallery"
           title="Portfolio Showcase"
-          subtitle="Discover our fine art photography capturing Diwali Deepotsav, Makar Sankranti kite celebrations, Lohri bonfires, Garba dance, and royal Indian weddings."
+          subtitle="Explore our fine art photography capturing royal Indian weddings, Varmala petal showers, pre-wedding silhouettes, Diwali Deepotsav, and cultural heritage shoots."
         />
 
         {/* Filter Tabs */}

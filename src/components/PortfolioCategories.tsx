@@ -4,9 +4,14 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import SectionHeader from './SectionHeader';
 
-const categories = ['All', 'Commercial', 'Portrait', 'Indian Festivals', 'Wedding', 'Fashion', 'Travel'];
+const categories = ['All', 'Fashion', 'Commercial', 'Portrait', 'Indian Festivals', 'Wedding', 'Travel'];
 
 const portfolioItems = [
+  { src: '/images/fashion/fashion1.png', category: 'Fashion', title: '🧥 Crimson Trench & Sunglasses Editorial', aspect: 'tall' },
+  { src: '/images/fashion/fashion2.png', category: 'Fashion', title: '🧥 What\'s Inside Matters — Zipper Streetwear Campaign', aspect: 'tall' },
+  { src: '/images/fashion/fashion3.png', category: 'Fashion', title: '💙 Blue Halo Circle Lilies Lookbook', aspect: 'tall' },
+  { src: '/images/fashion/fashion4.png', category: 'Fashion', title: '🌕 Full Moon Projection High Fashion Editorial', aspect: 'tall' },
+  { src: '/images/fashion/fashion5.png', category: 'Fashion', title: '💼 Luxury Menswear Suit Chair Editorial', aspect: 'tall' },
   { src: '/images/commercial/airpods-desert.png', category: 'Commercial', title: '🎧 Experience Stunning Visuals — AirPods Desert Campaign', aspect: 'square' },
   { src: '/images/commercial/command-key-studio.png', category: 'Commercial', title: '⌨️ Everything Starts Inside — Miniature Studio Concept', aspect: 'tall' },
   { src: '/images/commercial/excavator-muscle.png', category: 'Commercial', title: '🚜 Industrial Equipment Muscle Concept Photography', aspect: 'tall' },
@@ -57,9 +62,9 @@ export default function PortfolioCategories() {
     <section id="portfolio" className="section-padding" style={{ background: 'var(--bg-primary)' }}>
       <div className="container-wide">
         <SectionHeader
-          eyebrow="Commercial & Creative Photography Gallery"
+          eyebrow="Fashion, Commercial & Fine Art Gallery"
           title="Portfolio Showcase"
-          subtitle="Explore AirPods desert commercial campaigns, miniature creative concept shoots, 3D mobile product displays, fine art portraits, royal Indian weddings, and festive sessions."
+          subtitle="Explore high fashion lookbooks, streetwear apparel campaigns, full-moon projections, AirPods commercial campaigns, fine art portraits, and royal Indian weddings."
         />
 
         {/* Filter Tabs */}

@@ -7,7 +7,10 @@ import SectionHeader from './SectionHeader';
 const categories = ['All', 'Commercial', 'Portrait', 'Indian Festivals', 'Wedding', 'Fashion', 'Travel'];
 
 const portfolioItems = [
+  { src: '/images/commercial/command-key-studio.png', category: 'Commercial', title: '⌨️ Everything Starts Inside — Miniature Studio Concept', aspect: 'tall' },
+  { src: '/images/commercial/excavator-muscle.png', category: 'Commercial', title: '🚜 Industrial Equipment Muscle Concept Photography', aspect: 'tall' },
   { src: '/images/commercial/product1.png', category: 'Commercial', title: '📱 3D Mobile Fashion & Product Showcase', aspect: 'tall' },
+  { src: '/images/keepsakes/snow-mailbox.jpg', category: 'Commercial', title: '📮 Winter Mailbox Custom Printed Cards & Envelopes', aspect: 'tall' },
   { src: '/images/portrait/portrait1.png', category: 'Portrait', title: '🖤 Monochrome Candid Male Portrait', aspect: 'tall' },
   { src: '/images/portrait/portrait2.png', category: 'Portrait', title: '🌅 Golden Hour Warm Studio Headshot', aspect: 'tall' },
   { src: '/images/portrait/portrait3.png', category: 'Portrait', title: '✨ Studio Double Exposure Fashion Portrait', aspect: 'tall' },
@@ -53,9 +56,9 @@ export default function PortfolioCategories() {
     <section id="portfolio" className="section-padding" style={{ background: 'var(--bg-primary)' }}>
       <div className="container-wide">
         <SectionHeader
-          eyebrow="Commercial & Fine Art Gallery"
+          eyebrow="Commercial & Creative Photography Gallery"
           title="Portfolio Showcase"
-          subtitle="Explore 3D mobile product photography, fine art portraiture, studio headshots, royal Indian weddings, Diwali Deepotsav, and cultural heritage sessions."
+          subtitle="Explore miniature creative concept shoots, industrial equipment commercial photography, 3D mobile product displays, fine art portraits, royal Indian weddings, and festive sessions."
         />
 
         {/* Filter Tabs */}

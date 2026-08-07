@@ -6,32 +6,32 @@ import Link from 'next/link';
 
 const stories = [
   {
-    title: '🪔 Diwali Deepotsav Shoot',
-    type: 'Festive Family Story',
+    title: '🪔 Diwali Deepotsav Family Shoot',
+    type: 'Festive Celebration',
     location: 'Freeganj, Ujjain',
-    image: 'https://images.unsplash.com/photo-1605886106691-d576a1656fce?w=700&q=80',
+    image: '/images/festivals/diwali-deepotsav.jpg',
     quote: 'Ayushman Studio captured our family Diwali puja with such warmth and divine radiance.',
   },
   {
-    title: 'Aarav & Meera',
-    type: 'Destination Wedding',
-    location: 'Udaipur, Rajasthan',
-    image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=700&q=80',
-    quote: 'They captured every emotion we didn\'t even know we felt on our special day.',
-  },
-  {
-    title: '🎨 Vibrant Holi Celebration',
-    type: 'Cultural Festival Shoot',
-    location: 'Mathura & Ujjain',
-    image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=700&q=80',
-    quote: 'The colors in our photographs look so authentic and alive. Unforgettable work!',
-  },
-  {
-    title: 'Rohan & Priya',
-    type: 'Traditional Wedding',
+    title: '🪁 Makar Sankranti & Uttarayan',
+    type: 'Kite Festival Story',
     location: 'Ujjain, Madhya Pradesh',
-    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=700&q=80',
-    quote: 'The most beautiful wedding photos we\'ve ever seen. Pure magic.',
+    image: '/images/festivals/makar-sankranti.png',
+    quote: 'Capturing the golden hour kite flying and sweet exchanges was an unforgettable experience.',
+  },
+  {
+    title: '🔥 Lohri & Harvest Celebration',
+    type: 'Punjabi Festive Night',
+    location: 'Ujjain',
+    image: '/images/festivals/lohri-bonfire.jpg',
+    quote: 'The bonfire sparks and energetic Bhangra moments look magical in our album.',
+  },
+  {
+    title: '💃 Royal Palace Garba Night',
+    type: 'Cultural Heritage Shoot',
+    location: 'Jaipur Palace',
+    image: '/images/festivals/palace-dance.jpg',
+    quote: 'The twirling ghagra choli shots under mosaic arches look like fine art paintings.',
   },
 ];
 
@@ -52,8 +52,8 @@ export default function FeaturedStories() {
       <div className="container-wide">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
           <div>
-            <p className="text-eyebrow" style={{ marginBottom: '0.5rem', color: '#D40000' }}>Festive & Wedding Stories</p>
-            <h2 className="text-h1">Client Stories & Celebrations</h2>
+            <p className="text-eyebrow" style={{ marginBottom: '0.5rem', color: '#D40000' }}>Festive & Cultural Stories</p>
+            <h2 className="text-h1">Client Festive Celebrations</h2>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button

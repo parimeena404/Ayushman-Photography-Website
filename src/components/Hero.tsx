@@ -6,53 +6,27 @@ import Link from 'next/link';
 
 const slides = [
   {
+    image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=1920&q=80',
+    eyebrow: 'FINE ART PHOTOGRAPHY & PRINTING STUDIO',
+    title: 'Where Every Moment\nBecomes a Masterpiece',
+    subtitle: 'Luxury wedding, Indian festive, and commercial photography by Ayushman Cards n Graphics. Based in Freeganj, Ujjain.',
+  },
+  {
     image: '/images/festivals/diwali-deepotsav.jpg',
-    eyebrow: '🪔 DIWALI DEEPOTSAV CELEBRATIONS',
-    title: 'Capturing The Divine\nLight of Indian Festivals',
-    subtitle: 'From lit haveli courtyards and flower rangolis to sparklers and cherished family celebrations.',
-  },
-  {
-    image: '/images/festivals/makar-sankranti.png',
-    eyebrow: '🪁 MAKAR SANKRANTI & UTTARAYAN',
-    title: 'Colors of Joy,\nSweets & Flying Kites',
-    subtitle: 'Documenting traditional festive greetings, golden hour celebrations, and family moments.',
-  },
-  {
-    image: '/images/festivals/lohri-bonfire.jpg',
-    eyebrow: '🔥 LOHRI & HARVEST FESTIVALS',
-    title: 'Joyous Festive Fires,\nBhangra & Music Nights',
-    subtitle: 'Capturing the warmth, vibrant attire, and energetic dance around festival bonfires.',
-  },
-  {
-    image: '/images/festivals/palace-dance.jpg',
-    eyebrow: '💃 ROYAL HERITAGE & GARBA DANCE',
-    title: 'Grace, Elegance &\nArchitectural Splendor',
-    subtitle: 'Fine art photography of twirling dancers inside ornate mosaic palace halls.',
-  },
-  {
-    image: '/images/festivals/stained-glass.jpg',
-    eyebrow: '✨ HERITAGE & ARCHITECTURAL LIGHT',
-    title: 'Colors of Tradition,\nCrystallized in Time',
-    subtitle: 'Capturing magnificent stained glass reflections and royal Indian architecture.',
-  },
-  {
-    image: '/images/festivals/rainbow-sails.png',
-    eyebrow: '⛵ SUNSET DESTINATIONS & FINE ART',
-    title: 'Fine Art Visuals,\nDestinations & Dreams',
-    subtitle: 'Artistic photography celebrating golden hour landscapes and picturesque voyages.',
+    eyebrow: '🪔 INDIAN FESTIVE CELEBRATIONS',
+    title: 'Preserving Cultural\nTraditions & Joyous Memories',
+    subtitle: 'Specialized photography for Diwali Deepotsav, Lohri, Navratri Garba, and Makar Sankranti celebrations.',
   },
 ];
 
 export default function Hero() {
   const [active, setActive] = useState(0);
-  const [isLoaded, setIsLoaded] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    setIsLoaded(true);
     intervalRef.current = setInterval(() => {
       setActive((prev) => (prev + 1) % slides.length);
-    }, 5500);
+    }, 6000);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
@@ -63,7 +37,7 @@ export default function Hero() {
     if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       setActive((prev) => (prev + 1) % slides.length);
-    }, 5500);
+    }, 6000);
   };
 
   return (
@@ -72,8 +46,8 @@ export default function Hero() {
       style={{
         position: 'relative',
         width: '100%',
-        height: '92vh',
-        minHeight: '600px',
+        height: '88vh',
+        minHeight: '580px',
         overflow: 'hidden',
       }}
     >
@@ -81,7 +55,7 @@ export default function Hero() {
       <AnimatePresence mode="wait">
         <motion.div
           key={active}
-          initial={{ scale: 1.08, opacity: 0 }}
+          initial={{ scale: 1.06, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -124,7 +98,7 @@ export default function Hero() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-end',
-          paddingBottom: 'clamp(3.5rem, 7vh, 6rem)',
+          paddingBottom: 'clamp(3.5rem, 7vh, 5.5rem)',
         }}
       >
         <AnimatePresence mode="wait">
@@ -155,7 +129,7 @@ export default function Hero() {
             <h1
               style={{
                 fontFamily: "'Playfair Display', serif",
-                fontSize: 'clamp(2.5rem, 5.2vw, 4.5rem)',
+                fontSize: 'clamp(2.5rem, 5vw, 4.25rem)',
                 lineHeight: 1.08,
                 fontWeight: 700,
                 color: '#FFFFFF',
@@ -205,7 +179,7 @@ export default function Hero() {
                   boxShadow: '0 6px 20px rgba(212,0,0,0.4)',
                 }}
               >
-                Book Festive Session
+                Book Session
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
@@ -231,7 +205,7 @@ export default function Hero() {
                   border: '1.5px solid rgba(255,255,255,0.4)',
                 }}
               >
-                Explore Festivals Gallery
+                Explore Indian Festivals
               </Link>
             </div>
           </motion.div>
@@ -242,7 +216,7 @@ export default function Hero() {
           style={{
             display: 'flex',
             gap: '0.5rem',
-            marginTop: '2.5rem',
+            marginTop: '2rem',
           }}
         >
           {slides.map((_, i) => (
@@ -251,7 +225,7 @@ export default function Hero() {
               onClick={() => goToSlide(i)}
               aria-label={`Go to slide ${i + 1}`}
               style={{
-                width: i === active ? '40px' : '12px',
+                width: i === active ? '36px' : '12px',
                 height: '3px',
                 borderRadius: '2px',
                 background: i === active ? '#FFD700' : 'rgba(255,255,255,0.35)',

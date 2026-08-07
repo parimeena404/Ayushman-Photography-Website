@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import SectionHeader from './SectionHeader';
 
@@ -26,6 +26,20 @@ export default function PortfolioCategories() {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-60px' });
+
+  useEffect(() => {
+    const handleFilterEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      if (customEvent.detail && categories.includes(customEvent.detail)) {
+        setFilter(customEvent.detail);
+      }
+    };
+
+    window.addEventListener('changePortfolioFilter', handleFilterEvent);
+    return () => {
+      window.removeEventListener('changePortfolioFilter', handleFilterEvent);
+    };
+  }, []);
 
   const filteredItems = filter === 'All' ? portfolioItems : portfolioItems.filter((item) => item.category === filter);
 

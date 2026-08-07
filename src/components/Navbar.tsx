@@ -1,26 +1,32 @@
 'use client';
 
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
 import { useTheme } from '@/context/ThemeContext';
 import Link from 'next/link';
 
-const categoriesMenu = [
-  { label: 'View All', href: '/#portfolio' },
-  { label: '🪔 Indian Festivals', href: '/#festivals' },
-  { label: 'Wedding Photography', href: '/#portfolio' },
-  { label: 'Pre-Wedding Shoots', href: '/#portfolio' },
-  { label: 'Cinematography & Films', href: '/films' },
-  { label: 'Portrait Photography', href: '/#portfolio' },
-  { label: 'Fashion & Lookbooks', href: '/#portfolio' },
-  { label: 'Commercial & Brands', href: '/#portfolio' },
-  { label: 'Festive Cards & Prints', href: '/#products' },
-  { label: 'Drone Shoots', href: '/#portfolio' },
-  { label: 'Pricing Packages', href: '/#packages' },
+interface NavItem {
+  label: string;
+  targetId: string;
+  filterCategory?: string;
+  isExternalPage?: boolean;
+  href?: string;
+}
+
+const categoriesMenu: NavItem[] = [
+  { label: 'View All', targetId: 'portfolio', filterCategory: 'All' },
+  { label: '🪔 Indian Festivals', targetId: 'portfolio', filterCategory: 'Indian Festivals' },
+  { label: 'Wedding Photography', targetId: 'portfolio', filterCategory: 'Wedding' },
+  { label: 'Pre-Wedding Shoots', targetId: 'portfolio', filterCategory: 'Wedding' },
+  { label: 'Cinematography & Films', targetId: 'films', isExternalPage: true, href: '/films' },
+  { label: 'Portrait Photography', targetId: 'portfolio', filterCategory: 'Portrait' },
+  { label: 'Fashion & Lookbooks', targetId: 'portfolio', filterCategory: 'Fashion' },
+  { label: 'Commercial & Brands', targetId: 'portfolio', filterCategory: 'Commercial' },
+  { label: 'Festive Cards & Prints', targetId: 'products' },
+  { label: 'Drone Shoots', targetId: 'portfolio', filterCategory: 'All' },
+  { label: 'Pricing Packages', targetId: 'packages' },
 ];
 
 export default function Navbar() {
-  const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const [copiedCode, setCopiedCode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,6 +35,32 @@ export default function Navbar() {
     navigator.clipboard.writeText('FESTIVE20');
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  const handleNavClick = (e: React.MouseEvent, item: NavItem) => {
+    if (item.isExternalPage) return;
+
+    e.preventDefault();
+
+    // 1. Dispatch custom filter event for PortfolioCategories
+    if (item.filterCategory) {
+      window.dispatchEvent(new CustomEvent('changePortfolioFilter', { detail: item.filterCategory }));
+    }
+
+    // 2. Smooth scroll to target section
+    const elem = document.getElementById(item.targetId);
+    if (elem) {
+      const headerOffset = 130;
+      const elementPosition = elem.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
+    } else {
+      window.location.href = `/#${item.targetId}`;
+    }
   };
 
   return (
@@ -71,7 +103,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* 2. Main Header Bar (Logo, Search, Support, Theme, Sign In, Book Now) */}
+      {/* 2. Main Header Bar */}
       <div
         style={{
           padding: '0.75rem clamp(1rem, 3vw, 2.5rem)',
@@ -101,7 +133,13 @@ export default function Navbar() {
         {/* Centered Search Bar */}
         <div style={{ flex: '1 1 480px', maxWidth: '520px', position: 'relative' }} className="desktop-search">
           <form
-            onSubmit={(e) => { e.preventDefault(); if (searchQuery.trim()) window.location.href = `/#portfolio`; }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (searchQuery.trim()) {
+                const elem = document.getElementById('portfolio');
+                if (elem) elem.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
             style={{ display: 'flex', alignItems: 'center' }}
           >
             <input
@@ -238,7 +276,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* 3. Clean & Simple Category Navigation Bar */}
+      {/* 3. Smooth Navigation & Portfolio Filter Category Bar */}
       <div
         style={{
           borderBottom: '1px solid var(--border-light)',
@@ -260,9 +298,10 @@ export default function Navbar() {
           }}
         >
           {categoriesMenu.map((item, idx) => (
-            <Link
+            <a
               key={item.label}
-              href={item.href}
+              href={item.href || `/#${item.targetId}`}
+              onClick={(e) => handleNavClick(e, item)}
               style={{
                 display: 'inline-block',
                 padding: '0.65rem 0',
@@ -273,6 +312,7 @@ export default function Navbar() {
                 textDecoration: 'none',
                 borderBottom: '2px solid transparent',
                 transition: 'all 0.2s ease',
+                cursor: 'pointer',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = '#D40000';
@@ -284,7 +324,7 @@ export default function Navbar() {
               }}
             >
               {item.label}
-            </Link>
+            </a>
           ))}
         </div>
       </div>

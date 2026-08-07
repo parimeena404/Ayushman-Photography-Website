@@ -89,8 +89,8 @@
   --bg-overlay: rgba(0, 0, 0, 0.65);
 
   --text-primary: #F5F2EC;
-  --text-secondary: #A0A0A0;
-  --text-tertiary: #6A6A6A;
+  --text-secondary: #B5B5B5;
+  --text-tertiary: #8A8A8A;
   --text-light: #F5F2EC;
 
   --gold: #D4BA85;
@@ -98,10 +98,10 @@
   --gold-dark: #C9A86C;
   --gold-muted: rgba(212, 186, 133, 0.12);
 
-  --border-light: rgba(255, 255, 255, 0.06);
-  --border-medium: rgba(255, 255, 255, 0.12);
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.2);
   --border-gold: rgba(212, 186, 133, 0.25);
-  --divider: rgba(255, 255, 255, 0.06);
+  --divider: rgba(255, 255, 255, 0.08);
 
   --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.4);
@@ -333,6 +333,32 @@ button {
   transform: translateY(-1px);
 }
 
+/* Premium Red Button */
+.btn-premium {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  border-radius: var(--radius-full);
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #D40000 0%, #990000 100%) !important;
+  color: #FFFFFF !important;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(212, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 0, 0, 0.45);
+}
+
 /* Outline Button */
 .btn-outline {
   background: transparent;
@@ -460,6 +486,30 @@ button {
 
 .input::placeholder {
   color: var(--text-tertiary);
+}
+
+.input-luxury {
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  color: var(--text-primary) !important;
+  background-color: var(--bg-secondary) !important;
+  border: 1.5px solid var(--border-medium) !important;
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.input-luxury:focus {
+  border-color: #D40000 !important;
+  box-shadow: 0 0 0 3px rgba(212, 0, 0, 0.2) !important;
+  background-color: var(--bg-card) !important;
+}
+
+.input-luxury::placeholder {
+  color: var(--text-tertiary) !important;
+  opacity: 0.85;
 }
 
 .textarea {

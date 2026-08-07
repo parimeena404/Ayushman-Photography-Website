@@ -46,6 +46,7 @@ export default function LoginPage() {
           justifyContent: 'center',
           paddingTop: '8rem',
           paddingBottom: '6rem',
+          backgroundColor: 'var(--bg-primary)',
         }}
         className="section-padding"
       >
@@ -54,9 +55,10 @@ export default function LoginPage() {
             maxWidth: '480px',
             width: '100%',
             padding: '2.5rem',
-            border: '1px solid var(--divider)',
-            backgroundColor: 'var(--bg-secondary)',
-            boxShadow: '0 12px 40px rgba(0,0,0,0.1)',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--border-medium)',
+            backgroundColor: 'var(--bg-card)',
+            boxShadow: 'var(--shadow-elevated)',
           }}
         >
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
@@ -75,13 +77,37 @@ export default function LoginPage() {
                 display: 'block',
               }}
             />
-            <p className="text-editorial-sm font-body" style={{ color: 'var(--accent)', marginBottom: '0.5rem' }}>
+            <p
+              style={{
+                fontFamily: "'Manrope', sans-serif",
+                fontSize: '0.75rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.2em',
+                color: '#D40000',
+                fontWeight: 800,
+                marginBottom: '0.5rem',
+              }}
+            >
               Welcome Back
             </p>
-            <h1 className="font-heading text-editorial-lg" style={{ fontWeight: 300 }}>
+            <h1
+              style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: '2rem',
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+              }}
+            >
               Client Login
             </h1>
-            <p className="font-body" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+            <p
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                color: 'var(--text-secondary)',
+                fontSize: '0.9rem',
+                marginTop: '0.5rem',
+              }}
+            >
               Access your reservations, bookings & payment receipts
             </p>
           </div>
@@ -89,13 +115,14 @@ export default function LoginPage() {
           {error && (
             <div
               style={{
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                color: '#ef4444',
+                backgroundColor: 'rgba(212, 0, 0, 0.1)',
+                border: '1px solid rgba(212, 0, 0, 0.3)',
+                color: '#D40000',
                 padding: '0.85rem 1rem',
                 borderRadius: '6px',
                 marginBottom: '1.75rem',
                 fontSize: '0.85rem',
+                fontWeight: 600,
               }}
             >
               {error}
@@ -104,28 +131,46 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
             <div>
-              <label className="font-body" style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontFamily: "'Manrope', sans-serif",
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  color: 'var(--text-primary)',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 Email Address
               </label>
               <input
                 type="email"
                 required
                 placeholder="name@domain.com"
-                className="input-luxury font-body"
+                className="input-luxury"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
             <div>
-              <label className="font-body" style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontFamily: "'Manrope', sans-serif",
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  color: 'var(--text-primary)',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 Password
               </label>
               <input
                 type="password"
                 required
                 placeholder="••••••••"
-                className="input-luxury font-body"
+                className="input-luxury"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -138,8 +183,6 @@ export default function LoginPage() {
               style={{
                 width: '100%',
                 padding: '0.9rem',
-                backgroundColor: 'var(--accent)',
-                color: 'var(--bg-primary)',
                 cursor: isSubmitting ? 'not-allowed' : 'pointer',
                 opacity: isSubmitting ? 0.7 : 1,
               }}
@@ -147,9 +190,17 @@ export default function LoginPage() {
               {isSubmitting ? 'Authenticating...' : 'Sign In to Account →'}
             </button>
 
-            <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            <div
+              style={{
+                textAlign: 'center',
+                marginTop: '1.5rem',
+                fontSize: '0.875rem',
+                color: 'var(--text-secondary)',
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
               Don&rsquo;t have an account yet?{' '}
-              <Link href="/signup" style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>
+              <Link href="/signup" style={{ color: '#D40000', fontWeight: 700, textDecoration: 'none' }}>
                 Create Account
               </Link>
             </div>

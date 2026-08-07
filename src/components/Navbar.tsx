@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
+import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 
 interface NavItem {
@@ -28,6 +29,7 @@ const categoriesMenu: NavItem[] = [
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
   const [copiedCode, setCopiedCode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -230,25 +232,62 @@ export default function Navbar() {
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
 
-          {/* Sign In */}
-          <Link
-            href="/login"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              fontFamily: "'Manrope', sans-serif",
-              fontSize: '0.8125rem',
-              fontWeight: 600,
-              color: 'var(--text-primary)',
-              textDecoration: 'none',
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-            </svg>
-            <span className="desktop-only">Sign In</span>
-          </Link>
+          {/* User Account / Sign In */}
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <Link
+                href="/dashboard"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  fontFamily: "'Manrope', sans-serif",
+                  fontSize: '0.8125rem',
+                  fontWeight: 700,
+                  color: '#D40000',
+                  textDecoration: 'none',
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span className="desktop-only">{user.name.split(' ')[0]} (Dashboard)</span>
+              </Link>
+              <button
+                onClick={() => logout()}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--text-tertiary)',
+                  fontSize: '0.75rem',
+                  cursor: 'pointer',
+                  fontFamily: "'Inter', sans-serif",
+                  textDecoration: 'underline',
+                }}
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                fontFamily: "'Manrope', sans-serif",
+                fontSize: '0.8125rem',
+                fontWeight: 600,
+                color: 'var(--text-primary)',
+                textDecoration: 'none',
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span className="desktop-only">Sign In</span>
+            </Link>
+          )}
 
           {/* Cart / Bookings */}
           <Link

@@ -4,6 +4,7 @@ import pg from 'pg';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
+  pool: pg.Pool | undefined;
 };
 
 function createPrismaClient(): PrismaClient {
@@ -12,10 +13,18 @@ function createPrismaClient(): PrismaClient {
     throw new Error('DATABASE_URL is not set in environment variables');
   }
 
-  const pool = new pg.Pool({
+  // Create a pooled connection with SSL enabled for Supabase
+  const pool = globalForPrisma.pool ?? new pg.Pool({
     connectionString: url,
     ssl: { rejectUnauthorized: false },
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
   });
+
+  if (process.env.NODE_ENV !== 'production') {
+    globalForPrisma.pool = pool;
+  }
 
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });

@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { loadRazorpayScript } from '@/lib/razorpay';
+import { useAuth } from '@/context/AuthContext';
 
 const steps = [
   'Service & Package',
@@ -43,6 +45,9 @@ const packageOptions = [
 ];
 
 export default function BookingWizard() {
+  const { user } = useAuth();
+  const searchParams = useSearchParams();
+
   const [currentStep, setCurrentStep] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccessData, setPaymentSuccessData] = useState<any>(null);
@@ -67,6 +72,29 @@ export default function BookingWizard() {
     phone: '',
     story: '',
   });
+
+  // Auto pre-fill user info when logged in
+  useEffect(() => {
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || '',
+        phone: prev.phone || user.phone || '',
+      }));
+    }
+  }, [user]);
+
+  // Read URL query parameter for package selection
+  useEffect(() => {
+    const pkgParam = searchParams.get('pkg') || searchParams.get('package');
+    if (pkgParam) {
+      const match = packageOptions.find((p) => p.id === pkgParam || p.id.toLowerCase().includes(pkgParam.toLowerCase()));
+      if (match) {
+        setForm((prev) => ({ ...prev, packageId: match.id }));
+      }
+    }
+  }, [searchParams]);
 
   const selectedPackage = packageOptions.find((p) => p.id === form.packageId) || packageOptions[0];
 
@@ -116,7 +144,6 @@ export default function BookingWizard() {
     setErrorMessage('');
 
     try {
-      // 1. Create order on backend
       const res = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -145,7 +172,6 @@ export default function BookingWizard() {
 
       setActiveOrder(orderData);
 
-      // 2. Try loading official Razorpay SDK popup if valid live order
       const scriptLoaded = await loadRazorpayScript();
       if (scriptLoaded && (window as any).Razorpay && orderData.orderId && !orderData.orderId.startsWith('order_test_')) {
         try {
@@ -196,7 +222,6 @@ export default function BookingWizard() {
         }
       }
 
-      // If Razorpay API keys require dashboard refresh or popup blocked, open interactive Razorpay gateway modal
       setShowRzpModal(true);
       setIsProcessing(false);
     } catch (err: any) {
@@ -265,34 +290,63 @@ export default function BookingWizard() {
                   <p className="font-heading" style={{ fontSize: '1.75rem', fontWeight: 300, marginBottom: '0.5rem' }}>
                     Select Your Service Package
                   </p>
-                  {packageOptions.map((pkg) => (
-                    <div
-                      key={pkg.id}
-                      onClick={() => setForm({ ...form, packageId: pkg.id })}
-                      style={{
-                        padding: '1.5rem',
-                        border: `1px solid ${form.packageId === pkg.id ? 'var(--accent)' : 'var(--divider)'}`,
-                        backgroundColor: form.packageId === pkg.id ? 'var(--bg-secondary)' : 'transparent',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                        <h4 className="font-heading" style={{ fontSize: '1.25rem', fontWeight: 400 }}>
-                          {pkg.name}
-                        </h4>
-                        <span className="font-body" style={{ color: 'var(--accent)', fontWeight: 600 }}>
-                          Deposit: ₹{pkg.depositPrice.toLocaleString('en-IN')}
-                        </span>
+                  {packageOptions.map((pkg) => {
+                    const isSelected = form.packageId === pkg.id;
+                    return (
+                      <div
+                        key={pkg.id}
+                        onClick={() => setForm({ ...form, packageId: pkg.id })}
+                        style={{
+                          padding: '1.5rem',
+                          border: `2px solid ${isSelected ? 'var(--accent)' : 'var(--divider)'}`,
+                          backgroundColor: isSelected ? 'rgba(201, 168, 108, 0.08)' : 'var(--bg-secondary)',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          transition: 'all 0.25s ease',
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: '1rem',
+                        }}
+                      >
+                        {/* Radio Check Circle */}
+                        <div
+                          style={{
+                            width: '22px',
+                            height: '22px',
+                            borderRadius: '50%',
+                            border: `2px solid ${isSelected ? 'var(--accent)' : 'var(--text-secondary)'}`,
+                            backgroundColor: isSelected ? 'var(--accent)' : 'transparent',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginTop: '0.2rem',
+                            flexShrink: 0,
+                          }}
+                        >
+                          {isSelected && (
+                            <span style={{ color: '#fff', fontSize: '0.75rem', fontWeight: 700 }}>✓</span>
+                          )}
+                        </div>
+
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                            <h4 className="font-heading" style={{ fontSize: '1.25rem', fontWeight: 500, color: 'var(--text-primary)' }}>
+                              {pkg.name}
+                            </h4>
+                            <span className="font-body" style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '1.05rem' }}>
+                              Deposit: ₹{pkg.depositPrice.toLocaleString('en-IN')}
+                            </span>
+                          </div>
+                          <p className="font-body" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                            {pkg.desc}
+                          </p>
+                          <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--text-tertiary)', fontWeight: 500 }}>
+                            Total Package Value: ₹{pkg.totalPrice.toLocaleString('en-IN')}
+                          </div>
+                        </div>
                       </div>
-                      <p className="font-body" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                        {pkg.desc}
-                      </p>
-                      <div style={{ marginTop: '0.75rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                        Total Value: ₹{pkg.totalPrice.toLocaleString('en-IN')}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </motion.div>
               )}
 

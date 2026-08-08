@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -21,7 +22,9 @@ export default function BookingPage() {
             We accept a limited number of commissions each year to ensure every story receives our undivided artistry.
           </p>
         </div>
-        <BookingWizard />
+        <Suspense fallback={<div style={{ textAlign: 'center', padding: '3rem', color: 'var(--accent)' }}>Loading Booking System...</div>}>
+          <BookingWizard />
+        </Suspense>
       </div>
       <Footer />
     </PageTransition>

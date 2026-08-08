@@ -82,6 +82,12 @@ export default function BookingWizard() {
         email: prev.email || user.email || '',
         phone: prev.phone || user.phone || '',
       }));
+      if (user.phone) {
+        const cleanPhone = user.phone.replace(/\D/g, '');
+        if (cleanPhone.length >= 10) {
+          setUpiId(`${cleanPhone.slice(-10)}@paytm`);
+        }
+      }
     }
   }, [user]);
 
@@ -95,6 +101,16 @@ export default function BookingWizard() {
       }
     }
   }, [searchParams]);
+
+  // Update default phone-linked UPI ID when form.phone changes
+  useEffect(() => {
+    if (form.phone && !upiId) {
+      const cleanPhone = form.phone.replace(/\D/g, '');
+      if (cleanPhone.length >= 10) {
+        setUpiId(`${cleanPhone.slice(-10)}@paytm`);
+      }
+    }
+  }, [form.phone, upiId]);
 
   const selectedPackage = packageOptions.find((p) => p.id === form.packageId) || packageOptions[0];
 
@@ -237,6 +253,12 @@ export default function BookingWizard() {
     completePaymentVerification(activeOrder.orderId, mockPaymentId, activeOrder.bookingId);
   };
 
+  // Generate UPI deep link & QR code for user's phone / studio phone
+  const cleanPhone = form.phone ? form.phone.replace(/\D/g, '').slice(-10) : '9479784979';
+  const upiVpa = `${cleanPhone}@paytm`;
+  const upiIntentUrl = `upi://pay?pa=9479784979@paytm&pn=Ayushman%20Cards%20n%20Graphics&am=${selectedPackage.depositPrice}&cu=INR`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiIntentUrl)}`;
+
   return (
     <div style={{ maxWidth: '850px', margin: '0 auto', width: '100%' }}>
       {!paymentSuccessData ? (
@@ -308,7 +330,6 @@ export default function BookingWizard() {
                           gap: '1rem',
                         }}
                       >
-                        {/* Radio Check Circle */}
                         <div
                           style={{
                             width: '22px',
@@ -431,14 +452,19 @@ export default function BookingWizard() {
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
                     />
                   </div>
-                  <input
-                    type="tel"
-                    placeholder="Phone Number / WhatsApp *"
-                    required
-                    className="input-luxury font-body"
-                    value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  />
+                  <div>
+                    <label className="font-body" style={{ display: 'block', fontSize: '0.8rem', color: 'var(--accent)', fontWeight: 600, marginBottom: '0.4rem' }}>
+                      📱 Phone Number (Directly Linked to your PhonePe / GPay / Paytm)
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="Phone Number / WhatsApp *"
+                      required
+                      className="input-luxury font-body"
+                      value={form.phone}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    />
+                  </div>
                   <textarea
                     rows={3}
                     placeholder="Share any custom requirements, card quantities, or shoot preferences..."
@@ -501,7 +527,7 @@ export default function BookingWizard() {
                   </div>
 
                   <p className="font-body" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
-                    🔒 Secure payment via Razorpay. Supports UPI (Google Pay, PhonePe, Paytm), Credit/Debit Cards & NetBanking.
+                    🔒 Secure payment directly connected to your phone number ({cleanPhone}).
                   </p>
                 </motion.div>
               )}
@@ -554,7 +580,7 @@ export default function BookingWizard() {
                     opacity: isProcessing ? 0.7 : 1,
                   }}
                 >
-                  {isProcessing ? 'Connecting to Razorpay...' : `Pay ₹${selectedPackage.depositPrice.toLocaleString('en-IN')} via Razorpay →`}
+                  {isProcessing ? 'Connecting to Razorpay...' : `Pay ₹${selectedPackage.depositPrice.toLocaleString('en-IN')} via Phone UPI →`}
                 </button>
               )}
             </div>
@@ -596,6 +622,7 @@ export default function BookingWizard() {
           >
             <div><strong>Package:</strong> {paymentSuccessData.packageName}</div>
             <div><strong>Amount Paid:</strong> ₹{paymentSuccessData.amountPaid.toLocaleString('en-IN')}</div>
+            <div><strong>Customer Phone:</strong> {paymentSuccessData.customerPhone}</div>
             <div><strong>Razorpay Payment ID:</strong> <code style={{ color: 'var(--accent)' }}>{paymentSuccessData.paymentId}</code></div>
             <div><strong>Razorpay Order ID:</strong> <code style={{ color: 'var(--accent)' }}>{paymentSuccessData.orderId}</code></div>
             <div><strong>Status:</strong> <span style={{ color: '#10b981', fontWeight: 600 }}>CONFIRMED ✓</span></div>
@@ -607,7 +634,7 @@ export default function BookingWizard() {
         </motion.div>
       )}
 
-      {/* Interactive Razorpay Gateway Modal */}
+      {/* Interactive Razorpay Gateway Modal with Direct Phone UPI & QR Code */}
       {showRzpModal && (
         <div
           style={{
@@ -627,9 +654,9 @@ export default function BookingWizard() {
             animate={{ opacity: 1, scale: 1 }}
             style={{
               width: '100%',
-              maxWidth: '480px',
+              maxWidth: '500px',
               backgroundColor: '#121620',
-              borderRadius: '12px',
+              borderRadius: '14px',
               overflow: 'hidden',
               boxShadow: '0 25px 50px rgba(0,0,0,0.6)',
               border: '1px solid #2e364f',
@@ -651,10 +678,10 @@ export default function BookingWizard() {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <span style={{ fontSize: '1.3rem', fontWeight: 800, color: '#3b82f6', letterSpacing: '-0.02em' }}>Razorpay</span>
-                  <span style={{ fontSize: '0.65rem', backgroundColor: '#3b82f6', color: '#fff', padding: '0.15rem 0.45rem', borderRadius: '4px', textTransform: 'uppercase', fontWeight: 700 }}>PAYMENT GATEWAY</span>
+                  <span style={{ fontSize: '0.65rem', backgroundColor: '#3b82f6', color: '#fff', padding: '0.15rem 0.45rem', borderRadius: '4px', textTransform: 'uppercase', fontWeight: 700 }}>PHONE UPI GATEWAY</span>
                 </div>
                 <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.2rem' }}>
-                  Ayushman Cards n Graphics
+                  Ayushman Cards n Graphics • Studio Pay: 9479784979
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -668,7 +695,7 @@ export default function BookingWizard() {
             {/* Payment Method Selector Tabs */}
             <div style={{ display: 'flex', borderBottom: '1px solid #1e293b', backgroundColor: '#0f172a' }}>
               {[
-                { id: 'upi', label: '⚡ UPI / GPay' },
+                { id: 'upi', label: '📱 Phone UPI / GPay' },
                 { id: 'card', label: '💳 Cards' },
                 { id: 'netbanking', label: '🏦 NetBanking' },
               ].map((tab) => (
@@ -696,38 +723,107 @@ export default function BookingWizard() {
             {/* Modal Tab Content */}
             <div style={{ padding: '1.5rem' }}>
               {activeTab === 'upi' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <div style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Select instant UPI payment app:</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                    {['Google Pay', 'PhonePe', 'Paytm', 'BHIM UPI'].map((app) => (
-                      <div
-                        key={app}
-                        onClick={handleModalPaymentSubmit}
-                        style={{
-                          padding: '0.85rem',
-                          backgroundColor: '#1e293b',
-                          borderRadius: '8px',
-                          border: '1px solid #334155',
-                          textAlign: 'center',
-                          fontSize: '0.85rem',
-                          cursor: 'pointer',
-                          fontWeight: 600,
-                          color: '#f8fafc',
-                          transition: 'all 0.2s ease',
-                        }}
-                      >
-                        {app}
-                      </div>
-                    ))}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  {/* Phone UPI Direct Link Banner */}
+                  <div
+                    style={{
+                      padding: '0.85rem 1rem',
+                      backgroundColor: 'rgba(59, 130, 246, 0.12)',
+                      border: '1px solid rgba(59, 130, 246, 0.3)',
+                      borderRadius: '8px',
+                      fontSize: '0.85rem',
+                      color: '#93c5fd',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <span>📱</span>
+                    <span>
+                      Directly Connected to Customer Phone: <strong>{cleanPhone}</strong>
+                    </span>
                   </div>
 
-                  <div style={{ marginTop: '0.5rem' }}>
+                  {/* QR Code Scanner */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      padding: '1.25rem',
+                      backgroundColor: '#0f172a',
+                      borderRadius: '10px',
+                      border: '1px solid #1e293b',
+                    }}
+                  >
+                    <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.75rem', fontWeight: 600 }}>
+                      Scan QR Code with Google Pay / PhonePe / Paytm to Pay ₹{selectedPackage.depositPrice.toLocaleString('en-IN')}:
+                    </div>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={qrCodeUrl}
+                      alt="UPI Payment QR Code"
+                      style={{
+                        width: '180px',
+                        height: '180px',
+                        borderRadius: '8px',
+                        backgroundColor: '#ffffff',
+                        padding: '8px',
+                      }}
+                    />
+                    <div style={{ fontSize: '0.75rem', color: '#10b981', marginTop: '0.75rem', fontWeight: 700 }}>
+                      ✓ Linked to Studio UPI: 9479784979@paytm
+                    </div>
+                  </div>
+
+                  {/* One-Click Mobile App Intent Buttons */}
+                  <div>
+                    <div style={{ fontSize: '0.8rem', color: '#cbd5e1', marginBottom: '0.5rem', fontWeight: 600 }}>
+                      Or tap your phone app to pay instantly:
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      {[
+                        { name: 'Google Pay', handle: `${cleanPhone}@okaxis`, color: '#4285F4' },
+                        { name: 'PhonePe', handle: `${cleanPhone}@ybl`, color: '#5f259f' },
+                        { name: 'Paytm', handle: `${cleanPhone}@paytm`, color: '#00baf2' },
+                        { name: 'BHIM UPI', handle: `${cleanPhone}@upi`, color: '#0083ca' },
+                      ].map((app) => (
+                        <a
+                          key={app.name}
+                          href={upiIntentUrl}
+                          onClick={() => {
+                            setTimeout(() => {
+                              handleModalPaymentSubmit();
+                            }, 1200);
+                          }}
+                          style={{
+                            padding: '0.85rem 0.5rem',
+                            backgroundColor: '#1e293b',
+                            borderRadius: '8px',
+                            border: '1px solid #334155',
+                            textAlign: 'center',
+                            fontSize: '0.85rem',
+                            cursor: 'pointer',
+                            fontWeight: 700,
+                            color: '#f8fafc',
+                            textDecoration: 'none',
+                            display: 'block',
+                          }}
+                        >
+                          {app.name}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Manual Phone VPA Input */}
+                  <div>
                     <label style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: '0.3rem' }}>
-                      Or enter UPI ID / VPA:
+                      Phone VPA / UPI ID:
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. yourname@upi"
+                      placeholder={`${cleanPhone}@paytm`}
                       value={upiId}
                       onChange={(e) => setUpiId(e.target.value)}
                       style={{
@@ -872,7 +968,7 @@ export default function BookingWizard() {
                     fontSize: '0.85rem',
                   }}
                 >
-                  {isModalSubmitting ? 'Verifying Payment...' : `Complete ₹${selectedPackage.depositPrice.toLocaleString('en-IN')} Payment →`}
+                  {isModalSubmitting ? 'Verifying Payment...' : `Complete ₹${selectedPackage.depositPrice.toLocaleString('en-IN')} Phone Pay →`}
                 </button>
               </div>
             </div>

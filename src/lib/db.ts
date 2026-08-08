@@ -1,6 +1,11 @@
+import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
+
+const SUPABASE_DB_URL =
+  process.env.DATABASE_URL ||
+  'postgresql://postgres:i1v8Jwz6kl0vXdzt@db.iyhvcfgcbwcsagwlzabs.supabase.co:5432/postgres';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -8,19 +13,15 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient(): PrismaClient {
-  const url = process.env.DATABASE_URL;
-  if (!url) {
-    throw new Error('DATABASE_URL is not set in environment variables');
-  }
-
-  // Create a pooled connection with SSL enabled for Supabase
-  const pool = globalForPrisma.pool ?? new pg.Pool({
-    connectionString: url,
-    ssl: { rejectUnauthorized: false },
-    max: 10,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000,
-  });
+  const pool =
+    globalForPrisma.pool ??
+    new pg.Pool({
+      connectionString: SUPABASE_DB_URL,
+      ssl: { rejectUnauthorized: false },
+      max: 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+    });
 
   if (process.env.NODE_ENV !== 'production') {
     globalForPrisma.pool = pool;

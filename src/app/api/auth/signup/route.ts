@@ -24,36 +24,54 @@ export async function POST(req: Request) {
     }
 
     // Check if user already exists
-    const existingUser = await db.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
-    });
+    let existingUser;
+    try {
+      existingUser = await db.user.findUnique({
+        where: { email: email.toLowerCase().trim() },
+      });
+    } catch (dbError) {
+      console.error('Database connection error:', dbError);
+      return NextResponse.json(
+        { error: 'Unable to connect to the server. Please try again in a moment.' },
+        { status: 503 }
+      );
+    }
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'An account with this email address already exists. Please log in.' },
+        { error: 'An account with this email already exists. Please log in instead.' },
         { status: 400 }
       );
     }
 
     // Hash password and create user
     const hashedPassword = await hashPassword(password);
-    const user = await db.user.create({
-      data: {
-        name: name.trim(),
-        email: email.toLowerCase().trim(),
-        password: hashedPassword,
-        phone: phone || '',
-        role: 'CLIENT',
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        role: true,
-        createdAt: true,
-      },
-    });
+    let user;
+    try {
+      user = await db.user.create({
+        data: {
+          name: name.trim(),
+          email: email.toLowerCase().trim(),
+          password: hashedPassword,
+          phone: phone || '',
+          role: 'CLIENT',
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          role: true,
+          createdAt: true,
+        },
+      });
+    } catch (dbError) {
+      console.error('Database error creating user:', dbError);
+      return NextResponse.json(
+        { error: 'Unable to create account right now. Please try again in a moment.' },
+        { status: 503 }
+      );
+    }
 
     // Create JWT Token
     const token = signToken({
@@ -82,7 +100,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('Signup Error:', error);
     return NextResponse.json(
-      { error: error?.message || 'Failed to create user account' },
+      { error: 'Something went wrong. Please try again later.' },
       { status: 500 }
     );
   }

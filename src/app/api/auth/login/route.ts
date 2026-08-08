@@ -17,13 +17,22 @@ export async function POST(req: Request) {
     }
 
     // Find User
-    const user = await db.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
-    });
+    let user;
+    try {
+      user = await db.user.findUnique({
+        where: { email: email.toLowerCase().trim() },
+      });
+    } catch (dbError) {
+      console.error('Database connection error:', dbError);
+      return NextResponse.json(
+        { error: 'Unable to connect to the server. Please try again in a moment.' },
+        { status: 503 }
+      );
+    }
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Invalid email or password. Please check your credentials.' },
+        { error: 'No account found with this email. Please create a new account first.' },
         { status: 401 }
       );
     }
@@ -32,7 +41,7 @@ export async function POST(req: Request) {
     const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid) {
       return NextResponse.json(
-        { error: 'Invalid email or password. Please check your credentials.' },
+        { error: 'Incorrect password. Please try again.' },
         { status: 401 }
       );
     }
@@ -73,7 +82,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('Login Error:', error);
     return NextResponse.json(
-      { error: error?.message || 'Failed to authenticate user' },
+      { error: 'Something went wrong. Please try again later.' },
       { status: 500 }
     );
   }

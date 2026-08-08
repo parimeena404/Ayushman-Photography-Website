@@ -12,15 +12,21 @@ export async function GET() {
     }
 
     // Fetch user's bookings and inquiries
-    const bookings = await db.booking.findMany({
-      where: { customerEmail: currentUser.email },
-      orderBy: { createdAt: 'desc' },
-    });
+    let bookings = [];
+    let inquiries = [];
+    try {
+      bookings = await db.booking.findMany({
+        where: { customerEmail: currentUser.email },
+        orderBy: { createdAt: 'desc' },
+      });
 
-    const inquiries = await db.inquiry.findMany({
-      where: { email: currentUser.email },
-      orderBy: { createdAt: 'desc' },
-    });
+      inquiries = await db.inquiry.findMany({
+        where: { email: currentUser.email },
+        orderBy: { createdAt: 'desc' },
+      });
+    } catch (dbError) {
+      console.error('Database error fetching user data:', dbError);
+    }
 
     return NextResponse.json({
       authenticated: true,
@@ -29,6 +35,6 @@ export async function GET() {
       inquiries,
     });
   } catch (error: any) {
-    return NextResponse.json({ authenticated: false, error: error?.message });
+    return NextResponse.json({ authenticated: false, user: null });
   }
 }

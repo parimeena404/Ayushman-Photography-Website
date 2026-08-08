@@ -12,12 +12,6 @@ const milestones = [
   { year: '2025', text: '24+ years of creative excellence serving thousands of families & events across India' },
 ];
 
-const awards = [
-  'Complete Printing Solutions — Excellence Award',
-  'Premier Indian Wedding Card Designer — MP Choice',
-  'Heritage Event & Fine Art Photography Studio',
-  'Trusted Business Icon — Ujjain',
-];
 
 export default function About() {
   const sectionRef = useRef(null);
@@ -191,56 +185,7 @@ export default function About() {
           </div>
         </motion.div>
 
-        {/* Divider */}
-        <motion.div
-          variants={lineGrow}
-          className="divider-gold"
-          style={{ marginBottom: '5rem', transformOrigin: 'right' }}
-        />
 
-        {/* Awards */}
-        <motion.div variants={fadeInUp}>
-          <h3
-            className="font-heading text-editorial-md"
-            style={{
-              color: 'var(--text-primary)',
-              fontWeight: 300,
-              marginBottom: '2.5rem',
-            }}
-          >
-            Recognition
-          </h3>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: '1.5rem',
-            }}
-          >
-            {awards.map((award, i) => (
-              <div
-                key={i}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem',
-                }}
-              >
-                <span style={{ color: 'var(--accent)', fontSize: '1.2rem' }}>✦</span>
-                <span
-                  className="font-body"
-                  style={{
-                    color: 'var(--text-secondary)',
-                    fontSize: '0.95rem',
-                  }}
-                >
-                  {award}
-                </span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
       </motion.div>
 
       <style jsx global>{`

@@ -8,7 +8,7 @@ const steps = [
   'Service & Package',
   'Event Date & Venue',
   'Your Details',
-  'Razorpay Payment & Confirmation',
+  'Review & Pay',
 ];
 
 const packageOptions = [
@@ -48,13 +48,6 @@ export default function BookingWizard() {
   const [paymentSuccessData, setPaymentSuccessData] = useState<any>(null);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Payment Modal State
-  const [showRzpModal, setShowRzpModal] = useState(false);
-  const [activePaymentMethod, setActivePaymentMethod] = useState<'upi' | 'card' | 'netbanking'>('upi');
-  const [selectedUpiApp, setSelectedUpiApp] = useState('gpay');
-  const [upiId, setUpiId] = useState('');
-  const [pendingOrderInfo, setPendingOrderInfo] = useState<any>(null);
-
   const [form, setForm] = useState({
     packageId: 'royal-wedding',
     date: '',
@@ -78,7 +71,15 @@ export default function BookingWizard() {
     setErrorMessage('');
 
     try {
-      // 1. Create backend payment order
+      // 1. Load the Razorpay checkout script
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        setErrorMessage('Failed to load Razorpay SDK. Please check your internet connection and try again.');
+        setIsProcessing(false);
+        return;
+      }
+
+      // 2. Create order on backend
       const res = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -105,48 +106,80 @@ export default function BookingWizard() {
         return;
       }
 
-      setPendingOrderInfo(orderData);
-      setShowRzpModal(true);
-      setIsProcessing(false);
+      // 3. Open Razorpay Checkout popup
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'Ayushman Cards n Graphics',
+        description: `Booking Deposit — ${selectedPackage.name}`,
+        image: '/logo.png',
+        order_id: orderData.orderId,
+        handler: async function (response: any) {
+          // 4. Verify payment on backend
+          try {
+            const verifyRes = await fetch('/api/razorpay/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                bookingId: orderData.bookingId,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (verifyRes.ok && verifyData.success) {
+              setPaymentSuccessData({
+                orderId: response.razorpay_order_id,
+                paymentId: response.razorpay_payment_id,
+                amountPaid: selectedPackage.depositPrice,
+                packageName: selectedPackage.name,
+                customerName: form.name,
+                customerPhone: form.phone,
+              });
+            } else {
+              setErrorMessage(verifyData.error || 'Payment verification failed. Please contact support.');
+            }
+          } catch {
+            setErrorMessage('Error verifying payment. Please contact studio support at 9479784979.');
+          }
+          setIsProcessing(false);
+        },
+        prefill: {
+          name: form.name,
+          email: form.email || undefined,
+          contact: form.phone,
+        },
+        notes: {
+          package: selectedPackage.name,
+          eventDate: form.date,
+          city: form.city,
+        },
+        theme: {
+          color: '#D40000',
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessing(false);
+            setErrorMessage('Payment was cancelled. You can try again when ready.');
+          },
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on('payment.failed', function (response: any) {
+        setErrorMessage(
+          `Payment failed: ${response.error?.description || 'Unknown error'}. Please try again or contact support.`
+        );
+        setIsProcessing(false);
+      });
+      rzp.open();
     } catch (err: any) {
       console.error('Razorpay Payment Error:', err);
       setErrorMessage(err?.message || 'An unexpected error occurred during payment initialization.');
-      setIsProcessing(false);
-    }
-  };
-
-  const verifyAndCompletePayment = async (orderId: string, paymentId: string, signature?: string) => {
-    setIsProcessing(true);
-    try {
-      const verifyRes = await fetch('/api/razorpay/verify-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          razorpay_order_id: orderId,
-          razorpay_payment_id: paymentId,
-          razorpay_signature: signature || 'verified_test_sig',
-          bookingId: pendingOrderInfo?.bookingId,
-        }),
-      });
-
-      const verifyData = await verifyRes.json();
-
-      if (verifyRes.ok && verifyData.success) {
-        setPaymentSuccessData({
-          orderId: orderId,
-          paymentId: paymentId,
-          amountPaid: selectedPackage.depositPrice,
-          packageName: selectedPackage.name,
-          customerName: form.name,
-          customerPhone: form.phone,
-        });
-        setShowRzpModal(false);
-      } else {
-        setErrorMessage(verifyData.error || 'Payment verification failed.');
-      }
-    } catch (err: any) {
-      setErrorMessage('Error verifying payment. Please contact studio support.');
-    } finally {
       setIsProcessing(false);
     }
   };
@@ -386,7 +419,7 @@ export default function BookingWizard() {
                   </div>
 
                   <p className="font-body" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
-                    🔒 Encrypted 256-bit Razorpay Payment Gateway. Supports UPI (Google Pay, PhonePe, Paytm), Credit/Debit Cards & NetBanking.
+                    🔒 Secure payment via Razorpay. Supports UPI (Google Pay, PhonePe, Paytm), Credit/Debit Cards & NetBanking.
                   </p>
                 </motion.div>
               )}
@@ -446,7 +479,7 @@ export default function BookingWizard() {
           </form>
         </div>
       ) : (
-        /* Razorpay Success Receipt Modal */
+        /* Payment Success Receipt */
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -462,7 +495,7 @@ export default function BookingWizard() {
             Payment Verified & Booking Confirmed!
           </h3>
           <p className="font-body" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '2rem' }}>
-            Thank you, {paymentSuccessData.customerName}. Your reservation deposit has been saved to database.
+            Thank you, {paymentSuccessData.customerName}. Your reservation deposit has been received successfully.
           </p>
 
           <div
@@ -483,7 +516,7 @@ export default function BookingWizard() {
             <div><strong>Amount Paid:</strong> ₹{paymentSuccessData.amountPaid.toLocaleString('en-IN')}</div>
             <div><strong>Razorpay Payment ID:</strong> <code style={{ color: 'var(--accent)' }}>{paymentSuccessData.paymentId}</code></div>
             <div><strong>Razorpay Order ID:</strong> <code style={{ color: 'var(--accent)' }}>{paymentSuccessData.orderId}</code></div>
-            <div><strong>Status:</strong> <span style={{ color: '#10b981', fontWeight: 600 }}>CONFIRMED (DB Synced)</span></div>
+            <div><strong>Status:</strong> <span style={{ color: '#10b981', fontWeight: 600 }}>CONFIRMED ✓</span></div>
           </div>
 
           <a href="/dashboard" className="btn-premium">
@@ -491,294 +524,6 @@ export default function BookingWizard() {
           </a>
         </motion.div>
       )}
-
-      {/* Interactive Razorpay Gateway Modal Component */}
-      <AnimatePresence>
-        {showRzpModal && pendingOrderInfo && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0,0,0,0.75)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '1rem',
-            }}
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              style={{
-                maxWidth: '480px',
-                width: '100%',
-                backgroundColor: '#0E1624',
-                color: '#FCF7F6',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                border: '1px solid rgba(160, 106, 115, 0.4)',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-              }}
-            >
-              {/* Modal Header */}
-              <div
-                style={{
-                  backgroundColor: '#A06A73',
-                  padding: '1.25rem 1.5rem',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/logo.png"
-                    alt="Logo"
-                    style={{
-                      height: '36px',
-                      width: 'auto',
-                      backgroundColor: '#FFF',
-                      padding: '2px 6px',
-                      borderRadius: '4px',
-                      objectFit: 'contain',
-                    }}
-                  />
-                  <div>
-                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.9 }}>
-                      Razorpay Secure Gateway
-                    </div>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>
-                      Ayushman Cards n Graphics
-                    </div>
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.75rem', opacity: 0.85 }}>Amount Payable</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>₹{selectedPackage.depositPrice.toLocaleString('en-IN')}</div>
-                </div>
-              </div>
-
-              {/* Modal Content */}
-              <div style={{ padding: '1.5rem' }}>
-                <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Order ID: <code>{pendingOrderInfo.orderId}</code></span>
-                  <span>Key: <code>rzp_test_...4fa</code></span>
-                </div>
-
-                {/* Tabs */}
-                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                  <button
-                    type="button"
-                    onClick={() => setActivePaymentMethod('upi')}
-                    style={{
-                      padding: '0.6rem 1rem',
-                      fontSize: '0.85rem',
-                      background: 'none',
-                      border: 'none',
-                      borderBottom: activePaymentMethod === 'upi' ? '2px solid #A06A73' : '2px solid transparent',
-                      color: activePaymentMethod === 'upi' ? '#A06A73' : '#94a3b8',
-                      cursor: 'pointer',
-                      fontWeight: 600,
-                    }}
-                  >
-                    UPI / QR
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActivePaymentMethod('card')}
-                    style={{
-                      padding: '0.6rem 1rem',
-                      fontSize: '0.85rem',
-                      background: 'none',
-                      border: 'none',
-                      borderBottom: activePaymentMethod === 'card' ? '2px solid #A06A73' : '2px solid transparent',
-                      color: activePaymentMethod === 'card' ? '#A06A73' : '#94a3b8',
-                      cursor: 'pointer',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Card (Credit/Debit)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActivePaymentMethod('netbanking')}
-                    style={{
-                      padding: '0.6rem 1rem',
-                      fontSize: '0.85rem',
-                      background: 'none',
-                      border: 'none',
-                      borderBottom: activePaymentMethod === 'netbanking' ? '2px solid #A06A73' : '2px solid transparent',
-                      color: activePaymentMethod === 'netbanking' ? '#A06A73' : '#94a3b8',
-                      cursor: 'pointer',
-                      fontWeight: 600,
-                    }}
-                  >
-                    NetBanking
-                  </button>
-                </div>
-
-                {/* UPI Content */}
-                {activePaymentMethod === 'upi' && (
-                  <div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem', marginBottom: '1.25rem' }}>
-                      {['Google Pay', 'PhonePe', 'Paytm'].map((app) => (
-                        <div
-                          key={app}
-                          onClick={() => setSelectedUpiApp(app.toLowerCase())}
-                          style={{
-                            padding: '0.75rem',
-                            border: `1px solid ${selectedUpiApp === app.toLowerCase() ? '#A06A73' : 'rgba(255,255,255,0.1)'}`,
-                            backgroundColor: selectedUpiApp === app.toLowerCase() ? 'rgba(160, 106, 115, 0.15)' : 'rgba(255,255,255,0.03)',
-                            borderRadius: '6px',
-                            textAlign: 'center',
-                            fontSize: '0.8rem',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {app}
-                        </div>
-                      ))}
-                    </div>
-                    <input
-                      type="text"
-                      placeholder="Enter UPI ID (e.g. mobile@upi)"
-                      value={upiId}
-                      onChange={(e) => setUpiId(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem',
-                        backgroundColor: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        color: '#fff',
-                        borderRadius: '6px',
-                        fontSize: '0.85rem',
-                        marginBottom: '1rem',
-                      }}
-                    />
-                  </div>
-                )}
-
-                {/* Card Content */}
-                {activePaymentMethod === 'card' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem' }}>
-                    <input
-                      type="text"
-                      placeholder="Card Number (4532 •••• •••• 8910)"
-                      style={{
-                        padding: '0.75rem',
-                        backgroundColor: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        color: '#fff',
-                        borderRadius: '6px',
-                        fontSize: '0.85rem',
-                      }}
-                    />
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                      <input
-                        type="text"
-                        placeholder="MM / YY"
-                        style={{
-                          padding: '0.75rem',
-                          backgroundColor: 'rgba(255,255,255,0.05)',
-                          border: '1px solid rgba(255,255,255,0.15)',
-                          color: '#fff',
-                          borderRadius: '6px',
-                          fontSize: '0.85rem',
-                        }}
-                      />
-                      <input
-                        type="password"
-                        placeholder="CVV"
-                        maxLength={4}
-                        style={{
-                          padding: '0.75rem',
-                          backgroundColor: 'rgba(255,255,255,0.05)',
-                          border: '1px solid rgba(255,255,255,0.15)',
-                          color: '#fff',
-                          borderRadius: '6px',
-                          fontSize: '0.85rem',
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* NetBanking Content */}
-                {activePaymentMethod === 'netbanking' && (
-                  <div style={{ marginBottom: '1rem' }}>
-                    <select
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem',
-                        backgroundColor: '#1E293B',
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        color: '#fff',
-                        borderRadius: '6px',
-                        fontSize: '0.85rem',
-                      }}
-                    >
-                      <option>State Bank of India (SBI)</option>
-                      <option>HDFC Bank</option>
-                      <option>ICICI Bank</option>
-                      <option>Axis Bank</option>
-                      <option>Punjab National Bank</option>
-                    </select>
-                  </div>
-                )}
-
-                {/* Pay Action Button */}
-                <button
-                  type="button"
-                  disabled={isProcessing}
-                  onClick={() =>
-                    verifyAndCompletePayment(
-                      pendingOrderInfo.orderId,
-                      `pay_rzp_${Date.now()}`,
-                      'verified_razorpay_sig'
-                    )
-                  }
-                  style={{
-                    width: '100%',
-                    padding: '0.9rem',
-                    backgroundColor: '#A06A73',
-                    color: '#FFF',
-                    border: 'none',
-                    borderRadius: '6px',
-                    fontSize: '0.95rem',
-                    fontWeight: 600,
-                    cursor: isProcessing ? 'not-allowed' : 'pointer',
-                    opacity: isProcessing ? 0.7 : 1,
-                    marginTop: '0.5rem',
-                  }}
-                >
-                  {isProcessing ? 'Verifying Transaction with Razorpay...' : `Pay ₹${selectedPackage.depositPrice.toLocaleString('en-IN')} Now →`}
-                </button>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>🔒 256-bit Encrypted SSL Gateway</span>
-                  <button
-                    type="button"
-                    onClick={() => setShowRzpModal(false)}
-                    style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '0.75rem', cursor: 'pointer' }}
-                  >
-                    Cancel Transaction
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

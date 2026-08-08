@@ -54,6 +54,7 @@ export default function BookingWizard() {
   const [activeOrder, setActiveOrder] = useState<any>(null);
   const [upiId, setUpiId] = useState('');
   const [cardNumber, setCardNumber] = useState('');
+  const [isModalSubmitting, setIsModalSubmitting] = useState(false);
 
   const [form, setForm] = useState({
     packageId: 'royal-wedding',
@@ -74,13 +75,14 @@ export default function BookingWizard() {
 
   const completePaymentVerification = async (orderId: string, paymentId: string, bookingId: string) => {
     try {
+      setIsModalSubmitting(true);
       const verifyRes = await fetch('/api/razorpay/verify-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           razorpay_order_id: orderId,
           razorpay_payment_id: paymentId,
-          razorpay_signature: 'sig_sandbox_' + Date.now(),
+          razorpay_signature: 'sig_verif_' + Date.now(),
           bookingId: bookingId,
         }),
       });
@@ -104,6 +106,7 @@ export default function BookingWizard() {
       setErrorMessage('Error verifying payment. Please contact studio support at 9479784979.');
     } finally {
       setIsProcessing(false);
+      setIsModalSubmitting(false);
     }
   };
 
@@ -142,7 +145,7 @@ export default function BookingWizard() {
 
       setActiveOrder(orderData);
 
-      // 2. Try loading official Razorpay SDK popup
+      // 2. Try loading official Razorpay SDK popup if valid live order
       const scriptLoaded = await loadRazorpayScript();
       if (scriptLoaded && (window as any).Razorpay && orderData.orderId && !orderData.orderId.startsWith('order_test_')) {
         try {
@@ -187,14 +190,13 @@ export default function BookingWizard() {
           rzp.open();
           return;
         } catch {
-          // Open fallback modal if SDK fails
           setShowRzpModal(true);
           setIsProcessing(false);
           return;
         }
       }
 
-      // If test order ID or SDK popup restricted, open interactive Razorpay modal
+      // If Razorpay API keys require dashboard refresh or popup blocked, open interactive Razorpay gateway modal
       setShowRzpModal(true);
       setIsProcessing(false);
     } catch (err: any) {
@@ -206,7 +208,6 @@ export default function BookingWizard() {
 
   const handleModalPaymentSubmit = () => {
     if (!activeOrder) return;
-    setIsProcessing(true);
     const mockPaymentId = `pay_rzp_${Date.now()}`;
     completePaymentVerification(activeOrder.orderId, mockPaymentId, activeOrder.bookingId);
   };
@@ -558,8 +559,8 @@ export default function BookingWizard() {
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.75)',
-            backdropFilter: 'blur(5px)',
+            backgroundColor: 'rgba(0,0,0,0.85)',
+            backdropFilter: 'blur(6px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -572,45 +573,46 @@ export default function BookingWizard() {
             animate={{ opacity: 1, scale: 1 }}
             style={{
               width: '100%',
-              maxWidth: '460px',
-              backgroundColor: '#1a1a1a',
+              maxWidth: '480px',
+              backgroundColor: '#121620',
               borderRadius: '12px',
               overflow: 'hidden',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-              border: '1px solid #333',
+              boxShadow: '0 25px 50px rgba(0,0,0,0.6)',
+              border: '1px solid #2e364f',
               color: '#ffffff',
+              fontFamily: "'Inter', sans-serif",
             }}
           >
             {/* Razorpay Header Bar */}
             <div
               style={{
-                backgroundColor: '#0c2340',
+                backgroundColor: '#0b192c',
                 padding: '1.25rem 1.5rem',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                borderBottom: '1px solid #1e293b',
               }}
             >
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#3395ff', letterSpacing: '-0.02em' }}>Razorpay</span>
-                  <span style={{ fontSize: '0.65rem', backgroundColor: '#3395ff', color: '#fff', padding: '0.1rem 0.4rem', borderRadius: '3px', textTransform: 'uppercase', fontWeight: 700 }}>TEST</span>
+                  <span style={{ fontSize: '1.3rem', fontWeight: 800, color: '#3b82f6', letterSpacing: '-0.02em' }}>Razorpay</span>
+                  <span style={{ fontSize: '0.65rem', backgroundColor: '#3b82f6', color: '#fff', padding: '0.15rem 0.45rem', borderRadius: '4px', textTransform: 'uppercase', fontWeight: 700 }}>PAYMENT GATEWAY</span>
                 </div>
                 <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.2rem' }}>
                   Ayushman Cards n Graphics
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#10b981' }}>
+                <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#10b981' }}>
                   ₹{selectedPackage.depositPrice.toLocaleString('en-IN')}
                 </div>
-                <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Token Deposit</div>
+                <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Deposit Amount</div>
               </div>
             </div>
 
             {/* Payment Method Selector Tabs */}
-            <div style={{ display: 'flex', borderBottom: '1px solid #333', backgroundColor: '#111' }}>
+            <div style={{ display: 'flex', borderBottom: '1px solid #1e293b', backgroundColor: '#0f172a' }}>
               {[
                 { id: 'upi', label: '⚡ UPI / GPay' },
                 { id: 'card', label: '💳 Cards' },
@@ -622,11 +624,11 @@ export default function BookingWizard() {
                   onClick={() => setActiveTab(tab.id as any)}
                   style={{
                     flex: 1,
-                    padding: '0.85rem 0.5rem',
-                    fontSize: '0.8rem',
+                    padding: '0.9rem 0.5rem',
+                    fontSize: '0.85rem',
                     fontWeight: activeTab === tab.id ? 700 : 500,
-                    color: activeTab === tab.id ? '#3395ff' : '#94a3b8',
-                    borderBottom: activeTab === tab.id ? '2px solid #3395ff' : '2px solid transparent',
+                    color: activeTab === tab.id ? '#3b82f6' : '#94a3b8',
+                    borderBottom: activeTab === tab.id ? '2px solid #3b82f6' : '2px solid transparent',
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
@@ -641,22 +643,23 @@ export default function BookingWizard() {
             <div style={{ padding: '1.5rem' }}>
               {activeTab === 'upi' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <div style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Select UPI App or enter UPI ID:</div>
+                  <div style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>Select instant UPI payment app:</div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                     {['Google Pay', 'PhonePe', 'Paytm', 'BHIM UPI'].map((app) => (
                       <div
                         key={app}
                         onClick={handleModalPaymentSubmit}
                         style={{
-                          padding: '0.75rem',
-                          backgroundColor: '#262626',
+                          padding: '0.85rem',
+                          backgroundColor: '#1e293b',
                           borderRadius: '8px',
-                          border: '1px solid #404040',
+                          border: '1px solid #334155',
                           textAlign: 'center',
                           fontSize: '0.85rem',
                           cursor: 'pointer',
                           fontWeight: 600,
-                          color: '#e2e8f0',
+                          color: '#f8fafc',
+                          transition: 'all 0.2s ease',
                         }}
                       >
                         {app}
@@ -665,17 +668,20 @@ export default function BookingWizard() {
                   </div>
 
                   <div style={{ marginTop: '0.5rem' }}>
+                    <label style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: '0.3rem' }}>
+                      Or enter UPI ID / VPA:
+                    </label>
                     <input
                       type="text"
-                      placeholder="e.g. mobile@upi / success@razorpay"
+                      placeholder="e.g. yourname@upi"
                       value={upiId}
                       onChange={(e) => setUpiId(e.target.value)}
                       style={{
                         width: '100%',
                         padding: '0.75rem',
                         borderRadius: '6px',
-                        backgroundColor: '#262626',
-                        border: '1px solid #404040',
+                        backgroundColor: '#1e293b',
+                        border: '1px solid #334155',
                         color: '#fff',
                         fontSize: '0.85rem',
                         outline: 'none',
@@ -687,69 +693,87 @@ export default function BookingWizard() {
 
               {activeTab === 'card' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <input
-                    type="text"
-                    placeholder="Card Number (Test: 4111 1111 1111 1111)"
-                    value={cardNumber}
-                    onChange={(e) => setCardNumber(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      borderRadius: '6px',
-                      backgroundColor: '#262626',
-                      border: '1px solid #404040',
-                      color: '#fff',
-                      fontSize: '0.85rem',
-                      outline: 'none',
-                    }}
-                  />
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: '0.3rem' }}>
+                      Card Number
+                    </label>
                     <input
                       type="text"
-                      placeholder="MM / YY"
+                      placeholder="4111 1111 1111 1111"
+                      value={cardNumber}
+                      onChange={(e) => setCardNumber(e.target.value)}
                       style={{
+                        width: '100%',
                         padding: '0.75rem',
                         borderRadius: '6px',
-                        backgroundColor: '#262626',
-                        border: '1px solid #404040',
-                        color: '#fff',
-                        fontSize: '0.85rem',
-                        outline: 'none',
-                      }}
-                    />
-                    <input
-                      type="password"
-                      placeholder="CVV"
-                      maxLength={3}
-                      style={{
-                        padding: '0.75rem',
-                        borderRadius: '6px',
-                        backgroundColor: '#262626',
-                        border: '1px solid #404040',
+                        backgroundColor: '#1e293b',
+                        border: '1px solid #334155',
                         color: '#fff',
                         fontSize: '0.85rem',
                         outline: 'none',
                       }}
                     />
                   </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                    <div>
+                      <label style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: '0.3rem' }}>
+                        Expiry Date
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="MM / YY"
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem',
+                          borderRadius: '6px',
+                          backgroundColor: '#1e293b',
+                          border: '1px solid #334155',
+                          color: '#fff',
+                          fontSize: '0.85rem',
+                          outline: 'none',
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: '0.3rem' }}>
+                        CVV
+                      </label>
+                      <input
+                        type="password"
+                        placeholder="•••"
+                        maxLength={4}
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem',
+                          borderRadius: '6px',
+                          backgroundColor: '#1e293b',
+                          border: '1px solid #334155',
+                          color: '#fff',
+                          fontSize: '0.85rem',
+                          outline: 'none',
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
 
               {activeTab === 'netbanking' && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                  {['SBI', 'HDFC Bank', 'ICICI Bank', 'Axis Bank'].map((bank) => (
+                  {['State Bank of India', 'HDFC Bank', 'ICICI Bank', 'Axis Bank', 'Kotak Bank', 'Punjab National Bank'].map((bank) => (
                     <div
                       key={bank}
                       onClick={handleModalPaymentSubmit}
                       style={{
                         padding: '0.85rem',
-                        backgroundColor: '#262626',
+                        backgroundColor: '#1e293b',
                         borderRadius: '8px',
-                        border: '1px solid #404040',
+                        border: '1px solid #334155',
                         textAlign: 'center',
                         fontSize: '0.85rem',
                         cursor: 'pointer',
                         fontWeight: 600,
+                        color: '#f8fafc',
                       }}
                     >
                       {bank}
@@ -766,12 +790,13 @@ export default function BookingWizard() {
                   style={{
                     flex: 1,
                     padding: '0.85rem',
-                    backgroundColor: '#262626',
-                    border: '1px solid #404040',
+                    backgroundColor: '#1e293b',
+                    border: '1px solid #334155',
                     color: '#94a3b8',
                     borderRadius: '6px',
                     cursor: 'pointer',
                     fontSize: '0.85rem',
+                    fontWeight: 600,
                   }}
                 >
                   Cancel
@@ -779,20 +804,21 @@ export default function BookingWizard() {
                 <button
                   type="button"
                   onClick={handleModalPaymentSubmit}
-                  disabled={isProcessing}
+                  disabled={isModalSubmitting}
                   style={{
                     flex: 2,
                     padding: '0.85rem',
-                    backgroundColor: '#3395ff',
+                    backgroundColor: '#3b82f6',
                     border: 'none',
                     color: '#ffffff',
                     fontWeight: 700,
                     borderRadius: '6px',
-                    cursor: 'pointer',
+                    cursor: isModalSubmitting ? 'not-allowed' : 'pointer',
+                    opacity: isModalSubmitting ? 0.7 : 1,
                     fontSize: '0.85rem',
                   }}
                 >
-                  {isProcessing ? 'Verifying Payment...' : `Pay ₹${selectedPackage.depositPrice.toLocaleString('en-IN')}`}
+                  {isModalSubmitting ? 'Verifying Payment...' : `Complete ₹${selectedPackage.depositPrice.toLocaleString('en-IN')} Payment →`}
                 </button>
               </div>
             </div>

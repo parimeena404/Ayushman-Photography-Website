@@ -7,9 +7,9 @@ const footerColumns = [
     title: 'Let us help',
     links: [
       { label: 'Book Photography Session', href: '/booking' },
-      { label: 'Contact Studio Freeganj', href: '/#contact' },
+      { label: 'Contact Studio Freeganj', href: '/contact' },
       { label: 'Indian Festivals Gallery', href: '/#festivals' },
-      { label: 'Custom Shaadi Cards Quote', href: '/#contact' },
+      { label: 'Custom Shaadi Cards Quote', href: '/booking' },
       { label: 'Frequently Asked Questions', href: '/faq' },
       { label: 'Pricing & Packages', href: '/#packages' },
     ],
@@ -20,18 +20,18 @@ const footerColumns = [
       { label: 'About Ayushman Cards n Graphics', href: '/about' },
       { label: 'Our Photographers & Designers', href: '/about' },
       { label: 'Ujjain Studio (Since 2001)', href: '/about' },
-      { label: 'Press & Festival Showcase', href: '#' },
+      { label: 'Press & Festival Showcase', href: '/stories' },
       { label: 'Client Love Stories', href: '/stories' },
     ],
   },
   {
     title: 'Our policies',
     links: [
-      { label: 'Terms & Conditions', href: '#' },
-      { label: 'Privacy & Cookie Policy', href: '#' },
-      { label: 'Copyright & IP Rights', href: '#' },
-      { label: 'Cancellation & Refund Policy', href: '#' },
-      { label: 'Album Delivery & Shipping', href: '#' },
+      { label: 'Terms & Conditions', href: '/terms' },
+      { label: 'Privacy & Cookie Policy', href: '/privacy' },
+      { label: 'Copyright & IP Rights', href: '/copyright' },
+      { label: 'Cancellation & Refund Policy', href: '/cancellation' },
+      { label: 'Album Delivery & Shipping', href: '/shipping' },
     ],
   },
 ];
@@ -144,13 +144,15 @@ export default function Footer() {
             {/* Social Media Links */}
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               {[
-                { name: 'Instagram', path: 'M7.8 2h8.4C19 2 22 5 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C5 22 2 19 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z' },
-                { name: 'Facebook', path: 'M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z' },
-                { name: 'YouTube', path: 'M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33zM9.75 15.02V8.48l5.75 3.27-5.75 3.27z' },
+                { name: 'Instagram', path: 'M7.8 2h8.4C19 2 22 5 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C5 22 2 19 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z', href: 'https://instagram.com' },
+                { name: 'Facebook', path: 'M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z', href: 'https://facebook.com' },
+                { name: 'YouTube', path: 'M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33zM9.75 15.02V8.48l5.75 3.27-5.75 3.27z', href: 'https://youtube.com' },
               ].map((social) => (
                 <a
                   key={social.name}
-                  href="#"
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={social.name}
                   style={{
                     width: '34px',

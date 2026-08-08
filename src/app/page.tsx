@@ -12,6 +12,7 @@ import Packages from '@/components/Packages';
 import Testimonials from '@/components/Testimonials';
 import NewsletterBanner from '@/components/NewsletterBanner';
 import BrandValueProps from '@/components/BrandValueProps';
+import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 
 // 1. Most Popular Festive & Wedding Packages (Vistaprint Carousel 1)
@@ -223,6 +224,9 @@ export default function Home() {
 
         {/* Vistaprint Newsletter Subscription Banner */}
         <NewsletterBanner />
+
+        {/* Contact & Studio Location */}
+        <Contact />
 
         {/* Vistaprint Brand Narrative & Value Propositions */}
         <BrandValueProps />

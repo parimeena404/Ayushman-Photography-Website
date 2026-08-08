@@ -12,8 +12,8 @@ export async function GET() {
     }
 
     // Fetch user's bookings and inquiries
-    let bookings = [];
-    let inquiries = [];
+    let bookings: any[] = [];
+    let inquiries: any[] = [];
     try {
       bookings = await db.booking.findMany({
         where: { customerEmail: currentUser.email },

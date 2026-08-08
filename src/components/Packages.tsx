@@ -63,7 +63,7 @@ export default function Packages() {
   const isInView = useInView(ref, { once: true, margin: '-60px' });
 
   return (
-    <section className="section-padding" style={{ background: 'var(--bg-dark)' }}>
+    <section id="packages" className="section-padding" style={{ background: 'var(--bg-dark)' }}>
       <div className="container">
         <SectionHeader
           eyebrow="Investment"

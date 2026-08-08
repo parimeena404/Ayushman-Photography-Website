@@ -7,9 +7,9 @@ export const dynamic = 'force-dynamic';
 async function findUserWithRetry(email: string) {
   try {
     return await db.user.findUnique({ where: { email } });
-  } catch (err) {
-    // Retry once on transient network glitch
-    await new Promise((res) => setTimeout(res, 300));
+  } catch (err: any) {
+    console.error('First findUser DB attempt failed:', err?.message || err);
+    await new Promise((res) => setTimeout(res, 500));
     return await db.user.findUnique({ where: { email } });
   }
 }
@@ -32,10 +32,10 @@ export async function POST(req: Request) {
     let user;
     try {
       user = await findUserWithRetry(cleanEmail);
-    } catch (dbError) {
-      console.error('Database connection error:', dbError);
+    } catch (dbError: any) {
+      console.error('Database connection error in login route:', dbError?.message || dbError);
       return NextResponse.json(
-        { error: 'Unable to connect to database server. Please check connection and try again.' },
+        { error: `Database connection error: ${dbError?.message || 'Unable to connect to database server.'}` },
         { status: 503 }
       );
     }

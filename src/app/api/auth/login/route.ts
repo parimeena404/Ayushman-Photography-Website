@@ -4,6 +4,16 @@ import { comparePassword, signToken, COOKIE_NAME } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
+async function findUserWithRetry(email: string) {
+  try {
+    return await db.user.findUnique({ where: { email } });
+  } catch (err) {
+    // Retry once on transient network glitch
+    await new Promise((res) => setTimeout(res, 300));
+    return await db.user.findUnique({ where: { email } });
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -16,16 +26,16 @@ export async function POST(req: Request) {
       );
     }
 
-    // Find User
+    const cleanEmail = email.toLowerCase().trim();
+
+    // Find User with retry logic
     let user;
     try {
-      user = await db.user.findUnique({
-        where: { email: email.toLowerCase().trim() },
-      });
+      user = await findUserWithRetry(cleanEmail);
     } catch (dbError) {
       console.error('Database connection error:', dbError);
       return NextResponse.json(
-        { error: 'Unable to connect to the server. Please try again in a moment.' },
+        { error: 'Unable to connect to database server. Please check connection and try again.' },
         { status: 503 }
       );
     }

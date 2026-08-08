@@ -4,6 +4,15 @@ import { hashPassword, signToken, COOKIE_NAME } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
+async function findUserWithRetry(email: string) {
+  try {
+    return await db.user.findUnique({ where: { email } });
+  } catch (err) {
+    await new Promise((res) => setTimeout(res, 300));
+    return await db.user.findUnique({ where: { email } });
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -23,16 +32,16 @@ export async function POST(req: Request) {
       );
     }
 
+    const cleanEmail = email.toLowerCase().trim();
+
     // Check if user already exists
     let existingUser;
     try {
-      existingUser = await db.user.findUnique({
-        where: { email: email.toLowerCase().trim() },
-      });
+      existingUser = await findUserWithRetry(cleanEmail);
     } catch (dbError) {
       console.error('Database connection error:', dbError);
       return NextResponse.json(
-        { error: 'Unable to connect to the server. Please try again in a moment.' },
+        { error: 'Unable to connect to database server. Please check connection and try again.' },
         { status: 503 }
       );
     }
@@ -51,7 +60,7 @@ export async function POST(req: Request) {
       user = await db.user.create({
         data: {
           name: name.trim(),
-          email: email.toLowerCase().trim(),
+          email: cleanEmail,
           password: hashedPassword,
           phone: phone || '',
           role: 'CLIENT',

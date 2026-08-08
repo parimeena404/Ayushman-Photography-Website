@@ -106,53 +106,8 @@ export default function BookingWizard() {
       }
 
       setPendingOrderInfo(orderData);
-
-      // 2. Load official Razorpay Checkout SDK
-      const isRzpLoaded = await loadRazorpayScript();
-
-      if (isRzpLoaded && (window as any).Razorpay) {
-        const options = {
-          key: orderData.keyId || 'rzp_test_TMSAlhSBWAt4fa',
-          amount: orderData.amount,
-          currency: orderData.currency || 'INR',
-          name: 'Ayushman Cards n Graphics',
-          description: selectedPackage.name,
-          image: '/logo.png',
-          order_id: orderData.orderId,
-          handler: async function (response: any) {
-            await verifyAndCompletePayment(
-              response.razorpay_order_id,
-              response.razorpay_payment_id,
-              response.razorpay_signature
-            );
-          },
-          prefill: {
-            name: form.name,
-            email: form.email,
-            contact: form.phone,
-          },
-          theme: {
-            color: '#D40000',
-          },
-          modal: {
-            ondismiss: function () {
-              setIsProcessing(false);
-            },
-          },
-        };
-
-        const razorpayInstance = new (window as any).Razorpay(options);
-        razorpayInstance.on('payment.failed', function (response: any) {
-          setErrorMessage(`Payment Failed: ${response.error.description || 'Transaction declined'}`);
-          setIsProcessing(false);
-        });
-        razorpayInstance.open();
-        setIsProcessing(false);
-      } else {
-        // Fallback to interactive embedded Razorpay modal
-        setShowRzpModal(true);
-        setIsProcessing(false);
-      }
+      setShowRzpModal(true);
+      setIsProcessing(false);
     } catch (err: any) {
       console.error('Razorpay Payment Error:', err);
       setErrorMessage(err?.message || 'An unexpected error occurred during payment initialization.');

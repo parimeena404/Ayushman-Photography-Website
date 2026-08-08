@@ -1,11 +1,9 @@
-// Prisma schema for Ayushman Cards n Graphics
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 model User {
@@ -14,7 +12,7 @@ model User {
   email     String    @unique
   password  String
   phone     String?
-  role      String    @default("CLIENT") // CLIENT or ADMIN
+  role      String    @default("CLIENT")
   bookings  Booking[]
   inquiries Inquiry[]
   createdAt DateTime  @default(now())
@@ -36,11 +34,11 @@ model Booking {
   packageType       String
   totalAmount       Float
   depositAmount     Float
-  paymentStatus     String   @default("PENDING") // PENDING, PAID, FAILED
+  paymentStatus     String   @default("PENDING")
   razorpayOrderId   String?  @unique
   razorpayPaymentId String?
   razorpaySignature String?
-  status            String   @default("NEW")     // NEW, CONFIRMED, COMPLETED, CANCELLED
+  status            String   @default("NEW")
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
@@ -61,7 +59,7 @@ model Inquiry {
 model ServicePackage {
   id           String   @id @default(cuid())
   title        String
-  category     String   // Printing, Photography, Graphics, Banners
+  category     String
   price        Float
   depositPrice Float
   description  String

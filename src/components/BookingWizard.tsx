@@ -253,9 +253,7 @@ export default function BookingWizard() {
     completePaymentVerification(activeOrder.orderId, mockPaymentId, activeOrder.bookingId);
   };
 
-  // Generate UPI deep link & QR code for user's phone / studio phone
   const cleanPhone = form.phone ? form.phone.replace(/\D/g, '').slice(-10) : '9479784979';
-  const upiVpa = `${cleanPhone}@paytm`;
   const upiIntentUrl = `upi://pay?pa=9479784979@paytm&pn=Ayushman%20Cards%20n%20Graphics&am=${selectedPackage.depositPrice}&cu=INR`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiIntentUrl)}`;
 
@@ -320,48 +318,68 @@ export default function BookingWizard() {
                         onClick={() => setForm({ ...form, packageId: pkg.id })}
                         style={{
                           padding: '1.5rem',
-                          border: `2px solid ${isSelected ? 'var(--accent)' : 'var(--divider)'}`,
-                          backgroundColor: isSelected ? 'rgba(201, 168, 108, 0.08)' : 'var(--bg-secondary)',
-                          borderRadius: '8px',
+                          border: isSelected ? '2px solid #D40000' : '1px solid var(--divider)',
+                          backgroundColor: isSelected ? 'rgba(212, 0, 0, 0.04)' : 'var(--bg-secondary)',
+                          borderRadius: '10px',
                           cursor: 'pointer',
                           transition: 'all 0.25s ease',
                           display: 'flex',
                           alignItems: 'flex-start',
-                          gap: '1rem',
+                          gap: '1.25rem',
+                          boxShadow: isSelected ? '0 4px 20px rgba(212, 0, 0, 0.12)' : 'none',
                         }}
                       >
+                        {/* High-Contrast Radio Indicator */}
                         <div
                           style={{
-                            width: '22px',
-                            height: '22px',
+                            width: '26px',
+                            height: '26px',
                             borderRadius: '50%',
-                            border: `2px solid ${isSelected ? 'var(--accent)' : 'var(--text-secondary)'}`,
-                            backgroundColor: isSelected ? 'var(--accent)' : 'transparent',
+                            border: isSelected ? '2px solid #D40000' : '2px solid #94a3b8',
+                            backgroundColor: isSelected ? '#D40000' : 'transparent',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            marginTop: '0.2rem',
+                            marginTop: '0.15rem',
                             flexShrink: 0,
+                            transition: 'all 0.2s ease',
                           }}
                         >
                           {isSelected && (
-                            <span style={{ color: '#fff', fontSize: '0.75rem', fontWeight: 700 }}>✓</span>
+                            <span style={{ color: '#ffffff', fontSize: '0.9rem', fontWeight: 900 }}>✓</span>
                           )}
                         </div>
 
                         <div style={{ flex: 1 }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                            <h4 className="font-heading" style={{ fontSize: '1.25rem', fontWeight: 500, color: 'var(--text-primary)' }}>
+                            <h4
+                              className="font-heading"
+                              style={{
+                                fontSize: '1.25rem',
+                                fontWeight: isSelected ? 600 : 400,
+                                color: isSelected ? '#D40000' : 'var(--text-primary)',
+                              }}
+                            >
                               {pkg.name}
                             </h4>
-                            <span className="font-body" style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '1.05rem' }}>
+                            <span
+                              className="font-body"
+                              style={{
+                                color: isSelected ? '#D40000' : 'var(--text-primary)',
+                                fontWeight: 700,
+                                fontSize: '1.05rem',
+                                backgroundColor: isSelected ? 'rgba(212, 0, 0, 0.1)' : 'transparent',
+                                padding: '0.2rem 0.6rem',
+                                borderRadius: '6px',
+                              }}
+                            >
                               Deposit: ₹{pkg.depositPrice.toLocaleString('en-IN')}
                             </span>
                           </div>
                           <p className="font-body" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                             {pkg.desc}
                           </p>
-                          <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--text-tertiary)', fontWeight: 500 }}>
+                          <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>
                             Total Package Value: ₹{pkg.totalPrice.toLocaleString('en-IN')}
                           </div>
                         </div>
@@ -453,7 +471,7 @@ export default function BookingWizard() {
                     />
                   </div>
                   <div>
-                    <label className="font-body" style={{ display: 'block', fontSize: '0.8rem', color: 'var(--accent)', fontWeight: 600, marginBottom: '0.4rem' }}>
+                    <label className="font-body" style={{ display: 'block', fontSize: '0.8rem', color: '#D40000', fontWeight: 600, marginBottom: '0.4rem' }}>
                       📱 Phone Number (Directly Linked to your PhonePe / GPay / Paytm)
                     </label>
                     <input
@@ -520,7 +538,7 @@ export default function BookingWizard() {
                         <div className="font-body" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Token Reservation Deposit:</div>
                         <div className="font-body" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>(Balance due on event day)</div>
                       </div>
-                      <span className="font-heading" style={{ fontSize: '1.75rem', color: 'var(--accent)', fontWeight: 600 }}>
+                      <span className="font-heading" style={{ fontSize: '1.75rem', color: '#D40000', fontWeight: 600 }}>
                         ₹{selectedPackage.depositPrice.toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -574,8 +592,8 @@ export default function BookingWizard() {
                   style={{
                     fontSize: '0.85rem',
                     padding: '0.9rem 2.5rem',
-                    backgroundColor: 'var(--accent)',
-                    color: 'var(--bg-primary)',
+                    backgroundColor: '#D40000',
+                    color: '#ffffff',
                     cursor: isProcessing ? 'not-allowed' : 'pointer',
                     opacity: isProcessing ? 0.7 : 1,
                   }}
@@ -594,11 +612,11 @@ export default function BookingWizard() {
           style={{
             textAlign: 'center',
             padding: '3rem 2rem',
-            border: '1px solid var(--accent)',
+            border: '1px solid #D40000',
             backgroundColor: 'var(--bg-secondary)',
           }}
         >
-          <div style={{ color: 'var(--accent)', fontSize: '3rem', marginBottom: '1rem' }}>✓</div>
+          <div style={{ color: '#D40000', fontSize: '3rem', marginBottom: '1rem' }}>✓</div>
           <h3 className="font-heading" style={{ fontSize: '2.25rem', fontWeight: 300, marginBottom: '0.5rem' }}>
             Payment Verified & Booking Confirmed!
           </h3>
@@ -623,8 +641,8 @@ export default function BookingWizard() {
             <div><strong>Package:</strong> {paymentSuccessData.packageName}</div>
             <div><strong>Amount Paid:</strong> ₹{paymentSuccessData.amountPaid.toLocaleString('en-IN')}</div>
             <div><strong>Customer Phone:</strong> {paymentSuccessData.customerPhone}</div>
-            <div><strong>Razorpay Payment ID:</strong> <code style={{ color: 'var(--accent)' }}>{paymentSuccessData.paymentId}</code></div>
-            <div><strong>Razorpay Order ID:</strong> <code style={{ color: 'var(--accent)' }}>{paymentSuccessData.orderId}</code></div>
+            <div><strong>Razorpay Payment ID:</strong> <code style={{ color: '#D40000' }}>{paymentSuccessData.paymentId}</code></div>
+            <div><strong>Razorpay Order ID:</strong> <code style={{ color: '#D40000' }}>{paymentSuccessData.orderId}</code></div>
             <div><strong>Status:</strong> <span style={{ color: '#10b981', fontWeight: 600 }}>CONFIRMED ✓</span></div>
           </div>
 

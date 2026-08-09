@@ -6,16 +6,16 @@ import Link from 'next/link';
 
 const slides = [
   {
-    image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=1920&q=80',
-    eyebrow: 'FINE ART PHOTOGRAPHY & PRINTING STUDIO',
-    title: 'Where Every Moment\nBecomes a Masterpiece',
-    subtitle: 'Luxury wedding, Indian festive, and commercial photography by Ayushman Cards n Graphics. Based in Freeganj, Ujjain.',
+    image: 'https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?w=1920&q=80',
+    eyebrow: 'PREMIER PRINTING PRESS & GRAPHICS STUDIO | FREEGANJ, UJJAIN',
+    title: 'Precision Offset Printing &\nRoyal Wedding Cards',
+    subtitle: 'High-definition digital printing, gold foil wedding invitations, flex banners, photobooks & corporate stationery by Ayushman Cards & Graphics.',
   },
   {
-    image: '/images/festivals/diwali-deepotsav.jpg',
-    eyebrow: '🪔 INDIAN FESTIVE CELEBRATIONS',
-    title: 'Preserving Cultural\nTraditions & Joyous Memories',
-    subtitle: 'Specialized photography for Diwali Deepotsav, Lohri, Navratri Garba, and Makar Sankranti celebrations.',
+    image: 'https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=1920&q=80',
+    eyebrow: '🪔 WEDDING & FESTIVE PRINT SOLUTIONS',
+    title: 'Crafting Elegance for\nYour Sacred Celebrations',
+    subtitle: 'Custom laser-cut wedding boxes, acrylic invitations, star flex outdoor banners & premium photobooks delivered across Ujjain & worldwide.',
   },
 ];
 
@@ -179,14 +179,14 @@ export default function Hero() {
                   boxShadow: '0 6px 20px rgba(212,0,0,0.4)',
                 }}
               >
-                Book Session
+                Order Print / Get Quote
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </Link>
 
               <Link
-                href="/#festivals"
+                href="/#calculator"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -205,7 +205,7 @@ export default function Hero() {
                   border: '1.5px solid rgba(255,255,255,0.4)',
                 }}
               >
-                Explore Indian Festivals
+                ⚡ Instant Price Estimator
               </Link>
             </div>
           </motion.div>

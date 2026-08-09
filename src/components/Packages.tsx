@@ -7,52 +7,49 @@ import Link from 'next/link';
 
 const packages = [
   {
-    name: 'Essential',
-    price: '₹25,000',
-    period: 'Starting from',
-    desc: 'Perfect for intimate celebrations and small events.',
+    name: 'Business Starter Print Suite',
+    price: '₹3,500',
+    period: 'Popular Corporate Pack',
+    desc: 'Essential marketing & stationery printing for new businesses & shops.',
     features: [
-      '1 Professional Photographer',
-      'Up to 4 Hours Coverage',
-      '150+ Edited Photos',
-      'Online Gallery',
-      'Digital Delivery',
+      '500 Velvet Touch Visiting Cards',
+      '500 Executive Letterheads',
+      '500 Printed Brand Envelopes',
+      '50 Sq. Ft. Frontlit Flex Banner',
+      'Free Graphic Design Setup',
+      'Express Studio Pickup / Delivery',
     ],
     popular: false,
   },
   {
-    name: 'Signature',
-    price: '₹65,000',
-    period: 'Starting from',
-    desc: 'Our most popular package for weddings and grand events.',
+    name: 'Grand Royal Shaadi Card Suite',
+    price: '₹18,500',
+    period: 'Best-Selling Wedding Pack',
+    desc: 'Complete royal wedding invitation set for 500 families.',
     features: [
-      '2 Professional Photographers',
-      'Full Day Coverage (12 Hours)',
-      '500+ Edited Photos',
-      'Cinematic Highlight Film',
-      'Drone Coverage',
-      'Same-Day Edits',
-      'Premium Online Gallery',
-      'USB Drive Delivery',
+      '500 Royal Velvet Box / Acrylic Cards',
+      'Hot Foil Stamping & Laser Cut Finish',
+      '500 Matching Designer Envelopes',
+      'Free Animated WhatsApp Video E-Invite',
+      '1 Custom "Shaadi Times" Newspaper',
+      'Custom Calligraphy & Hindi Layout',
+      'Safe Pan-India Express Delivery',
     ],
     popular: true,
   },
   {
-    name: 'Luxe',
-    price: '₹1,50,000',
-    period: 'Starting from',
-    desc: 'The ultimate luxury experience for destination weddings.',
+    name: 'Retail Mega Advertising Suite',
+    price: '₹35,000',
+    period: 'Bulk Commercial Pack',
+    desc: 'Comprehensive outdoor flex, flyers & stationery bundle for grand openings.',
     features: [
-      '3 Professional Photographers',
-      'Multi-Day Coverage',
-      '1000+ Edited Photos',
-      'Feature-Length Wedding Film',
-      'Drone + Crane Coverage',
-      'Same-Day Edits & Trailer',
-      'Handcrafted Luxury Album',
-      'Canvas Print (20×30)',
-      'Pre-Wedding Shoot Included',
-      'Dedicated Project Manager',
+      '10,000 Copies A5 Gloss Art Pamphlets',
+      '2,000 Gold Foil Spot UV Visiting Cards',
+      '200 Sq. Ft. Heavy Duty Star Flex Banners',
+      '2 Roll-up Standees with Frames',
+      '10 Carbonless Duplicate Bill Books',
+      'Dedicated Pre-Press Graphic Artist',
+      'Priority Printing Queue Slot',
     ],
     popular: false,
   },
@@ -66,9 +63,9 @@ export default function Packages() {
     <section id="packages" className="section-padding" style={{ background: 'var(--bg-dark)' }}>
       <div className="container">
         <SectionHeader
-          eyebrow="Investment"
-          title="Photography Packages"
-          subtitle="Transparent pricing with no hidden costs. Every package is customizable to your needs."
+          eyebrow="Bulk Offers"
+          title="Featured Bulk Printing Packages"
+          subtitle="Transparent pricing for wedding card collections, business starter kits, and commercial press bundles."
           light
         />
 
@@ -213,7 +210,7 @@ export default function Packages() {
                   border: pkg.popular ? '2px solid var(--gold)' : '2px solid rgba(255,255,255,0.2)',
                 }}
               >
-                Book This Package
+                Order Print Package
               </Link>
             </motion.div>
           ))}

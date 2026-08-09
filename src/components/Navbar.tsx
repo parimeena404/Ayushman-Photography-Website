@@ -14,17 +14,16 @@ interface NavItem {
 }
 
 const categoriesMenu: NavItem[] = [
-  { label: 'View All', targetId: 'portfolio', filterCategory: 'All' },
-  { label: '🪔 Indian Festivals', targetId: 'portfolio', filterCategory: 'Indian Festivals' },
-  { label: 'Wedding Photography', targetId: 'portfolio', filterCategory: 'Wedding' },
-  { label: 'Pre-Wedding Shoots', targetId: 'portfolio', filterCategory: 'Wedding' },
-  { label: 'Cinematography & Films', targetId: 'films', isExternalPage: true, href: '/films' },
-  { label: 'Portrait Photography', targetId: 'portfolio', filterCategory: 'Portrait' },
-  { label: 'Fashion & Lookbooks', targetId: 'portfolio', filterCategory: 'Fashion' },
-  { label: 'Commercial & Brands', targetId: 'portfolio', filterCategory: 'Commercial' },
-  { label: 'Festive Cards & Prints', targetId: 'products' },
-  { label: 'Drone Shoots', targetId: 'portfolio', filterCategory: 'All' },
-  { label: 'Pricing Packages', targetId: 'packages' },
+  { label: 'View All Services', targetId: 'products', filterCategory: 'All' },
+  { label: '💍 Wedding & Invitation Cards', targetId: 'products', filterCategory: 'Wedding Cards' },
+  { label: '💼 Business & Visiting Cards', targetId: 'products', filterCategory: 'Visiting Cards' },
+  { label: '🚩 Flex Banners & Signage', targetId: 'products', filterCategory: 'Flex & Banners' },
+  { label: '📖 Photobooks & Wedding Albums', targetId: 'products', filterCategory: 'Photobooks' },
+  { label: '📄 Pamphlets, Flyers & Bill Books', targetId: 'products', filterCategory: 'Corporate Stationery' },
+  { label: '🎁 Custom Gifts & Merchandise', targetId: 'products', filterCategory: 'Customized Gifts' },
+  { label: '🎨 Graphic Design & Layouts', targetId: 'products', filterCategory: 'Graphic Design' },
+  { label: '⚡ Instant Price Estimator', targetId: 'calculator' },
+  { label: 'Bulk Printing Offers', targetId: 'packages' },
 ];
 
 export default function Navbar() {
@@ -84,7 +83,7 @@ export default function Navbar() {
         }}
       >
         <span>
-          🪔 <strong>Indian Festive Season Special!</strong> Flat 20% OFF on Festive Family Shoots & Custom Invitation Cards | Code: <strong style={{ color: '#FFD700' }}>FESTIVE20</strong>
+          🪔 <strong>Wedding & Festive Printing Season!</strong> Flat 20% OFF on Royal Invitation Cards & Bulk Flex Banners | Code: <strong style={{ color: '#FFD700' }}>FESTIVE20</strong>
         </span>
         <button
           onClick={handleCopyCode}
@@ -138,7 +137,7 @@ export default function Navbar() {
             onSubmit={(e) => {
               e.preventDefault();
               if (searchQuery.trim()) {
-                const elem = document.getElementById('portfolio');
+                const elem = document.getElementById('products');
                 if (elem) elem.scrollIntoView({ behavior: 'smooth' });
               }
             }}
@@ -146,7 +145,7 @@ export default function Navbar() {
           >
             <input
               type="text"
-              placeholder="Search Diwali shoots, wedding cards, portraits, photo albums..."
+              placeholder="Search wedding cards, visiting cards, flex banners, photobooks, pamphlets..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -251,7 +250,7 @@ export default function Navbar() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                 </svg>
-                <span className="desktop-only">{user.name.split(' ')[0]} (Dashboard)</span>
+                <span className="desktop-only">{user.name.split(' ')[0]} (Orders)</span>
               </Link>
               <button
                 onClick={() => logout()}
@@ -289,7 +288,7 @@ export default function Navbar() {
             </Link>
           )}
 
-          {/* Cart / Bookings */}
+          {/* Cart / Order Print */}
           <Link
             href="/booking"
             style={{
@@ -310,7 +309,7 @@ export default function Navbar() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
             </svg>
-            <span>Book Session</span>
+            <span>Order Print / Quote</span>
           </Link>
         </div>
       </div>

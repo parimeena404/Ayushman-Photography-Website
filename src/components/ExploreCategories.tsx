@@ -5,16 +5,15 @@ import { useRef } from 'react';
 import Link from 'next/link';
 
 const circleCategories = [
-  { name: '🪔 Diwali Deepotsav', image: '/images/festivals/diwali-deepotsav.jpg', badge: 'Diwali Special' },
-  { name: '🔥 Lohri & Bonfire', image: '/images/festivals/lohri-bonfire.jpg', badge: 'Festive Fire' },
-  { name: '💃 Royal Garba Dance', image: '/images/festivals/palace-dance.jpg', badge: 'Heritage' },
-  { name: '🪁 Makar Sankranti', image: '/images/festivals/makar-sankranti.png', badge: 'Kite Fest' },
-  { name: '🎨 Holi Color Fest', image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=300&q=80', badge: 'Vibrant' },
-  { name: '👸 Royal Weddings', image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=300&q=80', badge: 'Popular' },
-  { name: '💍 Pre-Wedding', image: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=300&q=80' },
-  { name: '⛵ Sunset Destinations', image: '/images/festivals/rainbow-sails.png', badge: 'Travel' },
-  { name: '✨ Stained Glass Art', image: '/images/festivals/stained-glass.jpg', badge: 'Architecture' },
-  { name: '✉️ Festive Cards', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=300&q=80', badge: 'Printing' },
+  { name: '💍 Royal Wedding Cards', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=300&q=80', badge: 'Wedding' },
+  { name: '💼 Business Visiting Cards', image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=300&q=80', badge: 'Popular' },
+  { name: '🚩 Flex Banners & Star Flex', image: 'https://images.unsplash.com/photo-1542744094-3a31b272c490?w=300&q=80', badge: 'Outdoor' },
+  { name: '📖 Luxury Photobooks', image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300&q=80', badge: 'HD Albums' },
+  { name: '📄 Pamphlets & Flyers', image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=300&q=80', badge: 'Marketing' },
+  { name: '🎁 Custom Mugs & Gifts', image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=300&q=80', badge: 'Merch' },
+  { name: '✨ Laser Acrylic Cards', image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=300&q=80', badge: 'Luxury' },
+  { name: '🏷️ Stickers & Labels', image: 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=300&q=80', badge: 'Branding' },
+  { name: '🎨 Custom Graphic Design', image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=300&q=80', badge: 'Studio' },
 ];
 
 export default function ExploreCategories() {
@@ -34,10 +33,10 @@ export default function ExploreCategories() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <div>
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)', fontWeight: 700, color: 'var(--text-primary)' }}>
-              Explore Categories & Indian Festivals
+              Explore Print Categories & Custom Graphics
             </h2>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8125rem', color: 'var(--text-tertiary)' }}>
-              Quick browse our Diwali, Lohri, Makar Sankranti, Navratri & Wedding photography collections
+              Explore Ayushman Cards & Graphics range of wedding invitations, offset printing, flex banners & custom products
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>

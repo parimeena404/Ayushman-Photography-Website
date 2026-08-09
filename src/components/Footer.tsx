@@ -6,12 +6,12 @@ const footerColumns = [
   {
     title: 'Let us help',
     links: [
-      { label: 'Book Photography Session', href: '/booking' },
-      { label: 'Contact Studio Freeganj', href: '/contact' },
-      { label: 'Indian Festivals Gallery', href: '/#festivals' },
-      { label: 'Custom Shaadi Cards Quote', href: '/booking' },
-      { label: 'Frequently Asked Questions', href: '/faq' },
-      { label: 'Pricing & Packages', href: '/#packages' },
+      { label: 'Order Print / Get Quote', href: '/booking' },
+      { label: 'Instant Price Calculator', href: '/#calculator' },
+      { label: 'Royal Wedding Cards', href: '/#products' },
+      { label: 'Business & Visiting Cards', href: '/#products' },
+      { label: 'Flex Banners & Standees', href: '/#products' },
+      { label: 'Contact Printing Studio', href: '/contact' },
     ],
   },
   {

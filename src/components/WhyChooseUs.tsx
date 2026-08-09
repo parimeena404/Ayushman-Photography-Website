@@ -11,8 +11,8 @@ const features = [
         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
       </svg>
     ),
-    title: '25+ Years of Experience',
-    desc: 'A legacy of excellence since 2001. We bring two decades of refined artistry to every frame we capture.',
+    title: '25+ Years of Print Legacy',
+    desc: 'Established in 2001. Over two decades of craftsmanship in offset printing, wedding card design & corporate stationery in Ujjain.',
   },
   {
     icon: (
@@ -20,8 +20,8 @@ const features = [
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
       </svg>
     ),
-    title: '500+ Happy Families',
-    desc: 'Trusted by hundreds of families to preserve their most cherished memories with care and authenticity.',
+    title: '10,000+ Print Projects Delivered',
+    desc: 'Trusted by thousands of families for sacred wedding cards & business owners for flex banners, visiting cards & brand signage.',
   },
   {
     icon: (
@@ -29,8 +29,8 @@ const features = [
         <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
       </svg>
     ),
-    title: 'Same-Day Edits',
-    desc: 'Receive beautifully edited highlight reels and sneak peeks on the very same day of your event.',
+    title: 'Express Same-Day Printing',
+    desc: 'High-speed digital printing press for urgent visiting cards, pamphlets, banners, and event signage with same-day pickup.',
   },
   {
     icon: (
@@ -38,8 +38,8 @@ const features = [
         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
       </svg>
     ),
-    title: 'Award-Winning Team',
-    desc: 'Our photographers have been recognized nationally for artistic excellence, creative vision, and technical mastery.',
+    title: 'German Offset & Gold Foil Tech',
+    desc: 'Precision color accuracy, 3D Spot UV, hot foil stamping, and laser cutting for unmatched premium print finish.',
   },
 ];
 
@@ -51,9 +51,9 @@ export default function WhyChooseUs() {
     <section className="section-padding" style={{ background: 'var(--bg-primary)' }}>
       <div className="container-wide">
         <SectionHeader
-          eyebrow="Why Us"
-          title="Why Families Choose Ayushman"
-          subtitle="What sets us apart is not just our skill — it's the heart we pour into every photograph."
+          eyebrow="Why Choose Us"
+          title="Why Clients Trust Ayushman Cards & Graphics"
+          subtitle="Precision offset printing, premium paper boards, vibrant flex banners & custom wedding cards under one roof."
         />
 
         <div

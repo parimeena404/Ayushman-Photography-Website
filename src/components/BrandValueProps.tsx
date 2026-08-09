@@ -27,7 +27,7 @@ export default function BrandValueProps() {
               marginBottom: '0.75rem',
             }}
           >
-            Ayushman Cards n Graphics: Ujjain&apos;s Trusted Printing & Photography Studio Since 2001
+            Ayushman Cards & Graphics: Ujjain&apos;s Trusted Printing Press & Graphics Studio Since 2001
           </h2>
           <p
             style={{
@@ -37,7 +37,7 @@ export default function BrandValueProps() {
               lineHeight: 1.8,
             }}
           >
-            Located at 63 Varuchi Marg, Freeganj, Ujjain, Ayushman Cards n Graphics has been Central India&apos;s premier destination for fine art photography, Indian festive celebrations, wedding cinematography, luxury invitation cards, and commercial printing. We combine traditional warmth with modern digital craftsmanship.
+            Located at 63 Varuchi Marg, Freeganj, Ujjain, Ayushman Cards & Graphics is Central India&apos;s premier commercial printing press. We specialize in luxury wedding invitation cards, offset printing, visiting cards, flex banners, corporate stationery, photobooks, and custom graphic design.
           </p>
         </div>
 
@@ -63,12 +63,12 @@ export default function BrandValueProps() {
               boxShadow: 'var(--shadow-subtle)',
             }}
           >
-            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🏷️</div>
+            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🖨️</div>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.15rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-              Complete Printing & Photography Under One Roof
+              Complete Offset & Digital Printing Press
             </h3>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-              From pre-wedding shoots, Diwali & festive event coverage to wedding card printing, banners, visiting cards, and flush mount photo albums in Freeganj, Ujjain.
+              High-volume offset press for visiting cards, letterheads, pamphlets, bill books, and flex banners in Freeganj, Ujjain.
             </p>
           </motion.div>
 
@@ -86,12 +86,12 @@ export default function BrandValueProps() {
               boxShadow: 'var(--shadow-subtle)',
             }}
           >
-            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🪔</div>
+            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>💍</div>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.15rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-              Indian Festive & Cultural Expertise
+              Royal Wedding Cards & Laser Crafts
             </h3>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-              Specialized photography for Indian festivals including Diwali, Holi, Navratri Garba, Ganesh Utsav, and cultural heritage ceremonies across Madhya Pradesh.
+              Luxury velvet box cards, clear acrylic wedding invitations, gold foil Farman scrolls, and animated video E-invites for grand celebrations.
             </p>
           </motion.div>
 
@@ -114,7 +114,7 @@ export default function BrandValueProps() {
               Direct Studio Support & Helpline
             </h3>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-              Call or WhatsApp our team directly at <strong>9479784979</strong> or <strong>9893022451</strong> for instant booking quotes, album design assistance, or custom event packages.
+              Call or WhatsApp our print team directly at <strong>9479784979</strong> or <strong>9893022451</strong> for instant order quotes, design proofing, or delivery updates.
             </p>
           </motion.div>
         </div>

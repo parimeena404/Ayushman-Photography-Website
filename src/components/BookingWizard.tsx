@@ -7,40 +7,47 @@ import { loadRazorpayScript } from '@/lib/razorpay';
 import { useAuth } from '@/context/AuthContext';
 
 const steps = [
-  'Service & Package',
-  'Event Date & Venue',
-  'Your Details',
-  'Review & Pay',
+  'Print Product & Specs',
+  'Artwork & Delivery',
+  'Contact Details',
+  'Review & Confirm Order',
 ];
 
 const packageOptions = [
   {
-    id: 'royal-wedding',
-    name: 'Royal Wedding & Photography Package',
-    totalPrice: 50000,
-    depositPrice: 5000,
-    desc: 'Full Day Photo & Film Team, Cinematic Highlights, Pre-Wedding Shoot, Premium Heirloom Album',
-  },
-  {
-    id: 'wedding-cards',
-    name: 'Luxury Wedding Cards & Printing',
-    totalPrice: 25000,
-    depositPrice: 2500,
-    desc: 'Custom Calligraphy, Gold Foil Embossing, Velvet Envelopes & Complete Invitation Sets',
-  },
-  {
-    id: 'sangeet-haldi',
-    name: 'Haldi, Sangeet & Event Coverage',
-    totalPrice: 18000,
+    id: 'wedding-cards-suite',
+    name: '💍 Royal Wedding Invitation Suite (500 Cards Set)',
+    totalPrice: 18500,
     depositPrice: 2000,
-    desc: 'Comprehensive Multi-event Candid Photography & Cinematic Video Highlights',
+    desc: '500 Royal Velvet Box / Acrylic Cards, Foil Stamping, Custom Envelopes & Free WhatsApp Video E-Invite',
   },
   {
-    id: 'flex-banners',
-    name: 'Flex, Banners & Commercial Printing',
-    totalPrice: 10000,
+    id: 'visiting-corporate-pack',
+    name: '💼 Corporate Brand Printing Pack',
+    totalPrice: 5500,
     depositPrice: 1000,
-    desc: 'High-speed Offset Flex, Vinyl Banners, Posters, Visiting Cards & Brand Graphics',
+    desc: '1,000 Velvet Gold Foil Visiting Cards, 500 Letterheads & 500 Printed Brand Envelopes',
+  },
+  {
+    id: 'flex-banner-standee',
+    name: '🚩 Flex Banners & Standees Event Pack',
+    totalPrice: 6500,
+    depositPrice: 1000,
+    desc: '200 Sq. Ft. Star Flex Outdoor Banner + 2 Roll-up Standees (6x3 Ft Aluminium Frames)',
+  },
+  {
+    id: 'bulk-flyers-pamphlets',
+    name: '📄 Bulk Marketing Flyers & Pamphlets Pack',
+    totalPrice: 7500,
+    depositPrice: 1500,
+    desc: '5,000 Copies A5 130 GSM Gloss Art Paper Multi-Color Pamphlets with Free Graphic Layout',
+  },
+  {
+    id: 'photobook-heirloom-album',
+    name: '📖 HD Wedding Photobook & Keepsake Album',
+    totalPrice: 8500,
+    depositPrice: 1500,
+    desc: '40 Page Non-Tearable Silk Sheet HD Flush Mount Album with Leatherette / Acrylic Cover Box',
   },
 ];
 

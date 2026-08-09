@@ -50,8 +50,8 @@ export default function Contact() {
       <div className="container">
         <SectionHeader
           eyebrow="Get in Touch"
-          title="Connect With Ayushman Studio"
-          subtitle="Visit our studio in Freeganj, Ujjain, or send us a message to discuss your upcoming event, wedding, or festive photography needs."
+          title="Connect With Ayushman Cards & Graphics Press"
+          subtitle="Visit our printing press & graphics studio in Freeganj, Ujjain, or submit your design files & quote inquiries online."
         />
 
         <div
@@ -116,7 +116,7 @@ export default function Contact() {
               </div>
               <div>
                 <label style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-tertiary)', display: 'block', marginBottom: '0.4rem' }}>
-                  Service Interested In
+                  Printing Service Required
                 </label>
                 <select
                   className="input"
@@ -124,14 +124,14 @@ export default function Contact() {
                   onChange={(e) => setFormData({ ...formData, service: e.target.value })}
                   style={{ cursor: 'pointer' }}
                 >
-                  <option value="">Select a service</option>
-                  <option value="wedding">Wedding Photography & Films</option>
-                  <option value="festivals">Indian Festival & Celebration Shoot</option>
-                  <option value="prewedding">Pre-Wedding Shoot</option>
-                  <option value="portrait">Portrait & Family Session</option>
-                  <option value="cards">Custom Invitation & Greeting Cards</option>
-                  <option value="commercial">Commercial Brand & Product Shoot</option>
-                  <option value="other">Other Query</option>
+                  <option value="">Select print service</option>
+                  <option value="wedding-cards">Royal Wedding Cards & Invitations</option>
+                  <option value="visiting-cards">Business & Visiting Cards</option>
+                  <option value="flex-banners">Flex Banners & Outdoor Signage</option>
+                  <option value="pamphlets">Flyers, Pamphlets & Bill Books</option>
+                  <option value="photobooks">HD Wedding Photobooks & Albums</option>
+                  <option value="custom-gifts">Custom Printed Mugs & Gifts</option>
+                  <option value="graphic-design">Custom Graphic Design & Layout</option>
                 </select>
               </div>
             </div>

@@ -15,159 +15,134 @@ import BrandValueProps from '@/components/BrandValueProps';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 
-// 1. Most Popular Festive & Wedding Packages (Vistaprint Carousel 1)
-const popularPackages: ProductItem[] = [
-  {
-    id: 'pop-1',
-    title: '👰 Royal Varmala & Grand Indian Wedding',
-    badge: 'BOOK NOW @ ₹45,000',
-    price: '₹45,000',
-    unit: 'Full Day Coverage',
-    category: 'Wedding',
-    image: '/images/wedding/wedding5.jpg',
-  },
-  {
-    id: 'fest-1',
-    title: '🪔 Royal Diwali & Festive Family Shoot',
-    badge: 'BOOK NOW @ ₹15,000',
-    price: '₹15,000',
-    unit: 'Festive Special',
-    category: 'Festivals',
-    image: '/images/festivals/diwali-deepotsav.jpg',
-  },
-  {
-    id: 'pop-2',
-    title: '✨ Stone Jali Sunset Heritage Silhouette',
-    badge: 'BOOK NOW @ ₹65,000',
-    price: '₹65,000',
-    unit: 'Heritage Special',
-    category: 'Heritage Wedding',
-    image: '/images/wedding/wedding1.jpg',
-  },
-  {
-    id: 'pop-3',
-    title: '💍 Ivy Palace Steps Pre-Wedding Shoot',
-    badge: 'BOOK 1 @ ₹25,000',
-    price: '₹25,000',
-    unit: '1 Shoot Session',
-    category: 'Pre-Wedding',
-    image: '/images/wedding/wedding3.jpg',
-  },
-  {
-    id: 'fest-2',
-    title: '🪁 Makar Sankranti Kite Festival Shoot',
-    badge: 'BOOK 1 @ ₹18,000',
-    price: '₹18,000',
-    unit: 'Outdoor Session',
-    category: 'Makar Sankranti',
-    image: '/images/festivals/makar-sankranti.png',
-  },
-  {
-    id: 'pop-4',
-    title: '🏰 Palace Night Courtyard Royal Walk',
-    badge: 'BOOK NOW @ ₹55,000',
-    price: '₹55,000',
-    unit: 'Night Coverage',
-    category: 'Royal Wedding',
-    image: '/images/wedding/wedding4.jpg',
-  },
-];
+import InstantPrintCalculator from '@/components/InstantPrintCalculator';
 
-// 2. Trending Services & Cinema Films (Vistaprint Carousel 2)
-const trendingServices: ProductItem[] = [
+// 1. Royal Wedding & Event Invitation Cards
+const weddingCards: ProductItem[] = [
   {
-    id: 'trend-1',
-    title: '🎬 Vintage Film Strip Reel Cinema Story',
-    badge: 'FILM @ ₹35,000',
-    price: '₹35,000',
-    unit: '5 Min Highlight',
-    category: 'Cinematography',
-    image: '/images/keepsakes/film1.jpg',
+    id: 'wed-1',
+    title: '👰 Royal Velvet & Gold Foil Laser Cut Wedding Card Box',
+    badge: '100 PCS @ ₹4,500',
+    price: '₹4,500',
+    unit: '100 Box Cards Set',
+    category: 'Wedding Cards',
+    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
   },
   {
-    id: 'trend-2',
-    title: '🤝 Gathbandhan Sacred Vows Ritual Film',
-    badge: 'RITUAL @ ₹28,000',
-    price: '₹28,000',
-    unit: 'Wedding Rituals',
-    category: 'Cinematography',
-    image: '/images/wedding/wedding6.png',
+    id: 'wed-2',
+    title: '✨ Premium Clear Acrylic Wedding Invitation Card with Wax Seal',
+    badge: '100 PCS @ ₹6,500',
+    price: '₹6,500',
+    unit: '100 Acrylic Cards',
+    category: 'Acrylic Cards',
+    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500&q=80',
   },
   {
-    id: 'trend-3',
-    title: '🌅 Sunset Jharokha Archway Couple Shoot',
-    badge: 'HERITAGE @ ₹25,000',
-    price: '₹25,000',
-    unit: 'Jharokha Session',
-    category: 'Pre-Wedding',
-    image: '/images/wedding/wedding2.png',
+    id: 'wed-3',
+    title: '📜 Royal Farman Scroll Invitation Card with Metallic Case',
+    badge: '100 PCS @ ₹5,200',
+    price: '₹5,200',
+    unit: '100 Scroll Cards',
+    category: 'Scroll Invitations',
+    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=500&q=80',
   },
   {
-    id: 'trend-4',
-    title: '4K Aerial Drone Event Photography Flight',
-    badge: 'FLIGHT @ ₹18,000',
-    price: '₹18,000',
-    unit: 'Half-Day Drone',
-    category: 'Drone Photography',
-    image: 'https://images.unsplash.com/photo-1506947411487-a56738267384?w=500&q=80',
-  },
-];
-
-// 3. Indian Festive Greeting Cards, Albums & Prints (Vistaprint Carousel 3)
-const photoKeepsakes: ProductItem[] = [
-  {
-    id: 'card-1',
-    title: '💌 "Love You To The Moon" Handcrafted Greeting Card',
-    badge: 'BUY 10 @ ₹1,500',
-    price: '₹1,500',
-    unit: '10 Custom Pop-up Cards',
-    category: 'Greeting Cards',
+    id: 'wed-4',
+    title: '🪔 Traditional Ganesh Floral Wedding Invitation Set',
+    badge: '200 PCS @ ₹3,800',
+    price: '₹3,800',
+    unit: '200 Standard Cards',
+    category: 'Traditional Cards',
     image: '/images/keepsakes/card2.png',
   },
   {
-    id: 'card-2',
-    title: '📰 "The Forever Times" Custom Wedding Newspaper Album',
-    badge: 'BUY 50 @ ₹6,500',
-    price: '₹6,500',
-    unit: 'Custom Shaadi Newspaper',
-    category: 'Newspaper Albums',
+    id: 'wed-5',
+    title: '📰 "The Shaadi Times" Custom Wedding Newspaper Card',
+    badge: '100 PCS @ ₹3,200',
+    price: '₹3,200',
+    unit: '100 Newspaper Cards',
+    category: 'Newspaper Invitations',
     image: '/images/keepsakes/card3.png',
   },
+];
+
+// 2. Corporate Stationery & Marketing Prints
+const corporatePrints: ProductItem[] = [
   {
-    id: 'card-3',
-    title: '📖 Custom "Our Love Story" Newspaper Album Page',
-    badge: 'BUY 1 @ ₹2,200',
+    id: 'corp-1',
+    title: '💼 350 GSM Velvet Touch Business Cards with Gold Foil Stamping',
+    badge: '500 PCS @ ₹1,250',
+    price: '₹1,250',
+    unit: '500 Cards',
+    category: 'Visiting Cards',
+    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=500&q=80',
+  },
+  {
+    id: 'corp-2',
+    title: '📄 130 GSM Gloss Art Paper Multi-Color Pamphlets / Flyers',
+    badge: '1,000 PCS @ ₹1,800',
+    price: '₹1,800',
+    unit: '1,000 Flyers (A4/A5)',
+    category: 'Pamphlets & Flyers',
+    image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=500&q=80',
+  },
+  {
+    id: 'corp-3',
+    title: '📑 Premium Executive Letterheads & Matching Printed Envelopes',
+    badge: '500 SETS @ ₹2,200',
     price: '₹2,200',
-    unit: 'Framed Print Page',
-    category: 'Newspaper Prints',
-    image: '/images/keepsakes/card4.png',
+    unit: '500 Sets',
+    category: 'Stationery',
+    image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=500&q=80',
   },
   {
-    id: 'card-4',
-    title: '🪔 Festive Candle Camera Photo Note Cards',
-    badge: 'BUY 20 @ ₹2,000',
-    price: '₹2,000',
-    unit: 'Festive Note Cards',
-    category: 'Festive Cards',
-    image: '/images/keepsakes/card1.png',
+    id: 'corp-4',
+    title: '🧾 Customized Duplicate Carbonless Bill Books & Receipt Books',
+    badge: '10 BOOKS @ ₹1,500',
+    price: '₹1,500',
+    unit: '10 Bill Books',
+    category: 'Bill Books',
+    image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=500&q=80',
+  },
+];
+
+// 3. Flex Banners, Signage & Custom Printed Merchandise
+const signageKeepsakes: ProductItem[] = [
+  {
+    id: 'sign-1',
+    title: '🚩 Outdoor Heavy Duty Star Flex Banner Printing',
+    badge: 'START @ ₹18 / sq ft',
+    price: '₹18',
+    unit: 'Per Sq. Ft.',
+    category: 'Flex Banners',
+    image: 'https://images.unsplash.com/photo-1542744094-3a31b272c490?w=500&q=80',
   },
   {
-    id: 'card-5',
-    title: '📮 Winter Mailbox Custom Printed Cards & Envelopes',
-    badge: 'BUY 50 @ ₹3,500',
-    price: '₹3,500',
-    unit: 'Winter Card Set',
-    category: 'Print Envelopes',
-    image: '/images/keepsakes/snow-mailbox.jpg',
+    id: 'sign-2',
+    title: '🎯 Roll-up Promotional Display Standee (6x3 Feet Frame Included)',
+    badge: '1 SET @ ₹1,450',
+    price: '₹1,450',
+    unit: 'Complete Standee Set',
+    category: 'Display Standees',
+    image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=500&q=80',
   },
   {
-    id: 'card-6',
-    title: '🎬 Vintage Film Strip Reel Photo Frame Collage',
-    badge: 'BUY 1 @ ₹3,500',
-    price: '₹3,500',
-    unit: 'Handcrafted Frame Collage',
-    category: 'Film Collages',
-    image: '/images/keepsakes/film1.jpg',
+    id: 'sign-3',
+    title: '📖 HD Flush Mount Wedding Photobook Album (Non-Tearable Silk Sheet)',
+    badge: '30 PAGES @ ₹4,500',
+    price: '₹4,500',
+    unit: '30 Page HD Album',
+    category: 'Photobooks',
+    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&q=80',
+  },
+  {
+    id: 'sign-4',
+    title: '☕ Custom Printed Ceramic Magic Mug with Photo & Branding',
+    badge: 'BUY 10 @ ₹1,800',
+    price: '₹1,800',
+    unit: '10 Magic Mugs',
+    category: 'Custom Merchandise',
+    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&q=80',
   },
 ];
 
@@ -179,56 +154,59 @@ export default function Home() {
         {/* Hero Slider */}
         <Hero />
 
-        {/* Explore Categories & Indian Festivals Slider */}
+        {/* Explore Print Categories */}
         <ExploreCategories />
 
-        {/* Vistaprint Product Carousel 1: Festive & Wedding Packages */}
-        <ProductCarousel
-          sectionTitle="Popular Festive & Wedding Packages"
-          sectionSubtitle="Best-selling Indian festive shoots, royal wedding photography & pre-wedding sessions"
-          items={popularPackages}
-        />
+        {/* Instant Price Estimator Widget */}
+        <InstantPrintCalculator />
 
-        {/* Vistaprint Product Carousel 2: Trending Services & Cinema */}
-        <ProductCarousel
-          sectionTitle="Trending Services & Cinema Films"
-          sectionSubtitle="Explore 4K cinematography, heritage light shoots, drone flights & film reel stories"
-          items={trendingServices}
-        />
-
-        {/* Vistaprint Side-by-Side Split Banners */}
-        <PromoBanner />
-
-        {/* Vistaprint Product Carousel 3: Festive Cards, Albums & Prints */}
+        {/* Product Carousel 1: Royal Wedding Cards & Invitations */}
         <ProductCarousel
           id="products"
-          sectionTitle="Festive Invitation Cards, Custom Newspapers & Keepsake Prints"
-          sectionSubtitle="Handcrafted pop-up cards, 'The Forever Times' Shaadi newspapers, camera candle note cards & film strip collages"
-          items={photoKeepsakes}
+          sectionTitle="Royal Wedding & Ceremonial Invitation Cards"
+          sectionSubtitle="Explore luxury gold foil cards, acrylic invitations, laser cut box cards & Farman scrolls"
+          items={weddingCards}
         />
 
-        {/* Portfolio Gallery */}
+        {/* Product Carousel 2: Corporate Stationery & Marketing Prints */}
+        <ProductCarousel
+          sectionTitle="Corporate Printing, Visiting Cards & Marketing Flyers"
+          sectionSubtitle="High-speed offset printing for 350 GSM business cards, pamphlets, letterheads & bill books"
+          items={corporatePrints}
+        />
+
+        {/* Side-by-Side Split Banners */}
+        <PromoBanner />
+
+        {/* Product Carousel 3: Flex Banners, Signage & Custom Gifts */}
+        <ProductCarousel
+          sectionTitle="Flex Banners, Display Standees & Custom Printed Gifts"
+          sectionSubtitle="Outdoor heavy duty Star Flex, roll-up standees, HD photobooks & customized photo mugs"
+          items={signageKeepsakes}
+        />
+
+        {/* Portfolio Gallery Showcase */}
         <PortfolioCategories />
 
-        {/* Client Stories */}
+        {/* Client Printing Reviews */}
         <FeaturedStories />
 
-        {/* Why Choose Us */}
+        {/* Why Choose Ayushman Printing Press */}
         <WhyChooseUs />
 
-        {/* Packages */}
+        {/* Bulk Printing Packages */}
         <Packages />
 
-        {/* Testimonials */}
+        {/* Customer Testimonials */}
         <Testimonials />
 
-        {/* Vistaprint Newsletter Subscription Banner */}
+        {/* Newsletter Subscription Banner */}
         <NewsletterBanner />
 
         {/* Contact & Studio Location */}
         <Contact />
 
-        {/* Vistaprint Brand Narrative & Value Propositions */}
+        {/* Brand Narrative & Value Propositions */}
         <BrandValueProps />
       </main>
       <Footer />

@@ -1,39 +1,42 @@
 @import "tailwindcss";
 
 /* ══════════════════════════════════════════════
-   LUXURY PHOTOGRAPHY STUDIO — DESIGN SYSTEM
-   Inspired by Vistaprint's premium design language
+   AYUSHMAN CARDS & GRAPHICS — VISTAPRINT DESIGN SYSTEM
+   Exact Vistaprint India theme, colors, typography & layout
    ══════════════════════════════════════════════ */
 
-/* ── Color Palette ── */
+/* ── Vistaprint Color Palette ── */
 :root {
   /* Backgrounds */
-  --bg-primary: #FDFBF9;
-  --bg-secondary: #F7F3EE;
-  --bg-tertiary: #EDE8E1;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8F9FA;
+  --bg-tertiary: #F3F4F6;
   --bg-card: #FFFFFF;
-  --bg-dark: #1A1A1A;
-  --bg-darker: #0D0D0D;
-  --bg-overlay: rgba(13, 13, 13, 0.55);
+  --bg-dark: #0B2545;
+  --bg-darker: #051329;
+  --bg-overlay: rgba(11, 37, 69, 0.65);
 
   /* Text */
-  --text-primary: #1A1A1A;
-  --text-secondary: #5A5A5A;
-  --text-tertiary: #8A8A8A;
-  --text-light: #FDFBF9;
-  --text-on-gold: #1A1A1A;
+  --text-primary: #1E1E1E;
+  --text-secondary: #4B5563;
+  --text-tertiary: #6B7280;
+  --text-light: #FFFFFF;
+  --text-on-gold: #FFFFFF;
 
-  /* Accent */
-  --gold: #C9A86C;
-  --gold-light: #D4BA85;
-  --gold-dark: #A8883F;
-  --gold-muted: rgba(201, 168, 108, 0.15);
+  /* Accent & Action (Vistaprint Red & Navy) */
+  --accent: #D40000;
+  --accent-hover: #B30000;
+  --navy: #0B2545;
+  --gold: #D40000;
+  --gold-light: #FF3333;
+  --gold-dark: #990000;
+  --gold-muted: rgba(212, 0, 0, 0.08);
 
   /* Borders & Dividers */
-  --border-light: rgba(26, 26, 26, 0.08);
-  --border-medium: rgba(26, 26, 26, 0.15);
-  --border-gold: rgba(201, 168, 108, 0.3);
-  --divider: rgba(26, 26, 26, 0.08);
+  --border-light: rgba(0, 0, 0, 0.08);
+  --border-medium: #E5E7EB;
+  --border-gold: rgba(212, 0, 0, 0.3);
+  --divider: #E5E7EB;
 
   /* Shadows */
   --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
@@ -78,35 +81,37 @@
   --duration-slow: 0.6s;
 }
 
-/* ── Dark Theme ── */
+/* ── Dark Theme (Vistaprint Dark Mode) ── */
 [data-theme="dark"] {
-  --bg-primary: #0D0D0D;
-  --bg-secondary: #161616;
-  --bg-tertiary: #1E1E1E;
-  --bg-card: #1A1A1A;
-  --bg-dark: #0A0A0A;
-  --bg-darker: #050505;
-  --bg-overlay: rgba(0, 0, 0, 0.65);
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --bg-tertiary: #334155;
+  --bg-card: #1E293B;
+  --bg-dark: #0B132B;
+  --bg-darker: #050B1A;
+  --bg-overlay: rgba(15, 23, 42, 0.75);
 
-  --text-primary: #F5F2EC;
-  --text-secondary: #B5B5B5;
-  --text-tertiary: #8A8A8A;
-  --text-light: #F5F2EC;
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-tertiary: #94A3B8;
+  --text-light: #F8FAFC;
 
-  --gold: #D4BA85;
-  --gold-light: #E0C997;
-  --gold-dark: #C9A86C;
-  --gold-muted: rgba(212, 186, 133, 0.12);
+  --accent: #FF3333;
+  --accent-hover: #D40000;
+  --gold: #FF3333;
+  --gold-light: #FF6666;
+  --gold-dark: #CC0000;
+  --gold-muted: rgba(255, 51, 51, 0.15);
 
-  --border-light: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.1);
   --border-medium: rgba(255, 255, 255, 0.2);
-  --border-gold: rgba(212, 186, 133, 0.25);
-  --divider: rgba(255, 255, 255, 0.08);
+  --border-gold: rgba(255, 51, 51, 0.3);
+  --divider: rgba(255, 255, 255, 0.1);
 
   --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.5);
-  --shadow-gold: 0 4px 20px rgba(212, 186, 133, 0.15);
+  --shadow-gold: 0 4px 20px rgba(255, 51, 51, 0.2);
 }
 
 /* ══════════════════════════════════════════════

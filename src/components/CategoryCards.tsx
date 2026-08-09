@@ -6,16 +6,16 @@ import SectionHeader from './SectionHeader';
 import Link from 'next/link';
 
 const categories = [
-  { name: '🪔 Diwali Deepotsav', image: 'https://images.unsplash.com/photo-1605886106691-d576a1656fce?w=600&q=80', count: '100+ Diwali Shoots' },
-  { name: '🎨 Holi Color Fest', image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=600&q=80', count: '80+ Holi Shoots' },
-  { name: '💃 Navratri Garba', image: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=600&q=80', count: '120+ Garba Nights' },
-  { name: '🌺 Ganesh Utsav', image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=600&q=80', count: '90+ Festivals' },
-  { name: '👸 Royal Weddings', image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=600&q=80', count: '250+ Stories' },
-  { name: '💍 Pre-Wedding', image: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=600&q=80', count: '150+ Shoots' },
-  { name: '📷 Studio Portrait', image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80', count: '300+ Sessions' },
-  { name: '✨ Fashion Editorial', image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80', count: '80+ Projects' },
-  { name: '🏢 Commercial Shoots', image: 'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=600&q=80', count: '120+ Brands' },
-  { name: '✉️ Shaadi Cards & Prints', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&q=80', count: '500+ Card Orders' },
+  { name: '💍 Royal Wedding Cards', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&q=80', count: '500+ Designs' },
+  { name: '✨ Laser Acrylic Cards', image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80', count: '200+ Acrylic Cards' },
+  { name: '📜 Farman Scroll Cards', image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=600&q=80', count: '150+ Scrolls' },
+  { name: '📦 Velvet Box Cards', image: '/images/keepsakes/card2.png', count: '300+ Box Cards' },
+  { name: '💼 Business Visiting Cards', image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80', count: '2,000+ Orders' },
+  { name: '🚩 Flex Banners & Star Flex', image: 'https://images.unsplash.com/photo-1542744094-3a31b272c490?w=600&q=80', count: '1,500+ Banners' },
+  { name: '📄 Pamphlets & Flyers', image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&q=80', count: '3,000+ Flyers' },
+  { name: '🧾 Carbonless Bill Books', image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&q=80', count: '800+ Bill Books' },
+  { name: '📖 HD Wedding Photobooks', image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80', count: '400+ Albums' },
+  { name: '🎁 Custom Mugs & Gifts', image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&q=80', count: '1,200+ Gifts' },
 ];
 
 export default function CategoryCards() {
@@ -26,9 +26,9 @@ export default function CategoryCards() {
     <section className="section-padding" style={{ background: 'var(--bg-primary)' }}>
       <div className="container-wide">
         <SectionHeader
-          eyebrow="Indian Festive & Studio Portfolio"
-          title="Explore Photography & Festive Collections"
-          subtitle="From glowing Diwali Deepotsav lights and vibrant Holi color bursts to royal Indian weddings and custom invitation printing."
+          eyebrow="Print Collections"
+          title="Explore Cards & Print Categories"
+          subtitle="Explore royal wedding card boxes, clear acrylic invitations, velvet visiting cards, flex banners, and customized gifts printed in Ujjain."
         />
 
         <div

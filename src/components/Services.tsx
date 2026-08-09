@@ -7,52 +7,52 @@ import Link from 'next/link';
 
 const services = [
   {
-    title: 'Wedding Photography',
-    desc: 'Complete coverage of your special day with a team of seasoned professionals capturing every emotion.',
-    image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=500&q=80',
-    cta: 'Learn More',
+    title: 'Royal Wedding & Invitation Cards',
+    desc: 'Luxury velvet box cards, clear acrylic invitations, Farman scrolls, and animated digital video E-invites.',
+    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
+    cta: 'Explore Cards',
   },
   {
-    title: 'Cinematography',
-    desc: 'Cinematic wedding films with drone coverage, same-day edits, and Hollywood-grade color grading.',
-    image: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=500&q=80',
-    cta: 'Watch Films',
+    title: 'Business & Visiting Cards',
+    desc: '350 GSM Velvet Touch cards with Gold Foil Stamping, 3D Raised Spot UV, and transparent PVC plastic options.',
+    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=500&q=80',
+    cta: 'Get Estimate',
   },
   {
-    title: 'Pre-Wedding Shoots',
-    desc: 'Romantic couple sessions at stunning locations. From palaces to beaches, we create magic.',
-    image: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=500&q=80',
-    cta: 'View Gallery',
+    title: 'Flex Banners & Outdoor Signage',
+    desc: 'High-speed heavy duty Star Flex banners, roll-up display standees, vinyl stickers, and glow sign boards.',
+    image: 'https://images.unsplash.com/photo-1542744094-3a31b272c490?w=500&q=80',
+    cta: 'Calculate Price',
   },
   {
-    title: 'Portrait Sessions',
-    desc: 'Professional headshots, family portraits, and personal branding photography in studio or on-location.',
-    image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&q=80',
-    cta: 'Book Now',
+    title: 'Pamphlets, Flyers & Brochures',
+    desc: 'Multi-color offset printing on 130 GSM Gloss Art Paper for bulk promotional marketing & grand openings.',
+    image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=500&q=80',
+    cta: 'Order Bulk',
   },
   {
-    title: 'Fashion & Editorial',
-    desc: 'High-fashion photography for lookbooks, campaigns, and magazine editorials with creative direction.',
-    image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=500&q=80',
-    cta: 'See Portfolio',
+    title: 'Bill Books & Letterheads',
+    desc: 'Duplicate/triplicate carbonless receipt books, corporate letterheads, and brand identity envelopes.',
+    image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=500&q=80',
+    cta: 'View Stationery',
   },
   {
-    title: 'Commercial Photography',
-    desc: 'Product, food, architecture, and corporate photography for brands that demand excellence.',
-    image: 'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=500&q=80',
-    cta: 'Get Quote',
-  },
-  {
-    title: 'Event Coverage',
-    desc: 'Corporate events, concerts, conferences, and celebrations documented with professional finesse.',
-    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=500&q=80',
-    cta: 'Learn More',
-  },
-  {
-    title: 'Album Design',
-    desc: 'Handcrafted luxury albums with premium papers, custom layouts, and museum-quality printing.',
+    title: 'HD Photobooks & Wedding Albums',
+    desc: 'Flush mount non-tearable silk sheet photobooks with acrylic glass and leatherette hardcover presentation boxes.',
     image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&q=80',
-    cta: 'View Samples',
+    cta: 'See Albums',
+  },
+  {
+    title: 'Custom Gifts & Merchandise',
+    desc: 'Customized ceramic photo magic mugs, promotional t-shirts, keychains, and wall canvas framed prints.',
+    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&q=80',
+    cta: 'Browse Gifts',
+  },
+  {
+    title: 'Pre-Press Graphic Layout & Design',
+    desc: 'Professional in-house vector artwork creation, wedding card typography, brand logo design, and press prep.',
+    image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=500&q=80',
+    cta: 'Hire Designer',
   },
 ];
 
@@ -64,9 +64,9 @@ export default function Services() {
     <section id="services" className="section-padding" style={{ background: 'var(--bg-secondary)' }}>
       <div className="container-wide">
         <SectionHeader
-          eyebrow="What We Offer"
-          title="Our Services"
-          subtitle="A complete suite of premium photography and videography services tailored to your vision."
+          eyebrow="What We Print"
+          title="Our Printing Press & Graphics Services"
+          subtitle="A complete suite of offset printing, luxury invitation cards, flex banners, and custom graphics in Ujjain."
         />
 
         <div

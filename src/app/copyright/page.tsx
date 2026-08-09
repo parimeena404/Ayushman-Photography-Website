@@ -19,14 +19,14 @@ export default function CopyrightPage() {
 
           <div style={{ fontFamily: "'Inter', sans-serif", color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: '0.95rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <p>
-              All photographs, cinematic films, graphics, logo designs, custom invitation card templates, and digital media created by <strong>Ayushman Cards n Graphics</strong> are protected by Indian and International copyright laws.
+              All graphics, vector artworks, logo designs, custom invitation card layouts, typography styles, and digital media created by <strong>Ayushman Cards & Graphics Press</strong> are protected by Indian and International copyright laws.
             </p>
 
             <h2 style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 600, marginTop: '1rem' }}>
               Client Usage Permissions
             </h2>
             <p>
-              Clients purchasing photography sessions or custom card prints receive full rights for personal print, digital sharing, and family archiving. Un-authorized commercial licensing, resale, or sub-licensing to third-party vendors without permission is prohibited.
+              Clients purchasing custom card printing or graphic design services receive full rights for personal print distribution, digital sharing, and business branding. Unauthorized commercial resale or sub-licensing of proprietary card templates without permission is prohibited.
             </p>
           </div>
         </div>

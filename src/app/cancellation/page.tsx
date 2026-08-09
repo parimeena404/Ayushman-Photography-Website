@@ -19,14 +19,14 @@ export default function CancellationPage() {
 
           <div style={{ fontFamily: "'Inter', sans-serif", color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: '0.95rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <p>
-              We understand that plans can change. Below is the cancellation and refund policy for photography session bookings and custom print orders at <strong>Ayushman Cards n Graphics</strong>:
+              We understand that plans can change. Below is the cancellation and refund policy for custom wedding card printing, offset press orders, and flex banners at <strong>Ayushman Cards & Graphics Press</strong>:
             </p>
 
             <h2 style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 600, marginTop: '1rem' }}>
-              1. Session Rescheduling & Cancellation
+              1. Order Cancellation Before Printing Approval
             </h2>
             <p>
-              Sessions cancelled 7 or more days prior to the scheduled date are eligible for rescheduling at no additional charge. Booking deposits for cancellations made within 7 days of the shoot date can be transferred to a future booking within 6 months.
+              Orders cancelled prior to final digital proof approval receive a full refund minus nominal design proofing fees. Once design proofs are approved by the client and offset press production begins, customized print orders cannot be cancelled due to custom paper board materials.
             </p>
 
             <h2 style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 600, marginTop: '1rem' }}>

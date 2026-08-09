@@ -5,13 +5,12 @@ import { useRef } from 'react';
 import { staggerContainer, fadeInUp, fadeInLeft, fadeInRight, lineGrow } from '@/lib/animations';
 
 const milestones = [
-  { year: '2001', text: 'Established Ayushman Cards n Graphics in Ujjain as complete printing pioneers' },
-  { year: '2008', text: 'Expanded into luxury Indian wedding cards & custom typography design' },
-  { year: '2015', text: 'Launched fine art wedding photography, royal event & press graphics' },
-  { year: '2020', text: 'State-of-the-art digital printing, banners, flex & high-definition media production' },
-  { year: '2025', text: '24+ years of creative excellence serving thousands of families & events across India' },
+  { year: '2001', text: 'Established Ayushman Cards n Graphics in Ujjain as complete commercial printing press pioneers' },
+  { year: '2008', text: 'Expanded into luxury royal Indian wedding cards, gold foil stamping & custom typography design' },
+  { year: '2015', text: 'Pioneered laser-cut box invitations, acrylic wedding cards & high-speed offset printing' },
+  { year: '2020', text: 'Added state-of-the-art Star Flex outdoor banners, roll-up standees & HD photobook production' },
+  { year: '2025', text: '25+ years of print craftsmanship serving over 10,000+ happy clients & businesses across India' },
 ];
-
 
 export default function About() {
   const sectionRef = useRef(null);
@@ -31,13 +30,13 @@ export default function About() {
             className="text-editorial-sm font-body"
             style={{ color: 'var(--accent)', marginBottom: '1rem' }}
           >
-            About Studio
+            About Our Press
           </p>
           <h2
             className="font-heading text-editorial-lg"
             style={{ color: 'var(--text-primary)', fontWeight: 300 }}
           >
-            We Are Printers & Creatives By Heart
+            We Are Master Printers & Designers By Passion
           </h2>
         </motion.div>
 
@@ -55,8 +54,8 @@ export default function About() {
           {/* Portrait */}
           <motion.div variants={fadeInLeft}>
             <img
-              src="https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=800&q=85&auto=format"
-              alt="Ayushman Cards n Graphics Craftsmanship"
+              src="https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?w=800&q=85&auto=format"
+              alt="Ayushman Cards & Graphics Printing Press"
               style={{
                 width: '100%',
                 aspectRatio: '3/4',
@@ -78,7 +77,7 @@ export default function About() {
                 marginBottom: '2.5rem',
               }}
             >
-              Since 2001, <strong>Ayushman Cards n Graphics</strong> has been Ujjain&rsquo;s premier destination for complete printing solutions, fine art wedding invitations, visiting cards, posters, flex, banners, and royal event photography.
+              Since 2001, <strong>Ayushman Cards & Graphics</strong> has been Ujjain&rsquo;s premier destination for complete commercial printing solutions, royal wedding invitation cards, visiting cards, flex banners, pamphlets, corporate stationery, and custom graphic design.
             </p>
 
             <p
@@ -90,7 +89,7 @@ export default function About() {
                 marginBottom: '2.5rem',
               }}
             >
-              Founded with passion and dedicated craftsmanship, we blend traditional Indian aesthetics with modern digital graphics and cinematic photography to make every celebration unforgettable.
+              Founded with dedicated craftsmanship, we blend traditional Indian motifs with modern German offset printing technology, gold foil stamping, and laser cutting to make every invitation card and corporate print truly remarkable.
             </p>
 
             {/* Philosophy quote */}
@@ -111,7 +110,7 @@ export default function About() {
                   lineHeight: 1.5,
                 }}
               >
-                &ldquo;We don&rsquo;t just print paper or take photos. We craft memories that families cherish for generations.&rdquo;
+                &ldquo;We don&rsquo;t just print paper. We craft elegant invitations and brand graphics that make lasting impressions for lifetime milestones.&rdquo;
               </p>
             </div>
 
@@ -123,7 +122,7 @@ export default function About() {
                 letterSpacing: '0.1em',
               }}
             >
-              — Ayushman Cards n Graphics Studio Team
+              — Ayushman Cards & Graphics Press Team
             </p>
           </motion.div>
         </div>

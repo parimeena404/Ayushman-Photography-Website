@@ -80,7 +80,7 @@ export default function Preloader() {
               textTransform: 'uppercase',
             }}
           >
-            Fine Art Photography & Printing Studio · Freeganj Ujjain
+            Premier Printing Press & Custom Card Studio · Freeganj Ujjain
           </motion.p>
 
           {/* Progress line */}

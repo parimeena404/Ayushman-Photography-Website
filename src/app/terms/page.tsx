@@ -19,14 +19,14 @@ export default function TermsPage() {
 
           <div style={{ fontFamily: "'Inter', sans-serif", color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: '0.95rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <p>
-              Welcome to <strong>Ayushman Cards n Graphics</strong>. By accessing or using our photography services, studio bookings, custom Shaadi card design orders, and digital gallery services, you agree to comply with and be bound by the following terms and conditions.
+              Welcome to <strong>Ayushman Cards & Graphics Press</strong>. By ordering custom wedding cards, visiting cards, flex banners, corporate stationery, or graphic design services, you agree to comply with and be bound by the following terms and conditions.
             </p>
 
             <h2 style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 600, marginTop: '1rem' }}>
-              1. Bookings & Reservations
+              1. Print Orders & Advance Deposits
             </h2>
             <p>
-              All photography sessions, pre-wedding shoots, and festival event coverage require an advance booking deposit to secure the date. Bookings are confirmed upon receipt of deposit payment via our official payment gateway (Razorpay) or direct studio payment.
+              All custom card printing, flex banner orders, and offset printing projects require an advance deposit to initiate design proofing and material procurement. Orders are confirmed upon receipt of deposit payment via our official payment gateway (Razorpay) or direct Ujjain studio payment.
             </p>
 
             <h2 style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 600, marginTop: '1rem' }}>

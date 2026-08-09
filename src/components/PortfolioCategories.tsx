@@ -4,36 +4,23 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import SectionHeader from './SectionHeader';
 
-const categories = ['All', 'Fashion', 'Commercial', 'Portrait', 'Indian Festivals', 'Wedding', 'Travel'];
+const categories = ['All', 'Wedding Cards', 'Visiting Cards', 'Flex & Banners', 'Photobooks', 'Stationery', 'Packaging'];
 
 const portfolioItems = [
-  { src: '/images/fashion/fashion1.png', category: 'Fashion', title: '🧥 Crimson Trench & Sunglasses Editorial', aspect: 'tall' },
-  { src: '/images/fashion/fashion2.png', category: 'Fashion', title: '🧥 What\'s Inside Matters — Zipper Streetwear Campaign', aspect: 'tall' },
-  { src: '/images/fashion/fashion3.png', category: 'Fashion', title: '💙 Blue Halo Circle Lilies Lookbook', aspect: 'tall' },
-  { src: '/images/fashion/fashion4.png', category: 'Fashion', title: '🌕 Full Moon Projection High Fashion Editorial', aspect: 'tall' },
-  { src: '/images/fashion/fashion5.png', category: 'Fashion', title: '💼 Luxury Menswear Suit Chair Editorial', aspect: 'tall' },
-  { src: '/images/commercial/airpods-desert.png', category: 'Commercial', title: '🎧 Experience Stunning Visuals — AirPods Desert Campaign', aspect: 'square' },
-  { src: '/images/commercial/command-key-studio.png', category: 'Commercial', title: '⌨️ Everything Starts Inside — Miniature Studio Concept', aspect: 'tall' },
-  { src: '/images/commercial/excavator-muscle.png', category: 'Commercial', title: '🚜 Industrial Equipment Muscle Concept Photography', aspect: 'tall' },
-  { src: '/images/commercial/product1.png', category: 'Commercial', title: '📱 3D Mobile Fashion & Product Showcase', aspect: 'tall' },
-  { src: '/images/keepsakes/snow-mailbox.jpg', category: 'Commercial', title: '📮 Winter Mailbox Custom Printed Cards & Envelopes', aspect: 'tall' },
-  { src: '/images/portrait/portrait1.png', category: 'Portrait', title: '🖤 Monochrome Candid Male Portrait', aspect: 'tall' },
-  { src: '/images/portrait/portrait2.png', category: 'Portrait', title: '🌅 Golden Hour Warm Studio Headshot', aspect: 'tall' },
-  { src: '/images/portrait/portrait3.png', category: 'Portrait', title: '✨ Studio Double Exposure Fashion Portrait', aspect: 'tall' },
-  { src: '/images/portrait/portrait4.png', category: 'Fashion', title: '🔥 Experimental Red Frosted Graphic FACE', aspect: 'tall' },
-  { src: '/images/portrait/portrait5.png', category: 'Portrait', title: '🦋 Butterfly Social Frame Fine Art', aspect: 'tall' },
-  { src: '/images/wedding/wedding5.jpg', category: 'Wedding', title: '👰 Royal Varmala Rose Petal Canopy', aspect: 'tall' },
-  { src: '/images/wedding/wedding1.jpg', category: 'Wedding', title: '✨ Ornate Jali Window Sunset Silhouette', aspect: 'tall' },
-  { src: '/images/wedding/wedding3.jpg', category: 'Wedding', title: '💍 Heritage Ivy Palace Pre-Wedding', aspect: 'tall' },
-  { src: '/images/wedding/wedding4.jpg', category: 'Wedding', title: '🏰 Palace Night Courtyard Royal Walk', aspect: 'tall' },
-  { src: '/images/wedding/wedding2.png', category: 'Wedding', title: '🌅 Sunset Jharokha Archway Silhouette', aspect: 'square' },
-  { src: '/images/wedding/wedding6.png', category: 'Wedding', title: '🤝 Gathbandhan Sacred Vows Ritual', aspect: 'square' },
-  { src: '/images/festivals/diwali-deepotsav.jpg', category: 'Indian Festivals', title: '🪔 Diwali Deepotsav & Family Rangoli', aspect: 'tall' },
-  { src: '/images/festivals/makar-sankranti.png', category: 'Indian Festivals', title: '🪁 Makar Sankranti Kite Festival & Sweets', aspect: 'wide' },
-  { src: '/images/festivals/lohri-bonfire.jpg', category: 'Indian Festivals', title: '🔥 Lohri Bonfire & Punjabi Folk Dance', aspect: 'tall' },
-  { src: '/images/festivals/palace-dance.jpg', category: 'Indian Festivals', title: '💃 Royal Palace Garba Dance Showcase', aspect: 'wide' },
-  { src: '/images/festivals/stained-glass.jpg', category: 'Indian Festivals', title: '✨ Heritage Palace Stained Glass Light', aspect: 'tall' },
-  { src: '/images/festivals/rainbow-sails.png', category: 'Travel', title: '⛵ Sunset Voyage Rainbow Sails', aspect: 'wide' },
+  { src: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80', category: 'Wedding Cards', title: '💍 Royal Velvet Box Wedding Invitation Card with Gold Foil', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500&q=80', category: 'Wedding Cards', title: '✨ Clear Acrylic Glass Wedding Card with Wax Seal', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=500&q=80', category: 'Wedding Cards', title: '📜 Royal Farman Scroll Invitation in Metallic Tube Case', aspect: 'tall' },
+  { src: '/images/keepsakes/card2.png', category: 'Wedding Cards', title: '🪔 Traditional Ganesh Floral Wedding Invitation Set', aspect: 'tall' },
+  { src: '/images/keepsakes/card3.png', category: 'Wedding Cards', title: '📰 "The Shaadi Times" Custom Wedding Newspaper Card', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=500&q=80', category: 'Visiting Cards', title: '💼 350 GSM Velvet Touch Visiting Cards with Gold Foil', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=500&q=80', category: 'Visiting Cards', title: '✨ 3D Raised Spot UV & Matte Black Business Cards', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1542744094-3a31b272c490?w=500&q=80', category: 'Flex & Banners', title: '🚩 Heavy Duty Star Flex Banner Outdoor Grand Opening', aspect: 'wide' },
+  { src: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=500&q=80', category: 'Flex & Banners', title: '🎯 Promotional Roll-up Standee Display Frame', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&q=80', category: 'Photobooks', title: '📖 HD Flush Mount Wedding Photobook Album with Leatherette Box', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=500&q=80', category: 'Stationery', title: '📄 130 GSM Gloss Art Paper Pamphlets & Marketing Flyers', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=500&q=80', category: 'Stationery', title: '📑 Executive Printed Letterheads & Brand Envelopes', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=500&q=80', category: 'Stationery', title: '🧾 Duplicate Carbonless Bill Books & Receipt Books', aspect: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&q=80', category: 'Packaging', title: '🎁 Customized Ceramic Magic Photo Mugs & Gift Boxes', aspect: 'square' },
 ];
 
 export default function PortfolioCategories() {
@@ -62,9 +49,9 @@ export default function PortfolioCategories() {
     <section id="portfolio" className="section-padding" style={{ background: 'var(--bg-primary)' }}>
       <div className="container-wide">
         <SectionHeader
-          eyebrow="Fashion, Commercial & Fine Art Gallery"
-          title="Portfolio Showcase"
-          subtitle="Explore high fashion lookbooks, streetwear apparel campaigns, full-moon projections, AirPods commercial campaigns, fine art portraits, and royal Indian weddings."
+          eyebrow="Print Crafts & Gallery"
+          title="Print & Card Portfolio Showcase"
+          subtitle="Explore luxury gold foil wedding cards, clear acrylic invitations, velvet visiting cards, outdoor flex banners, and HD photobooks printed at our Ujjain press."
         />
 
         {/* Filter Tabs */}

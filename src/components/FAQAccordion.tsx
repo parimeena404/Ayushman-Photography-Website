@@ -6,36 +6,36 @@ import SectionHeader from './SectionHeader';
 
 const faqs = [
   {
-    q: 'How far in advance should I book my wedding photography?',
-    a: 'We recommend booking at least 3–6 months in advance, especially during the wedding season (November–February). For destination weddings, 6–12 months is ideal to ensure availability and allow time for pre-wedding shoots.',
+    q: 'How far in advance should I order my wedding invitation cards?',
+    a: 'We recommend placing your wedding card order 3–4 weeks before you plan to distribute them. This allows ample time for custom design proofing, foil stamping, laser cutting, and printing.',
   },
   {
-    q: 'What is included in a typical wedding photography package?',
-    a: 'Our packages include professional photographers, full-day coverage, edited high-resolution photos, an online gallery, and digital delivery. Premium packages also include cinematic films, drone coverage, same-day edits, and luxury albums.',
+    q: 'Can I see a physical proof sample before bulk card printing?',
+    a: 'Yes! For wedding cards and corporate orders, we share digital PDF proofs via WhatsApp/Email. You can also visit our Freeganj studio in Ujjain to view physical card samples, paper board textures, and gold foil finishes.',
   },
   {
-    q: 'Do you travel for destination weddings?',
-    a: 'Absolutely! We love destination weddings and have covered events across Rajasthan, Goa, Kerala, Udaipur, Jaipur, and international locations. Travel and accommodation costs are discussed upfront with no hidden charges.',
+    q: 'What paper GSM and finish options do you offer for visiting cards?',
+    a: 'We offer 300 GSM, 350 GSM, 400 GSM Art Cards, Velvet Touch Soft Lamination, Metallic Foil Stamping, 3D Raised Spot UV, and transparent PVC plastic cards.',
   },
   {
-    q: 'How long does it take to receive the final edited photos?',
-    a: 'You\'ll receive a curated set of sneak peeks within 48 hours. The complete edited gallery is delivered within 4–6 weeks, depending on the package. Same-day edits are available with Signature and Luxe packages.',
+    q: 'What is the turnaround time for express same-day flex banner printing?',
+    a: 'For flex banners, Star Flex outdoor banners, and promotional posters, we offer same-day printing for orders placed before 2:00 PM at our Ujjain studio press.',
   },
   {
-    q: 'Can I customize a photography package?',
-    a: 'Yes, every package is fully customizable. We understand that each event is unique, and we\'re happy to tailor our services to match your specific requirements and budget. Contact us for a personalized quote.',
+    q: 'Can you create custom graphic designs for wedding cards or banners?',
+    a: 'Absolutely! Our in-house graphic design team can craft custom wedding card layouts in Hindi & English, brand logos, pamphlets, letterheads, and flex banner graphics.',
   },
   {
-    q: 'Do you offer pre-wedding and engagement shoots?',
-    a: 'Yes, pre-wedding shoots are one of our specialties. We offer sessions at stunning locations including heritage sites, beaches, mountains, and urban settings. These can be booked standalone or as part of a wedding package.',
+    q: 'Do you deliver wedding card orders across India?',
+    a: 'Yes, we provide secure pan-India courier shipping for all custom wedding invitation box cards, acrylic cards, photobooks, and corporate stationery.',
   },
   {
-    q: 'What is your cancellation and refund policy?',
-    a: 'We understand plans can change. Cancellations made 60+ days before the event receive a full refund minus the booking deposit. Cancellations within 30–60 days receive a 50% refund. We also offer date changes subject to availability.',
+    q: 'What file formats do you accept for custom printing orders?',
+    a: 'We accept CDR (CorelDraw), AI (Adobe Illustrator), PDF, PSD, High-Resolution PNG, and JPEG files.',
   },
   {
-    q: 'Do you provide raw/unedited photographs?',
-    a: 'We deliver professionally edited images that represent our artistic vision. Raw files are not included as standard, but can be discussed as an add-on for an additional fee.',
+    q: 'Do you offer bulk discounts for commercial printing orders?',
+    a: 'Yes, we provide volume-based discounts for visiting cards, pamphlets, bill books, and flex banners. Use our Instant Price Calculator widget to check bulk rates.',
   },
 ];
 

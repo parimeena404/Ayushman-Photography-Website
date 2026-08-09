@@ -66,7 +66,7 @@ export async function POST(req: Request) {
         customerName,
         customerEmail: customerEmail || 'client@ayushmancards.com',
         customerPhone,
-        eventType: eventType || 'Wedding Cards & Photography',
+        eventType: eventType || 'Wedding Cards & Printing Press',
         eventDate: eventDate || new Date().toISOString().split('T')[0],
         city: city || 'Ujjain',
         address: address || '',

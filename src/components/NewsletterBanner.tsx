@@ -43,7 +43,7 @@ export default function NewsletterBanner() {
               marginBottom: '1.75rem',
             }}
           >
-            Get 15% off* your first photography booking when you sign up for our emails
+            Get 15% off* your first print order when you sign up for our emails
           </p>
 
           {submitted ? (
@@ -120,7 +120,7 @@ export default function NewsletterBanner() {
                   onChange={(e) => setConsent(e.target.checked)}
                   style={{ accentColor: 'var(--gold)' }}
                 />
-                <span>Yes, I&apos;d like to receive special offer emails, shoot updates, and tips from Ayushman Photography Studio.</span>
+                <span>Yes, I&apos;d like to receive special offer emails, print catalog updates, and discounts from Ayushman Cards & Graphics Press.</span>
               </label>
             </form>
           )}

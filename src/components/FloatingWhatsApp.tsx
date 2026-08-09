@@ -3,7 +3,7 @@
 export default function FloatingWhatsApp() {
   const phoneNumber = '+919479784979';
   const defaultMessage = encodeURIComponent(
-    'Hello Ayushman Cards n Graphics, I would like to inquire about wedding invitations, graphics & photography.'
+    'Hello Ayushman Cards & Graphics Press, I would like to inquire about wedding cards, visiting cards, flex banners & printing services.'
   );
 
   return (

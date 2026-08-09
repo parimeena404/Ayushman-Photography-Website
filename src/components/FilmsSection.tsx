@@ -6,10 +6,10 @@ import { films, Film } from '@/lib/stories';
 import VideoPlayer from './VideoPlayer';
 
 const filmCategories = [
-  'All Films',
-  'Wedding Films',
-  'Highlight Films',
-  'Drone Footage',
+  'All Craft Videos',
+  'Card Printing Craft',
+  'Laser Cutting',
+  'Offset Press',
 ];
 
 export default function FilmsSection() {
@@ -17,7 +17,7 @@ export default function FilmsSection() {
   const [activeFilm, setActiveFilm] = useState<Film | null>(null);
 
   const filteredFilms =
-    selectedCategory === 'All Films'
+    selectedCategory === 'All Craft Videos'
       ? films
       : films.filter((f) => f.category === selectedCategory);
 

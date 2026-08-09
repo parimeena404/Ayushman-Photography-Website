@@ -46,9 +46,9 @@ export default function Products() {
     <section id="products" className="section-padding" style={{ background: 'var(--bg-primary)' }}>
       <div className="container-wide">
         <SectionHeader
-          eyebrow="Keepsakes"
-          title="Photography Products"
-          subtitle="Transform your photographs into tangible treasures that last generations."
+          eyebrow="Print Crafts"
+          title="Custom Card & Printed Products"
+          subtitle="Explore high-quality card boards, gold foil stamping, flex banners, and customized printed merchandise."
         />
 
         <div

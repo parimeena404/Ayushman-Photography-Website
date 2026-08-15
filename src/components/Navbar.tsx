@@ -17,7 +17,25 @@ interface NavTab {
 }
 
 const megaNavTabs: NavTab[] = [
-  { label: 'View All', href: '/' },
+  {
+    label: 'View All',
+    href: '/',
+    columns: [
+      {
+        heading: 'All Print Categories',
+        items: [
+          { label: 'Visiting Cards', href: '/#products' },
+          { label: 'Wedding Invitations', href: '/#wedding' },
+          { label: 'Stationery & Letterheads', href: '/#stationery' },
+          { label: 'Signs, Banners & Standees', href: '/#banners' },
+          { label: 'Labels, Stickers & Packaging', href: '/#stickers' },
+          { label: 'Mugs, Albums & Gifts', href: '/#gifts' },
+          { label: 'Custom Polo T-Shirts', href: '/#tshirts' },
+          { label: 'Deals & Bulk Offers', href: '/#deals' },
+        ],
+      },
+    ],
+  },
   {
     label: 'Visiting Cards',
     href: '/#products',
@@ -61,6 +79,41 @@ const megaNavTabs: NavTab[] = [
           { label: 'Metal Card Holder', href: '/booking?pkg=wedding-cards' },
           { label: 'Executive Desktop Card Stand', href: '/booking?pkg=wedding-cards' },
           { label: 'Leatherette Pocket Case', href: '/booking?pkg=wedding-cards' },
+        ],
+      },
+    ],
+  },
+  {
+    label: 'Wedding Invitations',
+    href: '/#wedding',
+    columns: [
+      {
+        heading: 'Royal Invitations',
+        items: [
+          { label: 'Royal Velvet & Gold Box Cards', href: '/booking?pkg=royal-wedding' },
+          { label: 'Clear Acrylic Invitations', href: '/booking?pkg=royal-wedding' },
+          { label: 'Royal Farman Scroll Invitations', href: '/booking?pkg=royal-wedding' },
+          { label: 'Traditional Ganesh Cards', href: '/booking?pkg=royal-wedding' },
+          { label: '"The Shaadi Times" Newspaper Card', href: '/booking?pkg=royal-wedding', isNew: true },
+        ],
+      },
+      {
+        heading: 'Ceremony & Event Cards',
+        items: [
+          { label: 'Haldi & Sangeet Cards', href: '/booking?pkg=sangeet-haldi' },
+          { label: 'Wedding Menu Cards', href: '/booking?pkg=royal-wedding' },
+          { label: 'Wedding Program Folders', href: '/booking?pkg=royal-wedding' },
+          { label: 'Save The Date Cards', href: '/booking?pkg=royal-wedding' },
+          { label: 'Thank You Cards', href: '/booking?pkg=wedding-cards' },
+        ],
+      },
+      {
+        heading: 'Envelopes & Seals',
+        items: [
+          { label: 'Wax Seal Stamps', href: '/booking?pkg=royal-wedding' },
+          { label: 'Custom Envelope Seals', href: '/booking?pkg=royal-wedding' },
+          { label: 'Foil Embossed Envelopes', href: '/booking?pkg=royal-wedding' },
+          { label: 'Velvet Outer Boxes', href: '/booking?pkg=royal-wedding' },
         ],
       },
     ],
@@ -145,41 +198,6 @@ const megaNavTabs: NavTab[] = [
     ],
   },
   {
-    label: 'Wedding Invitations',
-    href: '/#wedding',
-    columns: [
-      {
-        heading: 'Royal Invitations',
-        items: [
-          { label: 'Royal Velvet & Gold Box Cards', href: '/booking?pkg=royal-wedding' },
-          { label: 'Clear Acrylic Invitations', href: '/booking?pkg=royal-wedding' },
-          { label: 'Royal Farman Scroll Invitations', href: '/booking?pkg=royal-wedding' },
-          { label: 'Traditional Ganesh Cards', href: '/booking?pkg=royal-wedding' },
-          { label: '"The Shaadi Times" Newspaper Card', href: '/booking?pkg=royal-wedding', isNew: true },
-        ],
-      },
-      {
-        heading: 'Ceremony & Event Cards',
-        items: [
-          { label: 'Haldi & Sangeet Cards', href: '/booking?pkg=sangeet-haldi' },
-          { label: 'Wedding Menu Cards', href: '/booking?pkg=royal-wedding' },
-          { label: 'Wedding Program Folders', href: '/booking?pkg=royal-wedding' },
-          { label: 'Save The Date Cards', href: '/booking?pkg=royal-wedding' },
-          { label: 'Thank You Cards', href: '/booking?pkg=wedding-cards' },
-        ],
-      },
-      {
-        heading: 'Envelopes & Seals',
-        items: [
-          { label: 'Wax Seal Stamps', href: '/booking?pkg=royal-wedding' },
-          { label: 'Custom Envelope Seals', href: '/booking?pkg=royal-wedding' },
-          { label: 'Foil Embossed Envelopes', href: '/booking?pkg=royal-wedding' },
-          { label: 'Velvet Outer Boxes', href: '/booking?pkg=royal-wedding' },
-        ],
-      },
-    ],
-  },
-  {
     label: 'Signs, Posters & Marketing Materials',
     href: '/#banners',
     columns: [
@@ -247,8 +265,60 @@ const megaNavTabs: NavTab[] = [
       },
     ],
   },
-  { label: 'Custom Polo T-shirts', href: '/#tshirts' },
-  { label: 'Deals & Offers', href: '/#deals' },
+  {
+    label: 'Custom Polo T-shirts',
+    href: '/#tshirts',
+    columns: [
+      {
+        heading: 'Men\'s Polo T-Shirts',
+        items: [
+          { label: 'Classic Cotton Polo T-Shirt', href: '/booking?pkg=flex-banners' },
+          { label: 'Dry-Fit Sports Polo', href: '/booking?pkg=flex-banners' },
+          { label: 'Embroidered Corporate Polo', href: '/booking?pkg=flex-banners' },
+          { label: 'Premium Heavyweight Polo', href: '/booking?pkg=flex-banners', isNew: true },
+        ],
+      },
+      {
+        heading: 'Women\'s Polo T-Shirts',
+        items: [
+          { label: 'Fitted Cotton Polo', href: '/booking?pkg=flex-banners' },
+          { label: 'Dry-Fit Workwear Polo', href: '/booking?pkg=flex-banners' },
+          { label: 'V-Neck Custom T-Shirt', href: '/booking?pkg=flex-banners' },
+        ],
+      },
+      {
+        heading: 'Caps & Wearables',
+        items: [
+          { label: 'Custom Printed Caps & Visors', href: '/booking?pkg=flex-banners' },
+          { label: 'Promotional Jackets & Vests', href: '/booking?pkg=flex-banners' },
+          { label: 'Printed Team Hoodies', href: '/booking?pkg=flex-banners', isNew: true },
+        ],
+      },
+    ],
+  },
+  {
+    label: 'Deals & Offers',
+    href: '/#deals',
+    columns: [
+      {
+        heading: 'Festive Deals & Discounts',
+        items: [
+          { label: 'Flat 20% OFF 1,000+ Visiting Cards (BULK20)', href: '/booking?pkg=wedding-cards', isNew: true },
+          { label: '15% OFF Royal Wedding Cards (WEDDING15)', href: '/booking?pkg=royal-wedding' },
+          { label: '10% OFF Flex Banners (BANNER10)', href: '/booking?pkg=flex-banners' },
+          { label: 'Flat 5% OFF Orders ₹10,000+ (SAVE5)', href: '/booking?pkg=wedding-cards' },
+        ],
+      },
+      {
+        heading: 'Combo Value Bundles',
+        items: [
+          { label: 'Corporate Starter Pack (Cards + Letterhead + Stamp)', href: '/booking?pkg=wedding-cards' },
+          { label: 'Wedding Royal Pack (Box Cards + Acrylic + Scroll)', href: '/booking?pkg=royal-wedding' },
+          { label: 'Shop Promotion Kit (Flex + Standee + Pamphlets)', href: '/booking?pkg=flex-banners' },
+        ],
+      },
+    ],
+  },
 ];
 
 export default function Navbar() {
@@ -269,7 +339,7 @@ export default function Navbar() {
       style={{ position: 'sticky', top: 0, zIndex: 1000 }}
       onMouseLeave={() => setHoveredTab(null)}
     >
-      {/* ═══ 1. Top Promo Announcement Bar (Vistaprint Blue) ═══ */}
+      {/* ═══ 1. Top Promo Announcement Bar ═══ */}
       <div
         style={{
           background: '#0B2545',
@@ -306,12 +376,12 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* ═══ 2. Main Header Bar (White bg, Vistaprint layout) ═══ */}
+      {/* ═══ 2. Main Header Bar ═══ */}
       <div
         style={{
           background: '#FFFFFF',
           borderBottom: '1px solid #E5E7EB',
-          padding: '0.65rem clamp(1rem, 3vw, 2.5rem)',
+          padding: '0.65rem clamp(1rem, 2vw, 2.5rem)',
         }}
       >
         <div
@@ -320,10 +390,10 @@ export default function Navbar() {
             margin: '0 auto',
             display: 'flex',
             alignItems: 'center',
-            gap: '1.5rem',
+            gap: '1.25rem',
           }}
         >
-          {/* ─── Logo (Vistaprint style) ─── */}
+          {/* Logo */}
           <Link
             href="/"
             style={{
@@ -342,8 +412,8 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* ─── Search Bar (Vistaprint rounded rect) ─── */}
-          <div style={{ flex: '1 1 520px', maxWidth: '600px' }} className="vp-desktop-only">
+          {/* Search Bar */}
+          <div style={{ flex: '1 1 480px', maxWidth: '560px' }} className="vp-desktop-only">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -359,7 +429,6 @@ export default function Navbar() {
                 borderRadius: '6px',
                 overflow: 'hidden',
                 background: '#FFFFFF',
-                transition: 'border-color 0.2s ease',
               }}
             >
               <input
@@ -369,9 +438,9 @@ export default function Navbar() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   flex: 1,
-                  padding: '0.6rem 1rem',
+                  padding: '0.55rem 0.9rem',
                   fontFamily: "'Inter', sans-serif",
-                  fontSize: '0.9rem',
+                  fontSize: '0.875rem',
                   color: '#1E1E1E',
                   border: 'none',
                   outline: 'none',
@@ -382,7 +451,7 @@ export default function Navbar() {
                 type="submit"
                 aria-label="Search"
                 style={{
-                  padding: '0.6rem 0.85rem',
+                  padding: '0.55rem 0.8rem',
                   background: 'transparent',
                   border: 'none',
                   borderLeft: '1px solid #E5E7EB',
@@ -400,36 +469,21 @@ export default function Navbar() {
             </form>
           </div>
 
-          {/* ─── Right side utility links ─── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.5rem, 1.5vw, 1.5rem)', flexShrink: 0, marginLeft: 'auto' }}>
-
-            {/* Help / Phone */}
+          {/* Right Header Links */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.5rem, 1.2vw, 1.25rem)', flexShrink: 0, marginLeft: 'auto' }}>
             <a
               href="tel:9479784979"
               className="vp-desktop-only"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                textDecoration: 'none',
-                gap: '0.1rem',
-              }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none' }}
             >
               <span style={{ fontSize: '0.6875rem', color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Help is here</span>
               <span style={{ fontSize: '0.8125rem', color: '#1E1E1E', fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>9479784979</span>
             </a>
 
-            {/* My Favourites */}
             <Link
               href="/dashboard"
               className="vp-desktop-only"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                textDecoration: 'none',
-                gap: '0.1rem',
-              }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none' }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="1.8">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -437,18 +491,11 @@ export default function Navbar() {
               <span style={{ fontSize: '0.6875rem', color: '#1E1E1E', fontFamily: "'Inter', sans-serif" }}>My Favourites</span>
             </Link>
 
-            {/* Sign In / User */}
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Link
                   href="/dashboard"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    textDecoration: 'none',
-                    gap: '0.1rem',
-                  }}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none' }}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="1.8">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
@@ -457,15 +504,7 @@ export default function Navbar() {
                 </Link>
                 <button
                   onClick={() => logout()}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#6B7280',
-                    fontSize: '0.65rem',
-                    cursor: 'pointer',
-                    fontFamily: "'Inter', sans-serif",
-                    textDecoration: 'underline',
-                  }}
+                  style={{ background: 'transparent', border: 'none', color: '#6B7280', fontSize: '0.65rem', cursor: 'pointer', fontFamily: "'Inter', sans-serif", textDecoration: 'underline' }}
                 >
                   Logout
                 </button>
@@ -477,7 +516,7 @@ export default function Navbar() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '0.5rem 1.35rem',
+                  padding: '0.45rem 1.25rem',
                   border: '1.5px solid #1E1E1E',
                   borderRadius: '999px',
                   background: 'transparent',
@@ -486,24 +525,15 @@ export default function Navbar() {
                   fontSize: '0.8125rem',
                   color: '#1E1E1E',
                   textDecoration: 'none',
-                  transition: 'all 0.2s ease',
                 }}
               >
                 Sign In
               </Link>
             )}
 
-            {/* Cart */}
             <Link
               href="/cart"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                textDecoration: 'none',
-                gap: '0.1rem',
-                position: 'relative',
-              }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none', position: 'relative' }}
               aria-label="Cart"
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="1.8">
@@ -537,7 +567,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ═══ 3. Category Navigation Ribbon with Hover Mega Menu ═══ */}
+      {/* ═══ 3. Perfectly Spaced Category Navigation Ribbon ═══ */}
       <div
         style={{
           background: '#FFFFFF',
@@ -550,11 +580,11 @@ export default function Navbar() {
           style={{
             maxWidth: '1440px',
             margin: '0 auto',
-            padding: '0 clamp(1rem, 3vw, 2.5rem)',
+            padding: '0 clamp(0.75rem, 1.5vw, 1.5rem)',
             display: 'flex',
             alignItems: 'center',
-            gap: '0',
-            whiteSpace: 'nowrap',
+            justifyContent: 'space-between',
+            width: '100%',
           }}
         >
           {megaNavTabs.map((tab, idx) => {
@@ -570,14 +600,15 @@ export default function Navbar() {
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    padding: '0.75rem 1rem',
+                    padding: '0.75rem 0.4rem',
                     fontFamily: "'Inter', sans-serif",
-                    fontSize: '0.8125rem',
+                    fontSize: '0.78125rem',
                     fontWeight: isHovered || idx === 0 ? 600 : 400,
-                    color: isHovered || idx === 0 ? '#0B2545' : '#4B5563',
+                    color: isHovered || idx === 0 ? '#0B2545' : '#374151',
                     textDecoration: 'none',
                     borderBottom: isHovered || idx === 0 ? '2px solid #0B2545' : '2px solid transparent',
                     transition: 'all 0.15s ease',
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   {tab.label}
@@ -587,7 +618,7 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* ═══ 4. Vistaprint Mega Menu Dropdown Overlay ═══ */}
+        {/* ═══ 4. Mega Menu Dropdown Overlay for ALL Tabs ═══ */}
         {hoveredTab && hoveredTab.columns && hoveredTab.columns.length > 0 && (
           <div
             onMouseEnter={() => setHoveredTab(hoveredTab)}
@@ -695,7 +726,6 @@ export default function Navbar() {
 
       <style jsx global>{`
         .vp-desktop-only { display: flex !important; }
-        header div::-webkit-scrollbar { display: none; }
         @keyframes fadeInDown {
           from { opacity: 0; transform: translateY(-4px); }
           to { opacity: 1; transform: translateY(0); }

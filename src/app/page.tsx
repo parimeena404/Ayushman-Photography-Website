@@ -21,9 +21,10 @@ const cardShapes: ProductItem[] = [
     price: '₹200.00',
     unit: '₹2.00 each / 100 units',
     category: 'Standard Cards',
-    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&auto=format&fit=crop&q=80',
     rating: 4.5,
     reviews: 1658,
+    bgGradient: '#FAF0E6',
   },
   {
     id: 'shape-2',
@@ -32,9 +33,10 @@ const cardShapes: ProductItem[] = [
     price: '₹230.00',
     unit: '₹2.30 each / 100 units',
     category: 'Classic Cards',
-    image: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&auto=format&fit=crop&q=80',
     rating: 4.5,
     reviews: 230,
+    bgGradient: '#FDF2F2',
   },
   {
     id: 'shape-3',
@@ -43,9 +45,10 @@ const cardShapes: ProductItem[] = [
     price: '₹250.00',
     unit: '₹2.50 each / 100 units',
     category: 'Rounded Cards',
-    image: 'https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=600&auto=format&fit=crop&q=80',
     rating: 4.5,
     reviews: 520,
+    bgGradient: '#F5F2ED',
   },
   {
     id: 'shape-4',
@@ -54,9 +57,10 @@ const cardShapes: ProductItem[] = [
     price: '₹250.00',
     unit: '₹2.50 each / 100 units',
     category: 'Square Cards',
-    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&auto=format&fit=crop&q=80',
     rating: 4.5,
     reviews: 69,
+    bgGradient: '#F0F7F2',
   },
   {
     id: 'shape-5',
@@ -65,9 +69,10 @@ const cardShapes: ProductItem[] = [
     price: '₹270.00',
     unit: '₹2.70 each / 100 units',
     category: 'Leaf Cards',
-    image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&auto=format&fit=crop&q=80',
     rating: 4.7,
     reviews: 53,
+    bgGradient: '#F4F0F9',
   },
   {
     id: 'shape-6',
@@ -76,9 +81,10 @@ const cardShapes: ProductItem[] = [
     price: '₹270.00',
     unit: '₹2.70 each / 100 units',
     category: 'Oval Cards',
-    image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=600&auto=format&fit=crop&q=80',
     rating: 4.7,
     reviews: 16,
+    bgGradient: '#F9EBE6',
   },
 ];
 
@@ -91,9 +97,10 @@ const cardTextures: ProductItem[] = [
     price: '₹220.00',
     unit: '₹2.20 each / 100 units',
     category: 'Matte Cards',
-    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&auto=format&fit=crop&q=80',
     rating: 4.6,
     reviews: 420,
+    bgGradient: '#FAF0E6',
   },
   {
     id: 'tex-2',
@@ -102,9 +109,10 @@ const cardTextures: ProductItem[] = [
     price: '₹250.00',
     unit: '₹2.50 each / 100 units',
     category: 'Glossy Cards',
-    image: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&auto=format&fit=crop&q=80',
     rating: 4.4,
     reviews: 312,
+    bgGradient: '#FDF2F2',
   },
   {
     id: 'tex-3',
@@ -113,9 +121,10 @@ const cardTextures: ProductItem[] = [
     price: '₹380.00',
     unit: '₹3.80 each / 100 units',
     category: 'Velvet Cards',
-    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&auto=format&fit=crop&q=80',
     rating: 4.8,
     reviews: 185,
+    bgGradient: '#F4F0F9',
   },
   {
     id: 'tex-4',
@@ -124,9 +133,10 @@ const cardTextures: ProductItem[] = [
     price: '₹580.00',
     unit: '₹5.80 each / 100 units',
     category: 'Spot UV Cards',
-    image: 'https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=600&auto=format&fit=crop&q=80',
     rating: 4.7,
     reviews: 89,
+    bgGradient: '#2D3748',
   },
   {
     id: 'tex-5',
@@ -135,9 +145,10 @@ const cardTextures: ProductItem[] = [
     price: '₹750.00',
     unit: '₹7.50 each / 100 units',
     category: 'Gold Foil Cards',
-    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop&q=80',
     rating: 4.9,
     reviews: 245,
+    bgGradient: '#FFFDF0',
   },
   {
     id: 'tex-6',
@@ -146,9 +157,10 @@ const cardTextures: ProductItem[] = [
     price: '₹2,200.00',
     unit: '₹22.00 each / 100 units',
     category: 'Acrylic Cards',
-    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&auto=format&fit=crop&q=80',
     rating: 4.8,
     reviews: 67,
+    bgGradient: '#EBF5FA',
   },
 ];
 
@@ -161,9 +173,10 @@ const weddingCards: ProductItem[] = [
     price: '₹4,500',
     unit: '₹45.00 each / 100 units',
     category: 'Wedding Box Cards',
-    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&auto=format&fit=crop&q=80',
     rating: 4.9,
     reviews: 890,
+    bgGradient: '#FDF2F2',
   },
   {
     id: 'wed-2',
@@ -172,9 +185,10 @@ const weddingCards: ProductItem[] = [
     price: '₹6,500',
     unit: '₹65.00 each / 100 units',
     category: 'Acrylic Invitations',
-    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&auto=format&fit=crop&q=80',
     rating: 4.8,
     reviews: 156,
+    bgGradient: '#EBF5FA',
   },
   {
     id: 'wed-3',
@@ -183,9 +197,10 @@ const weddingCards: ProductItem[] = [
     price: '₹5,200',
     unit: '₹52.00 each / 100 units',
     category: 'Scroll Invitations',
-    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop&q=80',
     rating: 4.7,
     reviews: 203,
+    bgGradient: '#FFFDF0',
   },
   {
     id: 'wed-4',
@@ -194,9 +209,10 @@ const weddingCards: ProductItem[] = [
     price: '₹3,800',
     unit: '₹19.00 each / 200 units',
     category: 'Traditional Cards',
-    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80',
     rating: 4.6,
     reviews: 345,
+    bgGradient: '#F4F0F9',
   },
   {
     id: 'wed-5',
@@ -205,9 +221,10 @@ const weddingCards: ProductItem[] = [
     price: '₹3,200',
     unit: '₹32.00 each / 100 units',
     category: 'Newspaper Invitations',
-    image: 'https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?w=600&auto=format&fit=crop&q=80',
     rating: 4.5,
     reviews: 128,
+    bgGradient: '#F5F2ED',
   },
 ];
 
@@ -222,7 +239,7 @@ export default function Home() {
         {/* 2. Trust Value Bar */}
         <TrustBar />
 
-        {/* 3. Best Sellers & Trending (horizontal scroll rows) */}
+        {/* 3. Best Sellers & Trending */}
         <ExploreCategories />
 
         {/* 4. Shop by Shapes */}
@@ -233,7 +250,7 @@ export default function Home() {
           items={cardShapes}
         />
 
-        {/* 5. Featured Promo — Wedding Cards */}
+        {/* 5. Featured Promo Banner */}
         <PromoBanner />
 
         {/* 6. Shop by Papers & Textures */}

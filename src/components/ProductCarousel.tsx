@@ -24,12 +24,12 @@ interface ProductCarouselProps {
 }
 
 const defaultGradients = [
-  'linear-gradient(135deg, #FBF4E8 0%, #F5E6D0 100%)', // Amber / Soft Gold
-  'linear-gradient(135deg, #FDF0F0 0%, #F8DCDC 100%)', // Coral Blush
-  'linear-gradient(135deg, #F4EFEA 0%, #E8E0D7 100%)', // Sand Linen
-  'linear-gradient(135deg, #EBF5EE 0%, #D8EADF 100%)', // Sage Mint
-  'linear-gradient(135deg, #F3EEF9 0%, #E5DAF2 100%)', // Lilac Lavender
-  'linear-gradient(135deg, #F9EBE6 0%, #F2D5CB 100%)', // Terracotta Clay
+  '#FAF0E6', // Amber Gold
+  '#FDF2F2', // Coral Blush
+  '#F5F2ED', // Linen Sand
+  '#F0F7F2', // Sage Mint
+  '#F4F0F9', // Lavender Lilac
+  '#F9EBE6', // Terracotta Clay
 ];
 
 export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, items }: ProductCarouselProps) {
@@ -109,7 +109,7 @@ export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, ite
             ref={scrollRef}
             style={{
               display: 'flex',
-              gap: '1rem',
+              gap: '1.25rem',
               overflowX: 'auto',
               scrollbarWidth: 'none',
               paddingBottom: '0.5rem',
@@ -122,7 +122,7 @@ export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, ite
                   key={item.id}
                   href={`/booking?pkg=${item.category?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'wedding-cards'}`}
                   style={{
-                    flex: '0 0 220px',
+                    flex: '0 0 210px',
                     textDecoration: 'none',
                     color: 'inherit',
                   }}
@@ -131,15 +131,14 @@ export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, ite
                     style={{
                       position: 'relative',
                       background: cardBg,
-                      borderRadius: '10px',
+                      borderRadius: '12px',
                       overflow: 'hidden',
-                      border: '1px solid rgba(0,0,0,0.06)',
-                      padding: '8px',
+                      border: '1px solid #E5E7EB',
                       transition: 'box-shadow 0.2s ease, transform 0.2s ease',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.1)';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.12)';
+                      e.currentTarget.style.transform = 'translateY(-3px)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.boxShadow = 'none';
@@ -151,17 +150,17 @@ export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, ite
                       <div
                         style={{
                           position: 'absolute',
-                          top: '12px',
-                          left: '12px',
+                          top: '10px',
+                          left: '10px',
                           zIndex: 5,
                           background: '#B2E4F7',
                           color: '#0B2545',
                           fontFamily: "'Inter', sans-serif",
                           fontSize: '0.6875rem',
                           fontWeight: 700,
-                          padding: '0.2rem 0.5rem',
+                          padding: '0.2rem 0.55rem',
                           borderRadius: '4px',
-                          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
                         }}
                       >
                         {item.badge}
@@ -172,42 +171,42 @@ export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, ite
                     <div
                       style={{
                         position: 'absolute',
-                        top: '12px',
-                        right: '12px',
+                        top: '10px',
+                        right: '10px',
                         zIndex: 5,
-                        width: '28px',
-                        height: '28px',
+                        width: '30px',
+                        height: '30px',
                         borderRadius: '50%',
                         background: 'rgba(255,255,255,0.92)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                        boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
                       }}
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="2">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="2">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                       </svg>
                     </div>
 
-                    {/* Image */}
-                    <div style={{ width: '100%', aspectRatio: '1', overflow: 'hidden', borderRadius: '6px' }}>
+                    {/* Image taking 100% full card width */}
+                    <div style={{ width: '100%', aspectRatio: '1', overflow: 'hidden' }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={item.image}
                         alt={item.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                       />
                     </div>
                   </div>
 
                   {/* Title + Price */}
-                  <div style={{ padding: '0.5rem 0.25rem' }}>
+                  <div style={{ padding: '0.6rem 0.25rem' }}>
                     <div
                       style={{
                         fontFamily: "'Inter', sans-serif",
                         fontSize: '0.875rem',
-                        fontWeight: 500,
+                        fontWeight: 600,
                         color: '#1E1E1E',
                         lineHeight: 1.35,
                         display: '-webkit-box',

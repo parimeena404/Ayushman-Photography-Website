@@ -11,6 +11,7 @@ interface CategoryProduct {
   unit?: string;
   rating?: number;
   reviews?: number;
+  bgGradient: string;
   href: string;
 }
 
@@ -23,6 +24,7 @@ const bestSellers: CategoryProduct[] = [
     unit: '₹2.00 each / 100 units',
     rating: 4.5,
     reviews: 1658,
+    bgGradient: 'linear-gradient(135deg, #FBF4E8 0%, #F5E6D0 100%)', // Pastel Gold / Amber
     href: '/booking?pkg=wedding-cards',
   },
   {
@@ -33,6 +35,7 @@ const bestSellers: CategoryProduct[] = [
     unit: '₹2.50 each / 100 units',
     rating: 4.5,
     reviews: 520,
+    bgGradient: 'linear-gradient(135deg, #F4EFEA 0%, #E8E0D7 100%)', // Soft Linen Sand
     href: '/booking?pkg=wedding-cards',
   },
   {
@@ -43,6 +46,7 @@ const bestSellers: CategoryProduct[] = [
     unit: '₹3.50 each / 100 units',
     rating: 4.3,
     reviews: 284,
+    bgGradient: 'linear-gradient(135deg, #EBF5EE 0%, #D8EADF 100%)', // Fresh Sage Mint
     href: '/booking?pkg=wedding-cards',
   },
   {
@@ -53,6 +57,7 @@ const bestSellers: CategoryProduct[] = [
     unit: 'Starting price',
     rating: 4.7,
     reviews: 162,
+    bgGradient: 'linear-gradient(135deg, #F3EEF9 0%, #E5DAF2 100%)', // Soft Lilac / Lavender
     href: '/booking?pkg=sangeet-haldi',
   },
   {
@@ -63,6 +68,7 @@ const bestSellers: CategoryProduct[] = [
     unit: '₹1.80 each / 100 units',
     rating: 4.4,
     reviews: 340,
+    bgGradient: 'linear-gradient(135deg, #E6F4F8 0%, #CDE7F0 100%)', // Ice Blue
     href: '/booking?pkg=flex-banners',
   },
   {
@@ -73,6 +79,7 @@ const bestSellers: CategoryProduct[] = [
     unit: '₹25.00 each / 100 units',
     rating: 4.8,
     reviews: 890,
+    bgGradient: 'linear-gradient(135deg, #FBEAEA 0%, #F5D3D3 100%)', // Royal Rose Velvet
     href: '/booking?pkg=royal-wedding',
   },
 ];
@@ -84,6 +91,7 @@ const trending: CategoryProduct[] = [
     badge: 'BUY 100 @ Rs.230',
     price: '₹230.00',
     unit: '₹2.30 each / 100 units',
+    bgGradient: 'linear-gradient(135deg, #FDF0F0 0%, #F8DCDC 100%)', // Coral Blush
     href: '/booking?pkg=wedding-cards',
   },
   {
@@ -92,6 +100,7 @@ const trending: CategoryProduct[] = [
     badge: 'BUY 100 @ Rs.580',
     price: '₹580.00',
     unit: '₹5.80 each / 100 units',
+    bgGradient: 'linear-gradient(135deg, #2D3748 0%, #1A202C 100%)', // Dark Slate Matte
     href: '/booking?pkg=wedding-cards',
   },
   {
@@ -100,6 +109,7 @@ const trending: CategoryProduct[] = [
     badge: 'START @ Rs.18/sq ft',
     price: '₹18.00',
     unit: 'Per sq. ft.',
+    bgGradient: 'linear-gradient(135deg, #FFFDF0 0%, #FAF0C8 100%)', // Warm Cream Gold
     href: '/booking?pkg=flex-banners',
   },
   {
@@ -108,6 +118,7 @@ const trending: CategoryProduct[] = [
     badge: 'BUY 1 @ Rs.860',
     price: '₹860.00',
     unit: 'Complete set',
+    bgGradient: 'linear-gradient(135deg, #F9EBE6 0%, #F2D5CB 100%)', // Terracotta Clay
     href: '/booking?pkg=flex-banners',
   },
   {
@@ -116,6 +127,7 @@ const trending: CategoryProduct[] = [
     badge: 'BUY 1 @ Rs.205',
     price: '₹205.00',
     unit: 'Per piece',
+    bgGradient: 'linear-gradient(135deg, #EBF5EE 0%, #D8EADF 100%)', // Mint Sage
     href: '/booking?pkg=sangeet-haldi',
   },
   {
@@ -124,6 +136,7 @@ const trending: CategoryProduct[] = [
     badge: 'BUY 100 @ Rs.4,500',
     price: '₹4,500.00',
     unit: '₹45.00 each / 100 units',
+    bgGradient: 'linear-gradient(135deg, #FFFDF0 0%, #F6E6A7 100%)', // Gold Metallic Glow
     href: '/booking?pkg=royal-wedding',
   },
 ];
@@ -228,11 +241,20 @@ function ProductRow({ title, items }: { title: string; items: CategoryProduct[] 
               <div
                 style={{
                   position: 'relative',
-                  background: '#F3F4F6',
-                  borderRadius: '8px',
+                  background: item.bgGradient,
+                  borderRadius: '10px',
                   overflow: 'hidden',
-                  border: '1px solid #E5E7EB',
-                  transition: 'box-shadow 0.2s ease',
+                  border: '1px solid rgba(0,0,0,0.06)',
+                  transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+                  padding: '8px',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.1)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
                 {/* Price Badge */}
@@ -240,8 +262,8 @@ function ProductRow({ title, items }: { title: string; items: CategoryProduct[] 
                   <div
                     style={{
                       position: 'absolute',
-                      top: '8px',
-                      left: '8px',
+                      top: '12px',
+                      left: '12px',
                       zIndex: 5,
                       background: '#B2E4F7',
                       color: '#0B2545',
@@ -250,6 +272,7 @@ function ProductRow({ title, items }: { title: string; items: CategoryProduct[] 
                       fontWeight: 700,
                       padding: '0.2rem 0.5rem',
                       borderRadius: '4px',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                     }}
                   >
                     {item.badge}
@@ -260,16 +283,17 @@ function ProductRow({ title, items }: { title: string; items: CategoryProduct[] 
                 <div
                   style={{
                     position: 'absolute',
-                    top: '8px',
-                    right: '8px',
+                    top: '12px',
+                    right: '12px',
                     zIndex: 5,
                     width: '28px',
                     height: '28px',
                     borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.9)',
+                    background: 'rgba(255,255,255,0.92)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
                   }}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="2">
@@ -277,8 +301,8 @@ function ProductRow({ title, items }: { title: string; items: CategoryProduct[] 
                   </svg>
                 </div>
 
-                {/* Product Image */}
-                <div style={{ width: '100%', aspectRatio: '1', overflow: 'hidden' }}>
+                {/* Product Image Wrapper with rounded inner corners */}
+                <div style={{ width: '100%', aspectRatio: '1', overflow: 'hidden', borderRadius: '6px' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={item.image}

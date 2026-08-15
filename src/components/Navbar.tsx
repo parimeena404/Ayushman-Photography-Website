@@ -5,14 +5,248 @@ import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
 
-const categoryTabs = [
+interface MegaColumn {
+  heading: string;
+  items: { label: string; href: string; isNew?: boolean }[];
+}
+
+interface NavTab {
+  label: string;
+  href: string;
+  columns?: MegaColumn[];
+}
+
+const megaNavTabs: NavTab[] = [
   { label: 'View All', href: '/' },
-  { label: 'Visiting Cards', href: '/#products' },
-  { label: 'Wedding Invitations', href: '/#wedding' },
-  { label: 'Stationery, Letterheads & Notebooks', href: '/#stationery' },
-  { label: 'Signs, Posters & Marketing Materials', href: '/#banners' },
-  { label: 'Labels, Stickers & Packaging', href: '/#stickers' },
-  { label: 'Mugs, Albums & Gifts', href: '/#gifts' },
+  {
+    label: 'Visiting Cards',
+    href: '/#products',
+    columns: [
+      {
+        heading: 'Shop by Shape',
+        items: [
+          { label: 'Standard Visiting Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Classic Visiting Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Rounded Corner Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Square Visiting Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Leaf Visiting Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Oval Visiting Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Custom Shape Cards', href: '/booking?pkg=wedding-cards', isNew: true },
+        ],
+      },
+      {
+        heading: 'Shop by Paper & Finish',
+        items: [
+          { label: 'Matte Finish (350 GSM)', href: '/booking?pkg=wedding-cards' },
+          { label: 'Glossy Laminated Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Velvet Touch Cards', href: '/booking?pkg=wedding-cards', isNew: true },
+          { label: 'Spot UV Coating Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Gold Foil Stamping Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Transparent Acrylic Cards', href: '/booking?pkg=royal-wedding' },
+          { label: 'Metallic Silver Foil Cards', href: '/booking?pkg=wedding-cards', isNew: true },
+        ],
+      },
+      {
+        heading: 'Specialty Cards',
+        items: [
+          { label: 'Premium Plus Glossy', href: '/booking?pkg=wedding-cards' },
+          { label: 'Non-Tearable Silk Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Magnet Visiting Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Kraft Paper Cards', href: '/booking?pkg=wedding-cards' },
+        ],
+      },
+      {
+        heading: 'Visiting Card Accessories',
+        items: [
+          { label: 'Metal Card Holder', href: '/booking?pkg=wedding-cards' },
+          { label: 'Executive Desktop Card Stand', href: '/booking?pkg=wedding-cards' },
+          { label: 'Leatherette Pocket Case', href: '/booking?pkg=wedding-cards' },
+        ],
+      },
+    ],
+  },
+  {
+    label: 'Stationery, Letterheads & Notebooks',
+    href: '/#stationery',
+    columns: [
+      {
+        heading: 'Custom Stationery',
+        items: [
+          { label: 'Letterheads', href: '/booking?pkg=wedding-cards' },
+          { label: 'Custom Letterhead Pads', href: '/booking?pkg=wedding-cards' },
+          { label: 'Bill Books', href: '/booking?pkg=wedding-cards' },
+          { label: 'Envelopes', href: '/booking?pkg=wedding-cards' },
+          { label: 'Custom Mouse Pads', href: '/booking?pkg=wedding-cards' },
+          { label: 'Envelope Seals', href: '/booking?pkg=wedding-cards' },
+          { label: 'Custom Pen Drive', href: '/booking?pkg=wedding-cards' },
+          { label: 'Laptop Skins', href: '/booking?pkg=wedding-cards' },
+          { label: 'Bulk Letterheads', href: '/booking?pkg=wedding-cards' },
+          { label: 'Custom Pens', href: '/booking?pkg=wedding-cards' },
+        ],
+      },
+      {
+        heading: 'Office Supplies',
+        items: [
+          { label: 'Lanyards', href: '/booking?pkg=wedding-cards' },
+          { label: 'ID Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Invoice Books', href: '/booking?pkg=wedding-cards' },
+          { label: 'Note Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Custom Certificates', href: '/booking?pkg=wedding-cards' },
+          { label: 'Awards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Coasters', href: '/booking?pkg=wedding-cards' },
+          { label: 'Employee Welcome Kit', href: '/booking?pkg=wedding-cards' },
+          { label: 'Cash Vouchers', href: '/booking?pkg=wedding-cards' },
+          { label: 'Paper Identity Cards', href: '/booking?pkg=wedding-cards' },
+        ],
+      },
+      {
+        heading: 'Custom Notebooks & Diaries',
+        items: [
+          { label: 'Personalised Notebooks', href: '/booking?pkg=wedding-cards' },
+          { label: 'Diary with Pen Holder', href: '/booking?pkg=wedding-cards' },
+          { label: 'Personalised A5 Diary', href: '/booking?pkg=wedding-cards' },
+          { label: 'Personalised Diary with Magnetic Lock', href: '/booking?pkg=wedding-cards' },
+          { label: 'Notebook A4 Size', href: '/booking?pkg=wedding-cards' },
+        ],
+      },
+      {
+        heading: 'Wedding Stationery',
+        items: [
+          { label: 'Wedding Invitations', href: '/booking?pkg=royal-wedding' },
+          { label: 'Save The Date Cards', href: '/booking?pkg=royal-wedding' },
+          { label: 'Wedding Menu', href: '/booking?pkg=royal-wedding' },
+          { label: 'Wedding Programmes', href: '/booking?pkg=royal-wedding' },
+          { label: 'Shop all Wedding Stationery', href: '/booking?pkg=royal-wedding' },
+        ],
+      },
+      {
+        heading: 'Invitations & Announcements',
+        items: [
+          { label: 'Thank You Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Birthday Invitations', href: '/booking?pkg=royal-wedding' },
+          { label: 'Party invitations', href: '/booking?pkg=royal-wedding' },
+          { label: 'Moving Announcements', href: '/booking?pkg=wedding-cards' },
+          { label: 'Gift Tags', href: '/booking?pkg=wedding-cards' },
+          { label: 'Shop all Invitations and Announcements', href: '/booking?pkg=royal-wedding' },
+        ],
+      },
+      {
+        heading: 'Explore More.',
+        items: [
+          { label: 'Gift Wrapping Paper', href: '/booking?pkg=flex-banners' },
+          { label: 'Custom Paper Wrist Bands', href: '/booking?pkg=flex-banners' },
+          { label: 'USB Flash Drive', href: '/booking?pkg=wedding-cards' },
+          { label: 'Perfect Binding Booklets', href: '/booking?pkg=wedding-cards' },
+          { label: 'Customised Mementos', href: '/booking?pkg=wedding-cards', isNew: true },
+          { label: 'Recognition Plaques', href: '/booking?pkg=wedding-cards', isNew: true },
+          { label: 'Star Performer Awards', href: '/booking?pkg=wedding-cards', isNew: true },
+        ],
+      },
+    ],
+  },
+  {
+    label: 'Wedding Invitations',
+    href: '/#wedding',
+    columns: [
+      {
+        heading: 'Royal Invitations',
+        items: [
+          { label: 'Royal Velvet & Gold Box Cards', href: '/booking?pkg=royal-wedding' },
+          { label: 'Clear Acrylic Invitations', href: '/booking?pkg=royal-wedding' },
+          { label: 'Royal Farman Scroll Invitations', href: '/booking?pkg=royal-wedding' },
+          { label: 'Traditional Ganesh Cards', href: '/booking?pkg=royal-wedding' },
+          { label: '"The Shaadi Times" Newspaper Card', href: '/booking?pkg=royal-wedding', isNew: true },
+        ],
+      },
+      {
+        heading: 'Ceremony & Event Cards',
+        items: [
+          { label: 'Haldi & Sangeet Cards', href: '/booking?pkg=sangeet-haldi' },
+          { label: 'Wedding Menu Cards', href: '/booking?pkg=royal-wedding' },
+          { label: 'Wedding Program Folders', href: '/booking?pkg=royal-wedding' },
+          { label: 'Save The Date Cards', href: '/booking?pkg=royal-wedding' },
+          { label: 'Thank You Cards', href: '/booking?pkg=wedding-cards' },
+        ],
+      },
+      {
+        heading: 'Envelopes & Seals',
+        items: [
+          { label: 'Wax Seal Stamps', href: '/booking?pkg=royal-wedding' },
+          { label: 'Custom Envelope Seals', href: '/booking?pkg=royal-wedding' },
+          { label: 'Foil Embossed Envelopes', href: '/booking?pkg=royal-wedding' },
+          { label: 'Velvet Outer Boxes', href: '/booking?pkg=royal-wedding' },
+        ],
+      },
+    ],
+  },
+  {
+    label: 'Signs, Posters & Marketing Materials',
+    href: '/#banners',
+    columns: [
+      {
+        heading: 'Banners & Displays',
+        items: [
+          { label: 'Star Flex Outdoor Banners (₹18/sqft)', href: '/booking?pkg=flex-banners' },
+          { label: 'Roll-up Display Standees (6x3 ft)', href: '/booking?pkg=flex-banners' },
+          { label: 'Heavy Duty Vinyl Banners', href: '/booking?pkg=flex-banners' },
+          { label: 'Glow Sign Boards', href: '/booking?pkg=flex-banners' },
+          { label: 'Promotional Canopy Tents', href: '/booking?pkg=flex-banners', isNew: true },
+        ],
+      },
+      {
+        heading: 'Marketing Prints',
+        items: [
+          { label: 'Pamphlets & Flyers (A4/A5)', href: '/booking?pkg=flex-banners' },
+          { label: 'Corporate Postcards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Restaurant Menu Cards', href: '/booking?pkg=wedding-cards' },
+          { label: 'Product Catalogs', href: '/booking?pkg=wedding-cards' },
+          { label: 'Tri-Fold Brochures', href: '/booking?pkg=flex-banners' },
+        ],
+      },
+    ],
+  },
+  {
+    label: 'Labels, Stickers & Packaging',
+    href: '/#stickers',
+    columns: [
+      {
+        heading: 'Stickers & Labels',
+        items: [
+          { label: 'Custom Die-Cut Stickers', href: '/booking?pkg=flex-banners' },
+          { label: 'Product Packaging Labels', href: '/booking?pkg=flex-banners' },
+          { label: 'Roll Labels', href: '/booking?pkg=flex-banners' },
+          { label: 'Sheet Stickers', href: '/booking?pkg=flex-banners' },
+          { label: 'Transparent Waterproof Stickers', href: '/booking?pkg=flex-banners', isNew: true },
+        ],
+      },
+      {
+        heading: 'Packaging Solutions',
+        items: [
+          { label: 'Printed Envelopes', href: '/booking?pkg=wedding-cards' },
+          { label: 'Custom Shipping Boxes', href: '/booking?pkg=flex-banners' },
+          { label: 'Branded Carry Bags', href: '/booking?pkg=flex-banners' },
+          { label: 'Custom Gift Wrapping Paper', href: '/booking?pkg=flex-banners' },
+        ],
+      },
+    ],
+  },
+  {
+    label: 'Mugs, Albums & Gifts',
+    href: '/#gifts',
+    columns: [
+      {
+        heading: 'Custom Gifts & Merchandise',
+        items: [
+          { label: 'Custom Ceramic Photo Mugs', href: '/booking?pkg=sangeet-haldi' },
+          { label: 'Magic Color Changing Photo Mugs', href: '/booking?pkg=sangeet-haldi' },
+          { label: 'HD Photobooks & Wedding Albums', href: '/booking?pkg=sangeet-haldi' },
+          { label: 'Custom Printed Keychains', href: '/booking?pkg=wedding-cards' },
+          { label: 'Custom Magic Photo Cushions', href: '/booking?pkg=sangeet-haldi', isNew: true },
+          { label: 'Custom Printed Polo T-shirts', href: '/booking?pkg=flex-banners' },
+        ],
+      },
+    ],
+  },
   { label: 'Custom Polo T-shirts', href: '/#tshirts' },
   { label: 'Deals & Offers', href: '/#deals' },
 ];
@@ -22,6 +256,7 @@ export default function Navbar() {
   const { totalItemCount } = useCart();
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedCode, setCopiedCode] = useState(false);
+  const [hoveredTab, setHoveredTab] = useState<NavTab | null>(null);
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText('SAVE5');
@@ -30,7 +265,10 @@ export default function Navbar() {
   };
 
   return (
-    <header style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
+    <header
+      style={{ position: 'sticky', top: 0, zIndex: 1000 }}
+      onMouseLeave={() => setHoveredTab(null)}
+    >
       {/* ═══ 1. Top Promo Announcement Bar (Vistaprint Blue) ═══ */}
       <div
         style={{
@@ -299,13 +537,12 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ═══ 3. Category Navigation Ribbon (Vistaprint style) ═══ */}
+      {/* ═══ 3. Category Navigation Ribbon with Hover Mega Menu ═══ */}
       <div
         style={{
           background: '#FFFFFF',
           borderBottom: '1px solid #E5E7EB',
-          overflowX: 'auto',
-          scrollbarWidth: 'none',
+          position: 'relative',
         }}
         className="vp-desktop-only"
       >
@@ -320,41 +557,149 @@ export default function Navbar() {
             whiteSpace: 'nowrap',
           }}
         >
-          {categoryTabs.map((tab, idx) => (
-            <Link
-              key={tab.label}
-              href={tab.href}
+          {megaNavTabs.map((tab, idx) => {
+            const isHovered = hoveredTab?.label === tab.label;
+            return (
+              <div
+                key={tab.label}
+                onMouseEnter={() => setHoveredTab(tab)}
+                style={{ position: 'relative' }}
+              >
+                <Link
+                  href={tab.href}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '0.75rem 1rem',
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: '0.8125rem',
+                    fontWeight: isHovered || idx === 0 ? 600 : 400,
+                    color: isHovered || idx === 0 ? '#0B2545' : '#4B5563',
+                    textDecoration: 'none',
+                    borderBottom: isHovered || idx === 0 ? '2px solid #0B2545' : '2px solid transparent',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  {tab.label}
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ═══ 4. Vistaprint Mega Menu Dropdown Overlay ═══ */}
+        {hoveredTab && hoveredTab.columns && hoveredTab.columns.length > 0 && (
+          <div
+            onMouseEnter={() => setHoveredTab(hoveredTab)}
+            onMouseLeave={() => setHoveredTab(null)}
+            style={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              background: '#FFFFFF',
+              borderTop: '1px solid #E5E7EB',
+              borderBottom: '2px solid #CBD5E1',
+              boxShadow: '0 12px 30px rgba(0,0,0,0.12)',
+              zIndex: 9999,
+              padding: '2rem clamp(1rem, 3vw, 2.5rem)',
+              animation: 'fadeInDown 0.15s ease-out',
+            }}
+          >
+            <div
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                padding: '0.75rem 1rem',
-                fontFamily: "'Inter', sans-serif",
-                fontSize: '0.8125rem',
-                fontWeight: 400,
-                color: idx === 0 ? '#0B2545' : '#4B5563',
-                textDecoration: idx === 0 ? 'underline' : 'none',
-                textUnderlineOffset: '4px',
-                transition: 'color 0.2s ease',
-                borderBottom: '2px solid transparent',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = '#0B2545';
-                e.currentTarget.style.textDecoration = 'underline';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = idx === 0 ? '#0B2545' : '#4B5563';
-                e.currentTarget.style.textDecoration = idx === 0 ? 'underline' : 'none';
+                maxWidth: '1440px',
+                margin: '0 auto',
+                display: 'grid',
+                gridTemplateColumns: `repeat(${Math.min(hoveredTab.columns.length, 6)}, 1fr)`,
+                gap: '1.75rem',
+                alignItems: 'start',
               }}
             >
-              {tab.label}
-            </Link>
-          ))}
-        </div>
+              {hoveredTab.columns.map((col) => (
+                <div key={col.heading}>
+                  <h4
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: '0.875rem',
+                      fontWeight: 700,
+                      color: '#1E1E1E',
+                      marginBottom: '0.75rem',
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {col.heading}
+                  </h4>
+                  <ul
+                    style={{
+                      listStyle: 'none',
+                      padding: 0,
+                      margin: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.45rem',
+                    }}
+                  >
+                    {col.items.map((item) => (
+                      <li key={item.label}>
+                        <Link
+                          href={item.href}
+                          onClick={() => setHoveredTab(null)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem',
+                            fontFamily: "'Inter', sans-serif",
+                            fontSize: '0.8125rem',
+                            color: '#4B5563',
+                            textDecoration: 'none',
+                            transition: 'color 0.15s ease',
+                            lineHeight: 1.4,
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.color = '#0B2545';
+                            e.currentTarget.style.textDecoration = 'underline';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.color = '#4B5563';
+                            e.currentTarget.style.textDecoration = 'none';
+                          }}
+                        >
+                          <span>{item.label}</span>
+                          {item.isNew && (
+                            <span
+                              style={{
+                                background: '#60B5FF',
+                                color: '#002B52',
+                                fontSize: '0.625rem',
+                                fontWeight: 800,
+                                padding: '0.05rem 0.35rem',
+                                borderRadius: '4px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.02em',
+                              }}
+                            >
+                              NEW
+                            </span>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <style jsx global>{`
         .vp-desktop-only { display: flex !important; }
         header div::-webkit-scrollbar { display: none; }
+        @keyframes fadeInDown {
+          from { opacity: 0; transform: translateY(-4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
 
         @media (max-width: 900px) {
           .vp-desktop-only { display: none !important; }

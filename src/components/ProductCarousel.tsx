@@ -1,8 +1,8 @@
 'use client';
 
-import { useRef } from 'react';
-import Link from 'next/link';
+import { useState, useRef } from 'react';
 import { useWishlist } from '@/context/WishlistContext';
+import ProductModal, { ProductModalItem } from './ProductModal';
 
 export interface ProductItem {
   id: string;
@@ -36,6 +36,7 @@ const defaultGradients = [
 export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, items }: ProductCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const [selectedProduct, setSelectedProduct] = useState<ProductModalItem | null>(null);
 
   const scroll = (dir: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -125,7 +126,9 @@ export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, ite
                     flex: '0 0 210px',
                     display: 'flex',
                     flexDirection: 'column',
+                    cursor: 'pointer',
                   }}
+                  onClick={() => setSelectedProduct({ id: item.id, name: item.title, image: item.image, badge: item.badge, price: item.price, unit: item.unit, category: item.category })}
                 >
                   <div
                     style={{
@@ -197,69 +200,61 @@ export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, ite
                       </svg>
                     </button>
 
-                    <Link
-                      href={`/booking?pkg=${item.category?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'wedding-cards'}`}
-                      style={{ textDecoration: 'none' }}
-                    >
-                      <div style={{ width: '100%', aspectRatio: '1', overflow: 'hidden' }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                        />
-                      </div>
-                    </Link>
+                    <div style={{ width: '100%', aspectRatio: '1', overflow: 'hidden' }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                      />
+                    </div>
                   </div>
 
-                  <Link
-                    href={`/booking?pkg=${item.category?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'wedding-cards'}`}
-                    style={{ textDecoration: 'none', color: 'inherit' }}
-                  >
-                    <div style={{ padding: '0.6rem 0.25rem' }}>
-                      <div
-                        style={{
-                          fontFamily: "'Inter', sans-serif",
-                          fontSize: '0.875rem',
-                          fontWeight: 600,
-                          color: '#1E1E1E',
-                          lineHeight: 1.35,
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                        }}
-                      >
-                        {item.title}
-                      </div>
-                      {item.rating && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.3rem' }}>
-                          {[...Array(5)].map((_, i) => (
-                            <span key={i} style={{ color: i < Math.floor(item.rating!) ? '#F59E0B' : '#D1D5DB', fontSize: '0.75rem' }}>★</span>
-                          ))}
-                          <span style={{ fontSize: '0.7rem', color: '#6B7280' }}>
-                            {item.rating} ({item.reviews?.toLocaleString()})
-                          </span>
-                        </div>
-                      )}
-                      <div style={{ marginTop: '0.25rem' }}>
-                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', fontWeight: 700, color: '#1E1E1E' }}>
-                          From {item.price}
+                  <div style={{ padding: '0.6rem 0.25rem' }}>
+                    <div
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
+                        color: '#1E1E1E',
+                        lineHeight: 1.35,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {item.title}
+                    </div>
+                    {item.rating && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.3rem' }}>
+                        {[...Array(5)].map((_, i) => (
+                          <span key={i} style={{ color: i < Math.floor(item.rating!) ? '#F59E0B' : '#D1D5DB', fontSize: '0.75rem' }}>★</span>
+                        ))}
+                        <span style={{ fontSize: '0.7rem', color: '#6B7280' }}>
+                          {item.rating} ({item.reviews?.toLocaleString()})
                         </span>
                       </div>
-                      {item.unit && (
-                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.725rem', color: '#6B7280' }}>
-                          {item.unit}
-                        </div>
-                      )}
+                    )}
+                    <div style={{ marginTop: '0.25rem' }}>
+                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', fontWeight: 700, color: '#1E1E1E' }}>
+                        From {item.price}
+                      </span>
                     </div>
-                  </Link>
+                    {item.unit && (
+                      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.725rem', color: '#6B7280' }}>
+                        {item.unit}
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
       </div>
+
+      <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
     </section>
   );
 }

@@ -1,8 +1,8 @@
 'use client';
 
-import { useRef } from 'react';
-import Link from 'next/link';
+import { useState, useRef } from 'react';
 import { useWishlist } from '@/context/WishlistContext';
+import ProductModal, { ProductModalItem } from './ProductModal';
 
 interface CategoryProduct {
   id: string;
@@ -14,7 +14,6 @@ interface CategoryProduct {
   rating?: number;
   reviews?: number;
   bgGradient: string;
-  href: string;
 }
 
 const bestSellers: CategoryProduct[] = [
@@ -28,7 +27,6 @@ const bestSellers: CategoryProduct[] = [
     rating: 4.5,
     reviews: 1658,
     bgGradient: '#FAF0E6',
-    href: '/booking?pkg=wedding-cards',
   },
   {
     id: 'bs-2',
@@ -40,7 +38,6 @@ const bestSellers: CategoryProduct[] = [
     rating: 4.5,
     reviews: 520,
     bgGradient: '#F5F2ED',
-    href: '/booking?pkg=wedding-cards',
   },
   {
     id: 'bs-3',
@@ -52,7 +49,6 @@ const bestSellers: CategoryProduct[] = [
     rating: 4.3,
     reviews: 284,
     bgGradient: '#F0F7F2',
-    href: '/booking?pkg=wedding-cards',
   },
   {
     id: 'bs-4',
@@ -64,7 +60,6 @@ const bestSellers: CategoryProduct[] = [
     rating: 4.7,
     reviews: 162,
     bgGradient: '#F4F0F9',
-    href: '/booking?pkg=sangeet-haldi',
   },
   {
     id: 'bs-5',
@@ -76,7 +71,6 @@ const bestSellers: CategoryProduct[] = [
     rating: 4.4,
     reviews: 340,
     bgGradient: '#EBF5FA',
-    href: '/booking?pkg=flex-banners',
   },
   {
     id: 'bs-6',
@@ -88,7 +82,6 @@ const bestSellers: CategoryProduct[] = [
     rating: 4.8,
     reviews: 890,
     bgGradient: '#FDF2F2',
-    href: '/booking?pkg=royal-wedding',
   },
 ];
 
@@ -101,7 +94,6 @@ const trending: CategoryProduct[] = [
     price: '₹230.00',
     unit: '₹2.30 each / 100 units',
     bgGradient: '#FDF2F2',
-    href: '/booking?pkg=wedding-cards',
   },
   {
     id: 'tr-2',
@@ -111,7 +103,6 @@ const trending: CategoryProduct[] = [
     price: '₹580.00',
     unit: '₹5.80 each / 100 units',
     bgGradient: '#2D3748',
-    href: '/booking?pkg=wedding-cards',
   },
   {
     id: 'tr-3',
@@ -121,7 +112,6 @@ const trending: CategoryProduct[] = [
     price: '₹18.00',
     unit: 'Per sq. ft.',
     bgGradient: '#FFFDF0',
-    href: '/booking?pkg=flex-banners',
   },
   {
     id: 'tr-4',
@@ -131,7 +121,6 @@ const trending: CategoryProduct[] = [
     price: '₹860.00',
     unit: 'Complete set',
     bgGradient: '#F9EBE6',
-    href: '/booking?pkg=flex-banners',
   },
   {
     id: 'tr-5',
@@ -141,7 +130,6 @@ const trending: CategoryProduct[] = [
     price: '₹205.00',
     unit: 'Per piece',
     bgGradient: '#F0F7F2',
-    href: '/booking?pkg=sangeet-haldi',
   },
   {
     id: 'tr-6',
@@ -151,7 +139,6 @@ const trending: CategoryProduct[] = [
     price: '₹4,500.00',
     unit: '₹45.00 each / 100 units',
     bgGradient: '#FFFDF0',
-    href: '/booking?pkg=royal-wedding',
   },
 ];
 
@@ -180,7 +167,15 @@ function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
   );
 }
 
-function ProductRow({ title, items }: { title: string; items: CategoryProduct[] }) {
+function ProductRow({
+  title,
+  items,
+  onSelectProduct,
+}: {
+  title: string;
+  items: CategoryProduct[];
+  onSelectProduct: (product: ProductModalItem) => void;
+}) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toggleWishlist, isInWishlist } = useWishlist();
 
@@ -250,7 +245,9 @@ function ProductRow({ title, items }: { title: string; items: CategoryProduct[] 
                   flex: '0 0 210px',
                   display: 'flex',
                   flexDirection: 'column',
+                  cursor: 'pointer',
                 }}
+                onClick={() => onSelectProduct(item)}
               >
                 <div
                   style={{
@@ -323,64 +320,60 @@ function ProductRow({ title, items }: { title: string; items: CategoryProduct[] 
                     </svg>
                   </button>
 
-                  <Link href={item.href} style={{ textDecoration: 'none' }}>
-                    <div style={{ width: '100%', aspectRatio: '1', overflow: 'hidden' }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          display: 'block',
-                        }}
-                      />
-                    </div>
-                  </Link>
+                  <div style={{ width: '100%', aspectRatio: '1', overflow: 'hidden' }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                      }}
+                    />
+                  </div>
                 </div>
 
-                <Link href={item.href} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ padding: '0.6rem 0.25rem' }}>
+                <div style={{ padding: '0.6rem 0.25rem' }}>
+                  <div
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: '0.875rem',
+                      fontWeight: 600,
+                      color: '#1E1E1E',
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {item.name}
+                  </div>
+                  {item.rating && <StarRating rating={item.rating} reviews={item.reviews || 0} />}
+                  {item.price && (
+                    <div style={{ marginTop: '0.35rem' }}>
+                      <span
+                        style={{
+                          fontFamily: "'Inter', sans-serif",
+                          fontSize: '0.9375rem',
+                          fontWeight: 700,
+                          color: '#1E1E1E',
+                        }}
+                      >
+                        From {item.price}
+                      </span>
+                    </div>
+                  )}
+                  {item.unit && (
                     <div
                       style={{
                         fontFamily: "'Inter', sans-serif",
-                        fontSize: '0.875rem',
-                        fontWeight: 600,
-                        color: '#1E1E1E',
-                        lineHeight: 1.3,
+                        fontSize: '0.75rem',
+                        color: '#6B7280',
                       }}
                     >
-                      {item.name}
+                      {item.unit}
                     </div>
-                    {item.rating && <StarRating rating={item.rating} reviews={item.reviews || 0} />}
-                    {item.price && (
-                      <div style={{ marginTop: '0.35rem' }}>
-                        <span
-                          style={{
-                            fontFamily: "'Inter', sans-serif",
-                            fontSize: '0.9375rem',
-                            fontWeight: 700,
-                            color: '#1E1E1E',
-                          }}
-                        >
-                          From {item.price}
-                        </span>
-                      </div>
-                    )}
-                    {item.unit && (
-                      <div
-                        style={{
-                          fontFamily: "'Inter', sans-serif",
-                          fontSize: '0.75rem',
-                          color: '#6B7280',
-                        }}
-                      >
-                        {item.unit}
-                      </div>
-                    )}
-                  </div>
-                </Link>
+                  )}
+                </div>
               </div>
             );
           })}
@@ -391,6 +384,8 @@ function ProductRow({ title, items }: { title: string; items: CategoryProduct[] 
 }
 
 export default function ExploreCategories() {
+  const [selectedProduct, setSelectedProduct] = useState<ProductModalItem | null>(null);
+
   return (
     <section
       id="products"
@@ -400,9 +395,11 @@ export default function ExploreCategories() {
       }}
     >
       <div style={{ maxWidth: '1440px', margin: '0 auto' }}>
-        <ProductRow title="Best Sellers" items={bestSellers} />
-        <ProductRow title="Trending" items={trending} />
+        <ProductRow title="Best Sellers" items={bestSellers} onSelectProduct={(p) => setSelectedProduct(p)} />
+        <ProductRow title="Trending" items={trending} onSelectProduct={(p) => setSelectedProduct(p)} />
       </div>
+
+      <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
     </section>
   );
 }

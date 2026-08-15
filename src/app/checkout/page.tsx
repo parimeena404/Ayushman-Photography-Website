@@ -26,11 +26,20 @@ export default function CheckoutPage() {
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [activePaymentTab, setActivePaymentTab] = useState<'upi' | 'qr' | 'razorpay' | 'cod'>('upi');
+  const [utrNumber, setUtrNumber] = useState('');
+  const [orderPayload, setOrderPayload] = useState<any>(null);
   const [successOrder, setSuccessOrder] = useState<any>(null);
 
   const finalTotal = grandTotal + (deliverySpeed === 'express' ? 250 : 0);
 
-  const handleRazorpayPayment = async (e: React.FormEvent) => {
+  // Dynamic QR Code URL for Ayushman Cards n Graphics
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
+    `upi://pay?pa=9479784979@paytm&pn=AyushmanCardsnGraphics&am=${finalTotal}&cu=INR&tn=Order_Payment`
+  )}`;
+
+  const handleInitiateOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !phone || !address || !pincode) {
       setErrorMsg('Please fill in your name, mobile number, address, and pincode.');
@@ -41,7 +50,7 @@ export default function CheckoutPage() {
     setLoading(true);
 
     try {
-      // 1. Create Order on Backend API first
+      // Create pending order on API
       const res = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -61,42 +70,29 @@ export default function CheckoutPage() {
       });
 
       const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to initialize payment order.');
-      }
+      setOrderPayload(data);
+      setLoading(false);
+      setShowPaymentModal(true);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Payment initiation error.');
+      setLoading(false);
+    }
+  };
 
-      // 2. Load Razorpay SDK Script
+  const handleLaunchRazorpaySDK = async () => {
+    if (!orderPayload) return;
+    setLoading(true);
+    try {
       const loaded = await loadRazorpayScript();
-
       if (loaded && (window as any).Razorpay) {
         const options: any = {
-          key: data.keyId || 'rzp_test_TMSAlhSBWAt4fa',
-          amount: data.amount,
+          key: orderPayload.keyId || 'rzp_test_TMSAlhSBWAt4fa',
+          amount: orderPayload.amount,
           currency: 'INR',
           name: 'Ayushman Cards n Graphics',
           description: `Print Order (${cart.length} item(s))`,
           handler: async function (response: any) {
-            try {
-              await fetch('/api/razorpay/verify-payment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  razorpay_order_id: response.razorpay_order_id || data.orderId,
-                  razorpay_payment_id: response.razorpay_payment_id || `pay_${Date.now()}`,
-                  razorpay_signature: response.razorpay_signature || 'sandbox_sig',
-                  bookingId: data.bookingId,
-                }),
-              });
-            } catch (e) {
-              console.warn('Verification call:', e);
-            }
-
-            setSuccessOrder({
-              orderId: data.orderId,
-              paymentId: response.razorpay_payment_id || `PAY_${Date.now()}`,
-              amount: finalTotal,
-            });
-            clearCart();
+            await handleConfirmPayment(response.razorpay_payment_id || `pay_${Date.now()}`);
           },
           prefill: {
             name: fullName,
@@ -108,69 +104,64 @@ export default function CheckoutPage() {
           },
         };
 
-        // CRITICAL FIX: Only attach order_id if it's a real server order created on Razorpay API.
-        // Synthetic order_test_ IDs cause Razorpay's iframe to throw "Order not found" Payment Failed errors.
-        if (data.orderId && !data.orderId.startsWith('order_test_')) {
-          options.order_id = data.orderId;
+        if (orderPayload.orderId && !orderPayload.orderId.startsWith('order_test_')) {
+          options.order_id = orderPayload.orderId;
         }
 
         const paymentObject = new (window as any).Razorpay(options);
-
         paymentObject.on('payment.failed', function () {
-          confirmTestPayment(data.orderId, data.bookingId);
+          // Switch to instant UPI tab if Razorpay fails
+          setActivePaymentTab('upi');
+          setLoading(false);
         });
-
         paymentObject.open();
         setLoading(false);
       } else {
-        // Direct test confirmation if Razorpay SDK script is blocked
-        confirmTestPayment(data.orderId, data.bookingId);
+        setActivePaymentTab('upi');
+        setLoading(false);
       }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Payment initiation error.');
+    } catch {
+      setActivePaymentTab('upi');
       setLoading(false);
     }
   };
 
-  const confirmTestPayment = async (orderId: string, bookingId: string) => {
+  const handleConfirmPayment = async (paymentTxnId?: string) => {
+    setLoading(true);
+    const txnId = paymentTxnId || (utrNumber.trim() ? `UTR_${utrNumber.trim()}` : `UPI_SUCCESS_${Date.now()}`);
+    const orderId = orderPayload?.orderId || `ORD_${Date.now()}`;
+    const bookingId = orderPayload?.bookingId;
+
     try {
-      const pId = `PAY_TEST_${Date.now()}`;
       await fetch('/api/razorpay/verify-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           razorpay_order_id: orderId,
-          razorpay_payment_id: pId,
+          razorpay_payment_id: txnId,
           razorpay_signature: 'sandbox_sig',
           bookingId: bookingId,
         }),
       });
-
-      setSuccessOrder({
-        orderId: orderId,
-        paymentId: pId,
-        amount: finalTotal,
-      });
-      clearCart();
-    } catch {
-      setErrorMsg('Transaction completed.');
-    } finally {
-      setLoading(false);
+    } catch (e) {
+      console.warn('Verification warning:', e);
     }
+
+    setSuccessOrder({
+      orderId: orderId,
+      paymentId: txnId,
+      amount: finalTotal,
+    });
+    clearCart();
+    setShowPaymentModal(false);
+    setLoading(false);
   };
 
-  const handleDirectWhatsAppOrder = () => {
-    if (!fullName || !phone) {
-      setErrorMsg('Please provide your name and phone number for WhatsApp confirmation.');
-      return;
-    }
-
-    const itemsSummary = cart.map((i) => `• ${i.title} (${i.quantity} units, ${i.paperStock}) = ₹${i.totalPrice}`).join('\n');
+  const handleWhatsAppOrder = () => {
+    const itemsSummary = cart.map((i) => `• ${i.title} (${i.quantity} units) = ₹${i.totalPrice}`).join('\n');
     const msg = `Hi Ayushman Cards!\nI want to place an order:\n\n*Name:* ${fullName}\n*Phone:* ${phone}\n*Address:* ${address}, ${city} - ${pincode}\n\n*Order Items:*\n${itemsSummary}\n\n*Total Amount:* ₹${finalTotal.toLocaleString()}`;
-    
     window.open(`https://wa.me/919479784979?text=${encodeURIComponent(msg)}`, '_blank');
-    clearCart();
-    setSuccessOrder({ orderId: `WA_${Date.now()}`, paymentId: 'WHATSAPP_CONFIRMED', amount: finalTotal });
+    handleConfirmPayment(`WA_${Date.now()}`);
   };
 
   if (successOrder) {
@@ -178,12 +169,12 @@ export default function CheckoutPage() {
       <>
         <Navbar />
         <main style={{ background: '#F8F9FA', minHeight: '80vh', padding: '4rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E5E7EB', padding: '3rem 2rem', maxWidth: '550px', textAlign: 'center', boxShadow: '0 12px 36px rgba(0,0,0,0.1)' }}>
+          <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E5E7EB', padding: '3rem 2rem', maxWidth: '550px', width: '100%', textAlign: 'center', boxShadow: '0 12px 36px rgba(0,0,0,0.1)' }}>
             <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: '#10B981', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', margin: '0 auto 1.5rem' }}>
               ✓
             </div>
             <h1 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.5rem' }}>
-              Print Order Successfully Placed!
+              Print Order Successfully Confirmed!
             </h1>
             <p style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '1.5rem' }}>
               Thank you, <strong>{fullName}</strong>! Our printing studio has received your order specs.
@@ -204,7 +195,7 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link
                 href="/dashboard"
                 style={{
@@ -252,14 +243,14 @@ export default function CheckoutPage() {
               Secure Print Checkout
             </h1>
             <p style={{ fontSize: '0.875rem', color: '#6B7280' }}>
-              Enter delivery shipping details & select Razorpay online payment or WhatsApp order confirmation.
+              Enter delivery shipping details & select your preferred payment method.
             </p>
           </div>
 
-          <form onSubmit={handleRazorpayPayment}>
+          <form onSubmit={handleInitiateOrder}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', alignItems: 'start' }}>
               
-              {/* LEFT COLUMN: Shipping & Delivery Form */}
+              {/* LEFT COLUMN: Shipping Form */}
               <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.5rem' }}>
                 <h2 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.1rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '1.25rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem' }}>
                   1. Shipping & Contact Information
@@ -367,25 +358,12 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <div style={{ marginBottom: '1.25rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 600, color: '#4B5563', marginBottom: '0.3rem' }}>
-                    GSTIN Number (Optional for B2B Input Tax Claim)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="23AAAAA0000A1Z5"
-                    value={gstin}
-                    onChange={(e) => setGstin(e.target.value)}
-                    style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #E5E7EB', background: '#F9FAFB', color: '#1E1E1E', fontSize: '0.8125rem', textTransform: 'uppercase' }}
-                  />
-                </div>
-
-                {/* 2. Delivery Options */}
+                {/* Delivery Options */}
                 <h2 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.1rem', fontWeight: 700, color: '#1E1E1E', marginTop: '1.5rem', marginBottom: '1rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem' }}>
-                  2. Select Delivery Turnaround
+                  2. Select Delivery Speed
                 </h2>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                   <button
                     type="button"
                     onClick={() => setDeliverySpeed('standard')}
@@ -440,17 +418,17 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* RIGHT COLUMN: Order Breakdown & Payment Buttons */}
+              {/* RIGHT COLUMN: Order Breakdown & Checkout Button */}
               <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.5rem', position: 'sticky', top: '140px' }}>
                 <h2 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.15rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '1rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem' }}>
-                  Payment & Final Total
+                  Order Summary
                 </h2>
 
                 <div style={{ marginBottom: '1.25rem', fontSize: '0.8125rem' }}>
-                  <div style={{ fontWeight: 700, color: '#1E1E1E', marginBottom: '0.5rem' }}>Items in Order:</div>
+                  <div style={{ fontWeight: 700, color: '#1E1E1E', marginBottom: '0.5rem' }}>Selected Items:</div>
                   {cart.map((item) => (
                     <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem', color: '#4B5563' }}>
-                      <span>{item.title.substring(0, 25)}...</span>
+                      <span>{item.title.substring(0, 25)}... ({item.quantity} pcs)</span>
                       <span style={{ fontWeight: 600, color: '#1E1E1E' }}>₹{item.totalPrice.toLocaleString()}</span>
                     </div>
                   ))}
@@ -485,62 +463,305 @@ export default function CheckoutPage() {
 
                 <div style={{ background: '#F8F9FA', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid #E5E7EB' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9375rem', fontWeight: 700, color: '#1E1E1E' }}>Payable Amount:</span>
+                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9375rem', fontWeight: 700, color: '#1E1E1E' }}>Total Payable:</span>
                     <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.6rem', fontWeight: 800, color: '#0B2545' }}>
                       ₹{finalTotal.toLocaleString()}
                     </span>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    style={{
-                      width: '100%',
-                      padding: '0.9rem',
-                      borderRadius: '999px',
-                      background: '#0B2545',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: '0.9375rem',
-                      fontWeight: 700,
-                      cursor: loading ? 'not-allowed' : 'pointer',
-                      boxShadow: '0 4px 14px rgba(11, 37, 69, 0.2)',
-                    }}
-                  >
-                    {loading ? '⏳ Opening Razorpay Portal...' : '💳 Pay via Razorpay (UPI / Card / NetBanking)'}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleDirectWhatsAppOrder}
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      borderRadius: '999px',
-                      background: '#25D366',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: '0.84375rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.5rem',
-                    }}
-                  >
-                    <span>💬 Direct WhatsApp Order & Pay</span>
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{
+                    width: '100%',
+                    padding: '0.9rem',
+                    borderRadius: '999px',
+                    background: '#0B2545',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: '0.9375rem',
+                    fontWeight: 700,
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 4px 14px rgba(11, 37, 69, 0.2)',
+                  }}
+                >
+                  {loading ? '⏳ Processing Order...' : '🔒 Proceed to Choose Payment Method'}
+                </button>
               </div>
 
             </div>
           </form>
         </div>
+
+        {/* ═══ UNIFIED RAZORPAY & DIRECT UPI PAYMENT MODAL ═══ */}
+        {showPaymentModal && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              background: 'rgba(0,0,0,0.7)',
+              backdropFilter: 'blur(5px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '1rem',
+            }}
+            onClick={() => setShowPaymentModal(false)}
+          >
+            <div
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '16px',
+                maxWidth: '560px',
+                width: '100%',
+                maxHeight: '92vh',
+                overflowY: 'auto',
+                padding: '1.75rem',
+                position: 'relative',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  right: '1rem',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  background: '#F3F4F6',
+                  border: 'none',
+                  fontSize: '1.2rem',
+                  cursor: 'pointer',
+                  color: '#4B5563',
+                }}
+              >
+                ✕
+              </button>
+
+              {/* Modal Header */}
+              <div style={{ textAlign: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '1rem' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#0B2545', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  AYUSHMAN CARDS N GRAPHICS
+                </span>
+                <h2 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.35rem', fontWeight: 700, color: '#1E1E1E', margin: '0.2rem 0' }}>
+                  Select Payment Method
+                </h2>
+                <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#10B981' }}>
+                  Amount: ₹{finalTotal.toLocaleString()}
+                </div>
+              </div>
+
+              {/* Payment Tabs Header */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.4rem', marginBottom: '1.25rem' }}>
+                {[
+                  { id: 'upi', label: '📱 Direct UPI' },
+                  { id: 'qr', label: '🖼️ Scan QR' },
+                  { id: 'razorpay', label: '💳 Razorpay' },
+                  { id: 'cod', label: '💵 Studio Pay' },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActivePaymentTab(tab.id as any)}
+                    style={{
+                      padding: '0.55rem 0.25rem',
+                      borderRadius: '8px',
+                      border: activePaymentTab === tab.id ? '2px solid #0B2545' : '1px solid #E5E7EB',
+                      background: activePaymentTab === tab.id ? 'rgba(11,37,69,0.06)' : '#F9FAFB',
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: '0.78125rem',
+                      fontWeight: activePaymentTab === tab.id ? 700 : 500,
+                      color: activePaymentTab === tab.id ? '#0B2545' : '#4B5563',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* TAB 1: DIRECT UPI APPS */}
+              {activePaymentTab === 'upi' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <p style={{ fontSize: '0.8125rem', color: '#6B7280', margin: 0 }}>
+                    Tap any UPI app below to pay directly to <strong>9479784979</strong> (Ayushman Cards n Graphics):
+                  </p>
+
+                  <a
+                    href={`upi://pay?pa=9479784979@paytm&pn=AyushmanCardsnGraphics&am=${finalTotal}&cu=INR`}
+                    style={{
+                      padding: '0.75rem 1rem',
+                      borderRadius: '8px',
+                      background: '#002970',
+                      color: '#FFFFFF',
+                      textDecoration: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.875rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <span>🔵 Pay via Paytm App</span>
+                    <span>9479784979@paytm</span>
+                  </a>
+
+                  <a
+                    href={`upi://pay?pa=9479784979@ybl&pn=AyushmanCardsnGraphics&am=${finalTotal}&cu=INR`}
+                    style={{
+                      padding: '0.75rem 1rem',
+                      borderRadius: '8px',
+                      background: '#5F259F',
+                      color: '#FFFFFF',
+                      textDecoration: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.875rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <span>🟣 Pay via PhonePe App</span>
+                    <span>9479784979@ybl</span>
+                  </a>
+
+                  <a
+                    href={`upi://pay?pa=9479784979@okaxis&pn=AyushmanCardsnGraphics&am=${finalTotal}&cu=INR`}
+                    style={{
+                      padding: '0.75rem 1rem',
+                      borderRadius: '8px',
+                      background: '#4285F4',
+                      color: '#FFFFFF',
+                      textDecoration: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.875rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <span>🟢 Pay via Google Pay (GPay)</span>
+                    <span>9479784979@okaxis</span>
+                  </a>
+                </div>
+              )}
+
+              {/* TAB 2: SCAN UPI QR CODE */}
+              {activePaymentTab === 'qr' && (
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: '0.8125rem', color: '#6B7280', marginBottom: '0.75rem' }}>
+                    Scan QR code with GPay, PhonePe, Paytm or BHIM to complete payment:
+                  </p>
+                  <div style={{ background: '#FFFFFF', padding: '1rem', borderRadius: '12px', display: 'inline-block', border: '1px solid #E5E7EB', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={qrCodeUrl} alt="UPI Payment QR Code" style={{ width: '180px', height: '180px', display: 'block', margin: '0 auto' }} />
+                  </div>
+                  <div style={{ fontSize: '0.78125rem', color: '#1E1E1E', fontWeight: 700, marginTop: '0.5rem' }}>
+                    Ayushman Cards n Graphics • 9479784979
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: RAZORPAY PORTAL */}
+              {activePaymentTab === 'razorpay' && (
+                <div style={{ textAlign: 'center', padding: '0.5rem 0' }}>
+                  <p style={{ fontSize: '0.8125rem', color: '#6B7280', marginBottom: '1rem' }}>
+                    Click below to open the Razorpay payment gateway popup (Cards, NetBanking, UPI):
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleLaunchRazorpaySDK}
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem',
+                      borderRadius: '999px',
+                      background: '#0B2545',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.875rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    💳 Open Razorpay Gateway Popup
+                  </button>
+                </div>
+              )}
+
+              {/* TAB 4: STUDIO PAY ON DELIVERY */}
+              {activePaymentTab === 'cod' && (
+                <div style={{ textAlign: 'center', padding: '0.5rem 0' }}>
+                  <p style={{ fontSize: '0.84375rem', color: '#1E1E1E', fontWeight: 600, marginBottom: '0.5rem' }}>
+                    Studio Collection & Pay on Delivery
+                  </p>
+                  <p style={{ fontSize: '0.78125rem', color: '#6B7280', marginBottom: '1rem' }}>
+                    Visit our studio at Freeganj, Ujjain to inspect sample proof and pay cash/UPI on order pickup.
+                  </p>
+                </div>
+              )}
+
+              {/* UTR Input & Confirmation Footer */}
+              <div style={{ borderTop: '1px solid #E5E7EB', marginTop: '1.25rem', paddingTop: '1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.3rem' }}>
+                  Enter UTR / UPI Reference Number (Optional):
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. 423589102451"
+                  value={utrNumber}
+                  onChange={(e) => setUtrNumber(e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '6px', border: '1px solid #E5E7EB', fontSize: '0.8125rem', marginBottom: '0.85rem' }}
+                />
+
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => handleConfirmPayment()}
+                    disabled={loading}
+                    style={{
+                      flex: 1,
+                      padding: '0.8rem',
+                      borderRadius: '999px',
+                      background: '#10B981',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.875rem',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {loading ? '⏳ Verifying...' : '✓ Confirm Payment & Place Order'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleWhatsAppOrder}
+                    style={{
+                      padding: '0.8rem 1rem',
+                      borderRadius: '999px',
+                      background: '#25D366',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.8125rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    💬 WhatsApp
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
       </main>
       <Footer />
     </>

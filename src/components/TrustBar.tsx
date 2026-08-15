@@ -1,78 +1,81 @@
 'use client';
 
-import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
-
-const stats = [
-  { value: '500+', label: 'Weddings Captured' },
-  { value: 'Since 2001', label: 'Years of Excellence' },
-  { value: '4.9★', label: 'Client Rating' },
-  { value: '50+', label: 'Awards Won' },
+const trustItems = [
+  { icon: '🚚', title: 'Fast Pan-India Delivery', desc: 'Free shipping on orders above ₹999' },
+  { icon: '✨', title: '100% Satisfaction Guarantee', desc: 'Quality you can trust, every time' },
+  { icon: '🎨', title: 'Free Design Templates', desc: 'Thousands of ready-to-use templates' },
+  { icon: '💰', title: 'Wholesale Savings', desc: 'Buy more, save more on bulk orders' },
 ];
 
 export default function TrustBar() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-40px' });
-
   return (
     <section
-      ref={ref}
       style={{
-        background: 'var(--bg-secondary)',
-        borderTop: '1px solid var(--border-light)',
-        borderBottom: '1px solid var(--border-light)',
+        background: '#FFFFFF',
+        borderBottom: '1px solid #E5E7EB',
+        padding: '1.25rem clamp(1rem, 3vw, 2.5rem)',
       }}
     >
       <div
-        className="container-wide"
         style={{
+          maxWidth: '1440px',
+          margin: '0 auto',
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
           gap: '1rem',
-          padding: 'clamp(1.5rem, 3vw, 2.5rem) clamp(1.25rem, 4vw, 3rem)',
         }}
+        className="vp-trust-grid"
       >
-        {stats.map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 16 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{
-              duration: 0.5,
-              delay: i * 0.1,
-              ease: [0.25, 0.46, 0.45, 0.94],
-            }}
+        {trustItems.map((item) => (
+          <div
+            key={item.title}
             style={{
-              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
               padding: '0.5rem 0',
             }}
           >
-            <div
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: 'clamp(1.25rem, 2vw, 1.75rem)',
-                fontWeight: 700,
-                color: 'var(--gold)',
-                marginBottom: '0.25rem',
-              }}
-            >
-              {stat.value}
+            <span style={{ fontSize: '1.5rem', flexShrink: 0 }}>{item.icon}</span>
+            <div>
+              <div
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 600,
+                  fontSize: '0.8125rem',
+                  color: '#1E1E1E',
+                  lineHeight: 1.3,
+                }}
+              >
+                {item.title}
+              </div>
+              <div
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: '0.75rem',
+                  color: '#6B7280',
+                  lineHeight: 1.4,
+                }}
+              >
+                {item.desc}
+              </div>
             </div>
-            <div
-              style={{
-                fontFamily: "'Manrope', sans-serif",
-                fontSize: '0.75rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.12em',
-                color: 'var(--text-tertiary)',
-                fontWeight: 500,
-              }}
-            >
-              {stat.label}
-            </div>
-          </motion.div>
+          </div>
         ))}
       </div>
+
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .vp-trust-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .vp-trust-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

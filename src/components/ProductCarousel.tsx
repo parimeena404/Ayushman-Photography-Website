@@ -1,17 +1,18 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
 
 export interface ProductItem {
   id: string;
   title: string;
-  badge: string;
+  badge?: string;
   price: string;
-  unit: string;
+  unit?: string;
+  category?: string;
   image: string;
-  category: string;
+  rating?: number;
+  reviews?: number;
 }
 
 interface ProductCarouselProps {
@@ -22,204 +23,212 @@ interface ProductCarouselProps {
 }
 
 export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, items }: ProductCarouselProps) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-40px' });
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const scroll = (direction: 'left' | 'right') => {
+  const scroll = (dir: 'left' | 'right') => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: direction === 'left' ? -380 : 380, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ left: dir === 'left' ? -320 : 320, behavior: 'smooth' });
     }
   };
 
   return (
-    <section id={id} style={{ padding: 'clamp(2.5rem, 5vh, 4rem) 0', background: 'var(--bg-primary)', borderBottom: '1px solid var(--border-light)' }}>
-      <div className="container-wide">
-        {/* Section Header with Navigation Arrows */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1.5rem' }}>
-          <div>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.35rem, 2.5vw, 1.85rem)', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
-              {sectionTitle}
-            </h2>
-            {sectionSubtitle && (
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8125rem', color: 'var(--text-tertiary)' }}>
-                {sectionSubtitle}
-              </p>
-            )}
-          </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button
-              onClick={() => scroll('left')}
-              aria-label="Previous"
+    <section
+      id={id}
+      style={{
+        background: '#FFFFFF',
+        padding: 'clamp(2rem, 4vw, 3rem) clamp(1rem, 3vw, 2.5rem)',
+        borderTop: '1px solid #F3F4F6',
+      }}
+    >
+      <div style={{ maxWidth: '1440px', margin: '0 auto' }}>
+        {/* Section header */}
+        <div style={{ marginBottom: '1.25rem' }}>
+          <h2
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '1.5rem',
+              fontWeight: 700,
+              color: '#1E1E1E',
+              marginBottom: '0.25rem',
+            }}
+          >
+            {sectionTitle}
+          </h2>
+          {sectionSubtitle && (
+            <p
               style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                border: '1.5px solid var(--border-medium)',
-                background: 'var(--bg-card)',
-                color: 'var(--text-primary)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                fontSize: '1.2rem',
-                transition: 'all 0.2s ease',
+                fontFamily: "'Inter', sans-serif",
+                fontSize: '0.9rem',
+                color: '#6B7280',
               }}
             >
-              ‹
-            </button>
-            <button
-              onClick={() => scroll('right')}
-              aria-label="Next"
-              style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                border: '1.5px solid var(--border-medium)',
-                background: 'var(--bg-card)',
-                color: 'var(--text-primary)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                fontSize: '1.2rem',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              ›
-            </button>
-          </div>
+              {sectionSubtitle}
+            </p>
+          )}
         </div>
 
-        {/* Vistaprint 1:1 Horizontal Product Card Carousel */}
-        <div
-          ref={scrollRef}
-          style={{
-            display: 'flex',
-            gap: 'clamp(1rem, 2vw, 1.5rem)',
-            overflowX: 'auto',
-            scrollSnapType: 'x mandatory',
-            scrollbarWidth: 'none',
-            paddingBottom: '0.75rem',
-          }}
-        >
-          {items.map((item, i) => (
-            <motion.div
-              key={item.id}
-              ref={i === 0 ? ref : undefined}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
-              style={{
-                flexShrink: 0,
-                width: 'clamp(220px, 22vw, 260px)',
-                scrollSnapAlign: 'start',
-              }}
-            >
-              <Link
-                href="/booking"
-                style={{
-                  display: 'block',
-                  background: 'var(--bg-card)',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1px solid var(--border-light)',
-                  boxShadow: 'var(--shadow-subtle)',
-                  overflow: 'hidden',
-                  textDecoration: 'none',
-                  transition: 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-                }}
-                className="vp-product-card"
-              >
-                {/* Product Image + Vistaprint Style Badge */}
-                <div style={{ position: 'relative', aspectRatio: '1/1', overflow: 'hidden', background: 'var(--bg-secondary)' }}>
-                  <div
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      backgroundImage: `url(${item.image})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      transition: 'transform 0.5s ease',
-                    }}
-                    className="vp-card-img"
-                  />
+        {/* Product scroll area */}
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => scroll('right')}
+            style={{
+              position: 'absolute',
+              right: '-8px',
+              top: '40%',
+              transform: 'translateY(-50%)',
+              zIndex: 10,
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              background: '#FFFFFF',
+              border: '1px solid #E5E7EB',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.2rem',
+              color: '#1E1E1E',
+            }}
+            aria-label="Scroll right"
+          >
+            ›
+          </button>
 
-                  {/* Vistaprint Style Promo Badge (e.g. BOOK 1 @ ₹45,000) */}
+          <div
+            ref={scrollRef}
+            style={{
+              display: 'flex',
+              gap: '1rem',
+              overflowX: 'auto',
+              scrollbarWidth: 'none',
+              paddingBottom: '0.5rem',
+            }}
+          >
+            {items.map((item) => (
+              <Link
+                key={item.id}
+                href={`/booking?pkg=${item.category?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'wedding-cards'}`}
+                style={{
+                  flex: '0 0 220px',
+                  textDecoration: 'none',
+                  color: 'inherit',
+                }}
+              >
+                <div
+                  style={{
+                    position: 'relative',
+                    background: '#F3F4F6',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    border: '1px solid #E5E7EB',
+                    transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = 'none';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  {/* Badge */}
+                  {item.badge && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '8px',
+                        left: '8px',
+                        zIndex: 5,
+                        background: '#B2E4F7',
+                        color: '#0B2545',
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: '0.6875rem',
+                        fontWeight: 700,
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      {item.badge}
+                    </div>
+                  )}
+
+                  {/* Heart */}
                   <div
                     style={{
                       position: 'absolute',
-                      top: '0.6rem',
-                      left: '0.6rem',
-                      background: 'rgba(26, 26, 26, 0.9)',
-                      color: 'var(--gold-light)',
-                      fontFamily: "'Manrope', sans-serif",
-                      fontSize: '0.65rem',
-                      fontWeight: 800,
-                      letterSpacing: '0.05em',
-                      padding: '0.25rem 0.6rem',
-                      borderRadius: '4px',
-                      textTransform: 'uppercase',
-                      backdropFilter: 'blur(4px)',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                      top: '8px',
+                      right: '8px',
+                      zIndex: 5,
+                      width: '28px',
+                      height: '28px',
+                      borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.9)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
-                    {item.badge}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                  </div>
+
+                  {/* Image */}
+                  <div style={{ width: '100%', aspectRatio: '1', overflow: 'hidden' }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   </div>
                 </div>
 
-                {/* Card Content */}
-                <div style={{ padding: '1rem' }}>
+                {/* Title + Price */}
+                <div style={{ padding: '0.5rem 0.25rem' }}>
                   <div
                     style={{
-                      fontFamily: "'Manrope', sans-serif",
-                      fontSize: '0.65rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.12em',
-                      color: 'var(--gold)',
-                      fontWeight: 700,
-                      marginBottom: '0.25rem',
-                    }}
-                  >
-                    {item.category}
-                  </div>
-
-                  <h3
-                    style={{
                       fontFamily: "'Inter', sans-serif",
-                      fontSize: '0.9375rem',
-                      fontWeight: 600,
-                      color: 'var(--text-primary)',
-                      lineHeight: 1.4,
-                      marginBottom: '0.5rem',
-                      height: '2.6em',
-                      overflow: 'hidden',
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
+                      color: '#1E1E1E',
+                      lineHeight: 1.35,
                       display: '-webkit-box',
                       WebkitLineClamp: 2,
                       WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
                     }}
                   >
                     {item.title}
-                  </h3>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '0.5rem', borderTop: '1px solid var(--border-light)', paddingTop: '0.5rem' }}>
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
-                      {item.unit}
-                    </span>
-                    <span style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.9375rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                      {item.price}
+                  </div>
+                  {item.rating && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.3rem' }}>
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} style={{ color: i < Math.floor(item.rating!) ? '#F59E0B' : '#D1D5DB', fontSize: '0.75rem' }}>★</span>
+                      ))}
+                      <span style={{ fontSize: '0.7rem', color: '#6B7280' }}>
+                        {item.rating} ({item.reviews?.toLocaleString()})
+                      </span>
+                    </div>
+                  )}
+                  <div style={{ marginTop: '0.25rem' }}>
+                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', fontWeight: 700, color: '#1E1E1E' }}>
+                      From {item.price}
                     </span>
                   </div>
+                  {item.unit && (
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.725rem', color: '#6B7280' }}>
+                      {item.unit}
+                    </div>
+                  )}
                 </div>
               </Link>
-            </motion.div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        .vp-product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); border-color: var(--gold) !important; }
-        .vp-product-card:hover .vp-card-img { transform: scale(1.06); }
-      `}</style>
     </section>
   );
 }

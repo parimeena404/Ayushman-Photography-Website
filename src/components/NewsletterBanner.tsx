@@ -1,130 +1,117 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 
 export default function NewsletterBanner() {
   const [email, setEmail] = useState('');
-  const [consent, setConsent] = useState(true);
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
+    if (email.trim()) {
       setSubmitted(true);
+      setEmail('');
     }
   };
 
   return (
-    <section style={{ background: 'var(--bg-card)', padding: 'clamp(3rem, 6vh, 4.5rem) 0', borderTop: '1px solid var(--border-light)', borderBottom: '1px solid var(--border-light)' }}>
-      <div className="container" style={{ maxWidth: '750px', textAlign: 'center' }}>
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+    <section
+      style={{
+        background: '#0B2545',
+        padding: 'clamp(2.5rem, 5vw, 4rem) clamp(1rem, 3vw, 2.5rem)',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: '700px',
+          margin: '0 auto',
+          textAlign: 'center',
+        }}
+      >
+        <h2
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+            fontWeight: 700,
+            color: '#FFFFFF',
+            marginBottom: '0.5rem',
+          }}
         >
-          <h2
-            style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              marginBottom: '0.5rem',
-            }}
-          >
-            It&apos;s good to be on the list.
-          </h2>
-          <p
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '0.9375rem',
-              color: 'var(--text-secondary)',
-              marginBottom: '1.75rem',
-            }}
-          >
-            Get 15% off* your first print order when you sign up for our emails
-          </p>
+          Get exclusive offers & updates
+        </h2>
+        <p
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '1rem',
+            color: 'rgba(255,255,255,0.7)',
+            marginBottom: '1.5rem',
+          }}
+        >
+          Subscribe to our newsletter for new product launches, festive deals & design tips.
+        </p>
 
-          {submitted ? (
-            <div
+        {submitted ? (
+          <div
+            style={{
+              background: 'rgba(16, 185, 129, 0.15)',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              borderRadius: '8px',
+              padding: '1rem',
+              color: '#10B981',
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 600,
+            }}
+          >
+            ✓ Thank you for subscribing! Watch your inbox for exclusive deals.
+          </div>
+        ) : (
+          <form
+            onSubmit={handleSubmit}
+            style={{
+              display: 'flex',
+              gap: '0.5rem',
+              maxWidth: '480px',
+              margin: '0 auto',
+            }}
+          >
+            <input
+              type="email"
+              placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               style={{
-                background: 'var(--gold-muted)',
-                color: 'var(--text-primary)',
-                padding: '1rem 1.5rem',
-                borderRadius: 'var(--radius-md)',
-                fontFamily: "'Manrope', sans-serif",
-                fontWeight: 600,
-                fontSize: '0.9375rem',
+                flex: 1,
+                padding: '0.75rem 1rem',
+                fontFamily: "'Inter', sans-serif",
+                fontSize: '0.9rem',
+                border: 'none',
+                borderRadius: '6px',
+                outline: 'none',
+                background: '#FFFFFF',
+                color: '#1E1E1E',
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: '#FFFFFF',
+                color: '#0B2545',
+                border: 'none',
+                borderRadius: '6px',
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 700,
+                fontSize: '0.875rem',
+                cursor: 'pointer',
+                transition: 'background 0.2s ease',
+                flexShrink: 0,
               }}
             >
-              🎉 Thank you for subscribing! Your 15% discount coupon code <strong>AYUSHMAN15</strong> has been applied.
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}>
-              <div style={{ display: 'flex', gap: '0.5rem', width: '100%', maxWidth: '520px' }}>
-                <input
-                  type="email"
-                  placeholder="Subscription email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem 1.25rem',
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: '0.875rem',
-                    color: 'var(--text-primary)',
-                    background: 'var(--bg-secondary)',
-                    border: '1.5px solid var(--border-medium)',
-                    borderRadius: '999px',
-                    outline: 'none',
-                  }}
-                />
-                <button
-                  type="submit"
-                  style={{
-                    padding: '0.75rem 1.75rem',
-                    background: 'var(--gold)',
-                    color: '#1A1A1A',
-                    fontFamily: "'Manrope', sans-serif",
-                    fontWeight: 700,
-                    fontSize: '0.875rem',
-                    border: 'none',
-                    borderRadius: '999px',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  Submit
-                </button>
-              </div>
-
-              <label
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  fontSize: '0.75rem',
-                  fontFamily: "'Inter', sans-serif",
-                  color: 'var(--text-tertiary)',
-                  maxWidth: '520px',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  marginTop: '0.25rem',
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={consent}
-                  onChange={(e) => setConsent(e.target.checked)}
-                  style={{ accentColor: 'var(--gold)' }}
-                />
-                <span>Yes, I&apos;d like to receive special offer emails, print catalog updates, and discounts from Ayushman Cards & Graphics Press.</span>
-              </label>
-            </form>
-          )}
-        </motion.div>
+              Subscribe
+            </button>
+          </form>
+        )}
       </div>
     </section>
   );

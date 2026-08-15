@@ -4,81 +4,94 @@ import Link from 'next/link';
 
 const footerColumns = [
   {
-    title: 'Let us help',
+    title: 'Let Us Help You',
     links: [
-      { label: 'Order Print / Get Quote', href: '/booking' },
-      { label: 'Instant Price Calculator', href: '/#calculator' },
-      { label: 'Royal Wedding Cards', href: '/#products' },
-      { label: 'Business & Visiting Cards', href: '/#products' },
-      { label: 'Flex Banners & Standees', href: '/#products' },
-      { label: 'Contact Printing Studio', href: '/contact' },
+      { label: 'My Account', href: '/dashboard' },
+      { label: 'Track My Order', href: '/dashboard' },
+      { label: 'Returns & Refunds', href: '/cancellation' },
+      { label: 'FAQs', href: '/faq' },
+      { label: 'Contact Us', href: '/contact' },
+    ],
+  },
+  {
+    title: 'Our Products',
+    links: [
+      { label: 'Visiting Cards', href: '/booking?pkg=wedding-cards' },
+      { label: 'Wedding Cards', href: '/booking?pkg=royal-wedding' },
+      { label: 'Stationery & Letterheads', href: '/booking?pkg=wedding-cards' },
+      { label: 'Flex Banners & Signage', href: '/booking?pkg=flex-banners' },
+      { label: 'Labels & Stickers', href: '/booking?pkg=flex-banners' },
+      { label: 'Photo Albums & Mugs', href: '/booking?pkg=sangeet-haldi' },
     ],
   },
   {
     title: 'Our Company',
     links: [
-      { label: 'About Ayushman Cards n Graphics', href: '/about' },
-      { label: 'Our Photographers & Designers', href: '/about' },
-      { label: 'Ujjain Studio (Since 2001)', href: '/about' },
-      { label: 'Press & Festival Showcase', href: '/stories' },
-      { label: 'Client Love Stories', href: '/stories' },
+      { label: 'About Ayushman Cards', href: '/about' },
+      { label: 'Customer Reviews', href: '/reviews' },
+      { label: 'Blog', href: '/blog' },
+      { label: 'Careers', href: '/about' },
     ],
   },
   {
-    title: 'Our policies',
+    title: 'Our Policies',
     links: [
+      { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Terms & Conditions', href: '/terms' },
-      { label: 'Privacy & Cookie Policy', href: '/privacy' },
-      { label: 'Copyright & IP Rights', href: '/copyright' },
-      { label: 'Cancellation & Refund Policy', href: '/cancellation' },
-      { label: 'Album Delivery & Shipping', href: '/shipping' },
+      { label: 'Cancellation Policy', href: '/cancellation' },
+      { label: 'Shipping Policy', href: '/shipping' },
+      { label: 'Copyright', href: '/copyright' },
     ],
   },
 ];
 
 export default function Footer() {
   return (
-    <footer style={{ background: '#0D0D0D', color: '#F5F2EC', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-      {/* Vistaprint 1:1 Footer Links Grid */}
+    <footer
+      style={{
+        background: '#F8F9FA',
+        borderTop: '1px solid #E5E7EB',
+      }}
+    >
+      {/* Main Footer Columns */}
       <div
-        className="container-wide"
         style={{
+          maxWidth: '1440px',
+          margin: '0 auto',
+          padding: 'clamp(2rem, 4vw, 3.5rem) clamp(1rem, 3vw, 2.5rem)',
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 'clamp(2rem, 4vw, 4rem)',
-          padding: 'clamp(3rem, 6vh, 4.5rem) clamp(1rem, 3vw, 2.5rem)',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '2rem',
         }}
+        className="vp-footer-grid"
       >
         {footerColumns.map((col) => (
           <div key={col.title}>
-            <h3
+            <h4
               style={{
-                fontFamily: "'Manrope', sans-serif",
-                fontSize: '0.8125rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.15em',
+                fontFamily: "'Inter', sans-serif",
+                fontSize: '0.875rem',
                 fontWeight: 700,
-                color: '#D40000',
-                marginBottom: '1.25rem',
+                color: '#1E1E1E',
+                marginBottom: '1rem',
               }}
             >
               {col.title}
-            </h3>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+            </h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {col.links.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
                     style={{
                       fontFamily: "'Inter', sans-serif",
-                      fontSize: '0.84375rem',
-                      color: 'rgba(255,255,255,0.65)',
+                      fontSize: '0.8125rem',
+                      color: '#6B7280',
                       textDecoration: 'none',
-                      transition: 'color 0.2s ease',
+                      transition: 'color 0.15s ease',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = '#FFFFFF'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = '#0B2545'; e.currentTarget.style.textDecoration = 'underline'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = '#6B7280'; e.currentTarget.style.textDecoration = 'none'; }}
                   >
                     {link.label}
                   </Link>
@@ -89,99 +102,137 @@ export default function Footer() {
         ))}
       </div>
 
-      {/* Footer Bottom Bar */}
-      <div style={{ padding: '2rem 0', background: '#080808' }}>
+      {/* Payment Methods & Social */}
+      <div
+        style={{
+          borderTop: '1px solid #E5E7EB',
+          padding: '1.5rem clamp(1rem, 3vw, 2.5rem)',
+        }}
+      >
         <div
-          className="container-wide"
           style={{
+            maxWidth: '1440px',
+            margin: '0 auto',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
-            gap: '1.5rem',
+            gap: '1rem',
           }}
         >
-          {/* Brand Logo, Address & Copyright */}
+          {/* Payment badges */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.6rem' }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/logo.png"
-                alt="Ayushman Cards n Graphics Logo"
-                style={{ height: '36px', width: 'auto' }}
-              />
-            </div>
-            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.78125rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, maxWidth: '480px' }}>
-              <strong>Ayushman Cards n Graphics</strong><br />
-              📍 63 Varuchi Marg, Freeganj, Ujjain, Madhya Pradesh 456001<br />
-              📞 Helpline: 9479784979 | 9893022451<br />
-              © 2001-{new Date().getFullYear()} Ayushman Cards n Graphics. All rights reserved.
-            </div>
-          </div>
-
-          {/* Social Icons & Country Selector */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
-            {/* Country Selector Button */}
-            <button
+            <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.4rem 0.85rem',
-                borderRadius: '999px',
-                border: '1px solid rgba(255,255,255,0.15)',
-                background: 'rgba(255,255,255,0.05)',
-                color: '#FFFFFF',
-                fontFamily: "'Manrope', sans-serif",
+                fontFamily: "'Inter', sans-serif",
                 fontSize: '0.75rem',
                 fontWeight: 600,
-                cursor: 'pointer',
+                color: '#6B7280',
+                marginBottom: '0.5rem',
               }}
             >
-              🇮🇳 India (Ujjain MP)
-            </button>
-
-            {/* Social Media Links */}
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              {[
-                { name: 'Instagram', path: 'M7.8 2h8.4C19 2 22 5 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C5 22 2 19 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z', href: 'https://instagram.com' },
-                { name: 'Facebook', path: 'M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z', href: 'https://facebook.com' },
-                { name: 'YouTube', path: 'M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33zM9.75 15.02V8.48l5.75 3.27-5.75 3.27z', href: 'https://youtube.com' },
-              ].map((social) => (
-                <a
-                  key={social.name}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.name}
+              We accept
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              {['UPI', 'GPay', 'PhonePe', 'Paytm', 'Visa', 'Mastercard', 'Razorpay'].map((m) => (
+                <span
+                  key={m}
                   style={{
-                    width: '34px',
-                    height: '34px',
-                    borderRadius: '50%',
-                    border: '1px solid rgba(255,255,255,0.15)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'rgba(255,255,255,0.7)',
-                    textDecoration: 'none',
-                    transition: 'all 0.2s ease',
+                    display: 'inline-block',
+                    padding: '0.25rem 0.6rem',
+                    background: '#FFFFFF',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '4px',
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: '0.6875rem',
+                    fontWeight: 600,
+                    color: '#4B5563',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#D40000'; e.currentTarget.style.color = '#D40000'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
                 >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d={social.path}/>
-                  </svg>
-                </a>
+                  {m}
+                </span>
               ))}
             </div>
           </div>
+
+          {/* Social links */}
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            {[
+              { label: 'Instagram', href: 'https://instagram.com/ayushmancards' },
+              { label: 'Facebook', href: 'https://facebook.com/ayushmancards' },
+              { label: 'YouTube', href: 'https://youtube.com/@ayushmancards' },
+              { label: 'WhatsApp', href: 'https://wa.me/919479784979' },
+            ].map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: '0.8125rem',
+                  color: '#6B7280',
+                  textDecoration: 'none',
+                  transition: 'color 0.15s ease',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = '#0B2545'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = '#6B7280'; }}
+              >
+                {social.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Copyright bar */}
+      <div
+        style={{
+          borderTop: '1px solid #E5E7EB',
+          padding: '1rem clamp(1rem, 3vw, 2.5rem)',
+          background: '#F3F4F6',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '1440px',
+            margin: '0 auto',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '0.5rem',
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '0.75rem',
+              color: '#9CA3AF',
+            }}
+          >
+            © {new Date().getFullYear()} Ayushman Cards n Graphics. All rights reserved. Freeganj, Ujjain, M.P.
+          </p>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '0.75rem',
+              color: '#9CA3AF',
+            }}
+          >
+            Prop. Parisha Meena · GSTIN: 23XXXXX1234X1ZX
+          </p>
         </div>
       </div>
 
       <style jsx>{`
         @media (max-width: 768px) {
-          footer > div:first-child {
+          .vp-footer-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .vp-footer-grid {
             grid-template-columns: 1fr !important;
           }
         }

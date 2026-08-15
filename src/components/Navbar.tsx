@@ -1,380 +1,363 @@
 'use client';
 
 import { useState } from 'react';
-import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
 
-interface NavItem {
-  label: string;
-  targetId: string;
-  filterCategory?: string;
-  isExternalPage?: boolean;
-  href?: string;
-}
-
-const categoriesMenu: NavItem[] = [
-  { label: 'View All Services', targetId: 'products', filterCategory: 'All' },
-  { label: '💍 Wedding & Invitation Cards', targetId: 'products', filterCategory: 'Wedding Cards' },
-  { label: '💼 Business & Visiting Cards', targetId: 'products', filterCategory: 'Visiting Cards' },
-  { label: '🚩 Flex Banners & Signage', targetId: 'products', filterCategory: 'Flex & Banners' },
-  { label: '📖 Photobooks & Wedding Albums', targetId: 'products', filterCategory: 'Photobooks' },
-  { label: '📄 Pamphlets, Flyers & Bill Books', targetId: 'products', filterCategory: 'Corporate Stationery' },
-  { label: '🎁 Custom Gifts & Merchandise', targetId: 'products', filterCategory: 'Customized Gifts' },
-  { label: '🎨 Graphic Design & Layouts', targetId: 'products', filterCategory: 'Graphic Design' },
-  { label: '⚡ Instant Price Estimator', targetId: 'calculator' },
-  { label: 'Bulk Printing Offers', targetId: 'packages' },
+const categoryTabs = [
+  { label: 'View All', href: '/' },
+  { label: 'Visiting Cards', href: '/#products' },
+  { label: 'Wedding Invitations', href: '/#wedding' },
+  { label: 'Stationery, Letterheads & Notebooks', href: '/#stationery' },
+  { label: 'Signs, Posters & Marketing Materials', href: '/#banners' },
+  { label: 'Labels, Stickers & Packaging', href: '/#stickers' },
+  { label: 'Mugs, Albums & Gifts', href: '/#gifts' },
+  { label: 'Custom Polo T-shirts', href: '/#tshirts' },
+  { label: 'Deals & Offers', href: '/#deals' },
 ];
 
 export default function Navbar() {
-  const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
-  const [copiedCode, setCopiedCode] = useState(false);
+  const { totalItemCount } = useCart();
   const [searchQuery, setSearchQuery] = useState('');
+  const [copiedCode, setCopiedCode] = useState(false);
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText('FESTIVE20');
+    navigator.clipboard.writeText('SAVE5');
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
-  const handleNavClick = (e: React.MouseEvent, item: NavItem) => {
-    if (item.isExternalPage) return;
-
-    e.preventDefault();
-
-    // 1. Dispatch custom filter event for PortfolioCategories
-    if (item.filterCategory) {
-      window.dispatchEvent(new CustomEvent('changePortfolioFilter', { detail: item.filterCategory }));
-    }
-
-    // 2. Smooth scroll to target section
-    const elem = document.getElementById(item.targetId);
-    if (elem) {
-      const headerOffset = 130;
-      const elementPosition = elem.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-    } else {
-      window.location.href = `/#${item.targetId}`;
-    }
-  };
-
   return (
-    <header style={{ position: 'sticky', top: 0, zIndex: 1000, background: 'var(--bg-card)', boxShadow: 'var(--shadow-subtle)' }}>
-      {/* 1. Sitewide Festive Announcement Bar */}
+    <header style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
+      {/* ═══ 1. Top Promo Announcement Bar (Vistaprint Blue) ═══ */}
       <div
         style={{
-          background: 'linear-gradient(90deg, #990000 0%, #D40000 50%, #990000 100%)',
+          background: '#0B2545',
           color: '#FFFFFF',
-          padding: '0.45rem 1rem',
-          fontSize: '0.78125rem',
-          fontFamily: "'Manrope', sans-serif",
+          padding: '0.5rem 1rem',
+          fontSize: '0.8125rem',
+          fontFamily: "'Inter', sans-serif",
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '0.75rem',
+          gap: '0.5rem',
           textAlign: 'center',
-          borderBottom: '1px solid rgba(255,255,255,0.15)',
         }}
       >
         <span>
-          🪔 <strong>Wedding & Festive Printing Season!</strong> Flat 20% OFF on Royal Invitation Cards & Bulk Flex Banners | Code: <strong style={{ color: '#FFD700' }}>FESTIVE20</strong>
+          Buy More, Save More! <strong>Flat 5% OFF</strong> on Orders ₹10,000+ | Code:{' '}
+          <strong style={{ color: '#60B5FF' }}>SAVE5</strong>
         </span>
         <button
           onClick={handleCopyCode}
           style={{
-            background: '#FFD700',
-            color: '#800000',
-            border: 'none',
+            background: 'transparent',
+            border: '1px solid rgba(255,255,255,0.3)',
             borderRadius: '4px',
-            padding: '0.18rem 0.65rem',
+            padding: '0.1rem 0.5rem',
             fontSize: '0.7rem',
-            fontWeight: 800,
+            fontWeight: 600,
+            color: '#FFFFFF',
             cursor: 'pointer',
-            fontFamily: "'Manrope', sans-serif",
-            transition: 'all 0.2s ease',
+            fontFamily: "'Inter', sans-serif",
           }}
         >
-          {copiedCode ? 'Copied!' : 'Copy Code'}
+          {copiedCode ? '✓ Copied' : '📋'}
         </button>
       </div>
 
-      {/* 2. Main Header Bar */}
+      {/* ═══ 2. Main Header Bar (White bg, Vistaprint layout) ═══ */}
       <div
         style={{
-          padding: '0.75rem clamp(1rem, 3vw, 2.5rem)',
-          borderBottom: '1px solid var(--border-light)',
-          maxWidth: 'var(--container-xl)',
-          margin: '0 auto',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '1.5rem',
+          background: '#FFFFFF',
+          borderBottom: '1px solid #E5E7EB',
+          padding: '0.65rem clamp(1rem, 3vw, 2.5rem)',
         }}
-      >
-        {/* Official Ayushman Brand Logo */}
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', flexShrink: 0 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.png"
-            alt="Ayushman Cards n Graphics Official Logo"
-            style={{
-              height: '42px',
-              width: 'auto',
-              objectFit: 'contain',
-            }}
-          />
-        </Link>
-
-        {/* Centered Search Bar */}
-        <div style={{ flex: '1 1 480px', maxWidth: '520px', position: 'relative' }} className="desktop-search">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (searchQuery.trim()) {
-                const elem = document.getElementById('products');
-                if (elem) elem.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
-            style={{ display: 'flex', alignItems: 'center' }}
-          >
-            <input
-              type="text"
-              placeholder="Search wedding cards, visiting cards, flex banners, photobooks, pamphlets..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.65rem 3rem 0.65rem 1.15rem',
-                fontFamily: "'Inter', sans-serif",
-                fontSize: '0.875rem',
-                color: 'var(--text-primary)',
-                background: 'var(--bg-secondary)',
-                border: '1.5px solid var(--border-medium)',
-                borderRadius: '999px',
-                outline: 'none',
-                transition: 'all 0.2s ease',
-              }}
-            />
-            <button
-              type="submit"
-              aria-label="Search"
-              style={{
-                position: 'absolute',
-                right: '0.35rem',
-                width: '34px',
-                height: '34px',
-                borderRadius: '50%',
-                background: '#D40000',
-                border: 'none',
-                color: '#FFFFFF',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-            </button>
-          </form>
-        </div>
-
-        {/* Right Header Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.75rem, 1.5vw, 1.5rem)', flexShrink: 0 }}>
-          {/* Support Phone Lines */}
-          <a
-            href="tel:9479784979"
-            className="desktop-only"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              fontSize: '0.8125rem',
-              fontFamily: "'Inter', sans-serif",
-              color: 'var(--text-secondary)',
-              textDecoration: 'none',
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D40000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-            </svg>
-            <div>
-              <div style={{ fontSize: '0.625rem', textTransform: 'uppercase', color: 'var(--text-tertiary)', fontWeight: 700 }}>Helpline Ujjain</div>
-              <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.8125rem' }}>9479784979 | 9893022451</div>
-            </div>
-          </a>
-
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              background: 'var(--bg-secondary)',
-              border: '1px solid var(--border-light)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-            }}
-          >
-            {theme === 'dark' ? '☀️' : '🌙'}
-          </button>
-
-          {/* User Account / Sign In */}
-          {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <Link
-                href="/dashboard"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.35rem',
-                  fontFamily: "'Manrope', sans-serif",
-                  fontSize: '0.8125rem',
-                  fontWeight: 700,
-                  color: '#D40000',
-                  textDecoration: 'none',
-                }}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                </svg>
-                <span className="desktop-only">{user.name.split(' ')[0]} (Orders)</span>
-              </Link>
-              <button
-                onClick={() => logout()}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: 'var(--text-tertiary)',
-                  fontSize: '0.75rem',
-                  cursor: 'pointer',
-                  fontFamily: "'Inter', sans-serif",
-                  textDecoration: 'underline',
-                }}
-              >
-                Sign Out
-              </button>
-            </div>
-          ) : (
-            <Link
-              href="/login"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                fontFamily: "'Manrope', sans-serif",
-                fontSize: '0.8125rem',
-                fontWeight: 600,
-                color: 'var(--text-primary)',
-                textDecoration: 'none',
-              }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-              </svg>
-              <span className="desktop-only">Sign In</span>
-            </Link>
-          )}
-
-          {/* Cart / Order Print */}
-          <Link
-            href="/booking"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              background: 'linear-gradient(135deg, #D40000 0%, #990000 100%)',
-              color: '#FFFFFF',
-              padding: '0.5rem 1.15rem',
-              borderRadius: '999px',
-              fontFamily: "'Manrope', sans-serif",
-              fontSize: '0.8125rem',
-              fontWeight: 700,
-              textDecoration: 'none',
-              boxShadow: '0 4px 14px rgba(212, 0, 0, 0.25)',
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-            </svg>
-            <span>Order Print / Quote</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* 3. Smooth Navigation & Portfolio Filter Category Bar */}
-      <div
-        style={{
-          borderBottom: '1px solid var(--border-light)',
-          background: 'var(--bg-card)',
-          overflowX: 'auto',
-          scrollbarWidth: 'none',
-        }}
-        className="desktop-only"
       >
         <div
           style={{
-            maxWidth: 'var(--container-xl)',
+            maxWidth: '1440px',
+            margin: '0 auto',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1.5rem',
+          }}
+        >
+          {/* ─── Logo (Vistaprint style) ─── */}
+          <Link
+            href="/"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              textDecoration: 'none',
+              flexShrink: 0,
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="Ayushman Cards n Graphics"
+              style={{ height: '38px', width: 'auto', objectFit: 'contain' }}
+            />
+          </Link>
+
+          {/* ─── Search Bar (Vistaprint rounded rect) ─── */}
+          <div style={{ flex: '1 1 520px', maxWidth: '600px' }} className="vp-desktop-only">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (searchQuery.trim()) {
+                  const el = document.getElementById('products');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                border: '1.5px solid #CBD5E1',
+                borderRadius: '6px',
+                overflow: 'hidden',
+                background: '#FFFFFF',
+                transition: 'border-color 0.2s ease',
+              }}
+            >
+              <input
+                type="text"
+                placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  flex: 1,
+                  padding: '0.6rem 1rem',
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: '0.9rem',
+                  color: '#1E1E1E',
+                  border: 'none',
+                  outline: 'none',
+                  background: 'transparent',
+                }}
+              />
+              <button
+                type="submit"
+                aria-label="Search"
+                style={{
+                  padding: '0.6rem 0.85rem',
+                  background: 'transparent',
+                  border: 'none',
+                  borderLeft: '1px solid #E5E7EB',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#6B7280',
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+              </button>
+            </form>
+          </div>
+
+          {/* ─── Right side utility links ─── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.5rem, 1.5vw, 1.5rem)', flexShrink: 0, marginLeft: 'auto' }}>
+
+            {/* Help / Phone */}
+            <a
+              href="tel:9479784979"
+              className="vp-desktop-only"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textDecoration: 'none',
+                gap: '0.1rem',
+              }}
+            >
+              <span style={{ fontSize: '0.6875rem', color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Help is here</span>
+              <span style={{ fontSize: '0.8125rem', color: '#1E1E1E', fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>9479784979</span>
+            </a>
+
+            {/* My Favourites */}
+            <Link
+              href="/dashboard"
+              className="vp-desktop-only"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textDecoration: 'none',
+                gap: '0.1rem',
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="1.8">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              <span style={{ fontSize: '0.6875rem', color: '#1E1E1E', fontFamily: "'Inter', sans-serif" }}>My Favourites</span>
+            </Link>
+
+            {/* Sign In / User */}
+            {user ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Link
+                  href="/dashboard"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textDecoration: 'none',
+                    gap: '0.1rem',
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="1.8">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  <span style={{ fontSize: '0.6875rem', color: '#1E1E1E', fontFamily: "'Inter', sans-serif" }}>{user.name?.split(' ')[0]}</span>
+                </Link>
+                <button
+                  onClick={() => logout()}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#6B7280',
+                    fontSize: '0.65rem',
+                    cursor: 'pointer',
+                    fontFamily: "'Inter', sans-serif",
+                    textDecoration: 'underline',
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0.5rem 1.35rem',
+                  border: '1.5px solid #1E1E1E',
+                  borderRadius: '999px',
+                  background: 'transparent',
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 600,
+                  fontSize: '0.8125rem',
+                  color: '#1E1E1E',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                Sign In
+              </Link>
+            )}
+
+            {/* Cart */}
+            <Link
+              href="/cart"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textDecoration: 'none',
+                gap: '0.1rem',
+                position: 'relative',
+              }}
+              aria-label="Cart"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="1.8">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              <span style={{ fontSize: '0.6875rem', color: '#1E1E1E', fontFamily: "'Inter', sans-serif" }}>Cart</span>
+              {totalItemCount > 0 && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '-6px',
+                    right: '-8px',
+                    background: '#D40000',
+                    color: '#FFFFFF',
+                    fontSize: '0.625rem',
+                    fontWeight: 800,
+                    width: '17px',
+                    height: '17px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {totalItemCount}
+                </span>
+              )}
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* ═══ 3. Category Navigation Ribbon (Vistaprint style) ═══ */}
+      <div
+        style={{
+          background: '#FFFFFF',
+          borderBottom: '1px solid #E5E7EB',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+        }}
+        className="vp-desktop-only"
+      >
+        <div
+          style={{
+            maxWidth: '1440px',
             margin: '0 auto',
             padding: '0 clamp(1rem, 3vw, 2.5rem)',
             display: 'flex',
             alignItems: 'center',
-            gap: '1.6rem',
+            gap: '0',
             whiteSpace: 'nowrap',
           }}
         >
-          {categoriesMenu.map((item, idx) => (
-            <a
-              key={item.label}
-              href={item.href || `/#${item.targetId}`}
-              onClick={(e) => handleNavClick(e, item)}
+          {categoryTabs.map((tab, idx) => (
+            <Link
+              key={tab.label}
+              href={tab.href}
               style={{
-                display: 'inline-block',
-                padding: '0.65rem 0',
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0.75rem 1rem',
                 fontFamily: "'Inter', sans-serif",
                 fontSize: '0.8125rem',
-                fontWeight: idx === 1 ? 700 : 500,
-                color: idx === 1 ? '#D40000' : 'var(--text-secondary)',
-                textDecoration: 'none',
+                fontWeight: 400,
+                color: idx === 0 ? '#0B2545' : '#4B5563',
+                textDecoration: idx === 0 ? 'underline' : 'none',
+                textUnderlineOffset: '4px',
+                transition: 'color 0.2s ease',
                 borderBottom: '2px solid transparent',
-                transition: 'all 0.2s ease',
-                cursor: 'pointer',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = '#D40000';
-                e.currentTarget.style.borderBottomColor = '#D40000';
+                e.currentTarget.style.color = '#0B2545';
+                e.currentTarget.style.textDecoration = 'underline';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = idx === 1 ? '#D40000' : 'var(--text-secondary)';
-                e.currentTarget.style.borderBottomColor = 'transparent';
+                e.currentTarget.style.color = idx === 0 ? '#0B2545' : '#4B5563';
+                e.currentTarget.style.textDecoration = idx === 0 ? 'underline' : 'none';
               }}
             >
-              {item.label}
-            </a>
+              {tab.label}
+            </Link>
           ))}
         </div>
       </div>
 
       <style jsx global>{`
-        .desktop-search { display: block; }
-        .desktop-only { display: flex !important; }
-        div::-webkit-scrollbar { display: none; }
+        .vp-desktop-only { display: flex !important; }
+        header div::-webkit-scrollbar { display: none; }
 
         @media (max-width: 900px) {
-          .desktop-search { display: none; }
-          .desktop-only { display: none !important; }
+          .vp-desktop-only { display: none !important; }
         }
       `}</style>
     </header>

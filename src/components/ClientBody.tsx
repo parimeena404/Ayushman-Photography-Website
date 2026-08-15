@@ -3,12 +3,15 @@
 import React from 'react';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider } from '@/context/AuthContext';
+import { CartProvider } from '@/context/CartContext';
 
 export default function ClientBody({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
       <AuthProvider>
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </AuthProvider>
     </ThemeProvider>
   );

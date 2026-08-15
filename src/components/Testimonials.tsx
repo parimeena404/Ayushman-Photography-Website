@@ -1,160 +1,146 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
-import SectionHeader from './SectionHeader';
-
-const testimonials = [
+const reviews = [
   {
-    name: 'Sneha & Rahul Sharma',
-    event: 'Royal Wedding Cards',
-    location: 'Ujjain',
+    name: 'Rajesh Sharma',
+    location: 'Ujjain, MP',
     rating: 5,
-    text: 'Ayushman Cards & Graphics printed our velvet box wedding invitations with gold foil stamping. The quality was so exquisite that every guest complimented our cards!',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80',
+    text: 'Ordered 500 visiting cards with gold foil — the quality was outstanding! Better than what I got from Delhi printers at half the price. Will definitely order again.',
+    product: 'Gold Foil Visiting Cards',
   },
   {
-    name: 'Priya Verma',
-    event: 'Visiting Cards & Letterheads',
-    location: 'Indore',
+    name: 'Priya Patel',
+    location: 'Indore, MP',
     rating: 5,
-    text: 'Ordered 350 GSM Velvet Touch gold foil visiting cards for our brand. The 3D spot UV finish and color sharpness were outstanding. Delivered right on schedule!',
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80',
+    text: 'My wedding cards were absolutely stunning. The velvet touch paper with laser-cut design made every guest compliment the invitation. Thank you Ayushman team!',
+    product: 'Velvet Laser-Cut Wedding Cards',
   },
   {
-    name: 'Aditya & Kavya Patel',
-    event: 'Flex Banners & Standees',
-    location: 'Ujjain',
-    rating: 5,
-    text: 'We needed same-day Star Flex outdoor banners and roll-up standees for our store launch. Ayushman Printing Press handled everything seamlessly from design to print.',
-    avatar: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=100&q=80',
+    name: 'Amit Jain',
+    location: 'Bhopal, MP',
+    rating: 4,
+    text: 'Great bulk pricing for our corporate letterheads and bill books. The print quality is consistently good across all 2,000 prints. Fast delivery too.',
+    product: 'Corporate Stationery Set',
   },
   {
-    name: 'Meera Joshi',
-    event: 'HD Wedding Photobook Album',
-    location: 'Bhopal',
+    name: 'Sunita Meena',
+    location: 'Ujjain, MP',
     rating: 5,
-    text: 'The flush mount non-tearable silk sheet wedding album they printed is a masterpiece. The acrylic glass cover box is super luxurious.',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
+    text: 'The flex banner for our shop came out perfect — vibrant colors and weather-resistant material. Their Star Flex quality is top-notch at ₹18/sqft.',
+    product: 'Star Flex Banner',
   },
 ];
 
-function Stars({ count }: { count: number }) {
-  return (
-    <div style={{ display: 'flex', gap: '0.2rem' }}>
-      {Array.from({ length: count }).map((_, i) => (
-        <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#C9A86C" stroke="none">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-        </svg>
-      ))}
-    </div>
-  );
-}
-
 export default function Testimonials() {
-  const [active, setActive] = useState(0);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-60px' });
-
   return (
-    <section ref={ref} className="section-padding" style={{ background: 'var(--bg-secondary)' }}>
-      <div className="container">
-        <SectionHeader
-          eyebrow="Testimonials"
-          title="What Our Clients Say"
-          subtitle="4.9 out of 5 stars from over 200+ reviews. Your trust is our greatest achievement."
-        />
+    <section
+      style={{
+        background: '#F8F9FA',
+        padding: 'clamp(3rem, 5vw, 4.5rem) clamp(1rem, 3vw, 2.5rem)',
+      }}
+    >
+      <div style={{ maxWidth: '1440px', margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+          <h2
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+              fontWeight: 700,
+              color: '#1E1E1E',
+              marginBottom: '0.5rem',
+            }}
+          >
+            What our customers say
+          </h2>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '1rem', color: '#6B7280' }}>
+            Rated 4.8/5 by 2,000+ happy customers
+          </p>
+        </div>
 
-        {/* Rating Summary */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
+        <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
             gap: '1rem',
-            marginBottom: 'clamp(2rem, 4vw, 3rem)',
           }}
+          className="vp-review-grid"
         >
-          <div style={{ display: 'flex', gap: '0.2rem' }}>
-            {[1,2,3,4,5].map((s) => (
-              <svg key={s} width="20" height="20" viewBox="0 0 24 24" fill="#C9A86C" stroke="none">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-              </svg>
-            ))}
-          </div>
-          <span style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>4.9</span>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'var(--text-tertiary)' }}>from 200+ reviews</span>
-        </motion.div>
-
-        {/* Testimonial Cards */}
-        <div style={{ position: 'relative', maxWidth: '700px', margin: '0 auto' }}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={active}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-              className="card-elevated"
-              style={{ padding: 'clamp(1.75rem, 4vw, 2.5rem)', textAlign: 'center' }}
+          {reviews.map((r) => (
+            <div
+              key={r.name}
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '10px',
+                border: '1px solid #E5E7EB',
+                padding: '1.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+              }}
             >
-              <Stars count={testimonials[active].rating} />
+              {/* Star rating */}
+              <div style={{ display: 'flex', gap: '2px' }}>
+                {[...Array(5)].map((_, i) => (
+                  <span key={i} style={{ color: i < r.rating ? '#F59E0B' : '#D1D5DB', fontSize: '1rem' }}>★</span>
+                ))}
+              </div>
 
+              {/* Review text */}
               <p
                 style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: 'clamp(1.0625rem, 2vw, 1.25rem)',
-                  fontStyle: 'italic',
-                  color: 'var(--text-primary)',
-                  lineHeight: 1.7,
-                  margin: '1.5rem 0',
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: '0.875rem',
+                  color: '#4B5563',
+                  lineHeight: 1.6,
+                  flex: 1,
                 }}
               >
-                &ldquo;{testimonials[active].text}&rdquo;
+                &ldquo;{r.text}&rdquo;
               </p>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
-                <img
-                  src={testimonials[active].avatar}
-                  alt={testimonials[active].name}
-                  style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--gold-muted)' }}
-                />
-                <div style={{ textAlign: 'left' }}>
-                  <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9375rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                    {testimonials[active].name}
-                  </div>
-                  <div style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
-                    {testimonials[active].event} · {testimonials[active].location}
-                  </div>
+              {/* Product tag */}
+              <div
+                style={{
+                  display: 'inline-block',
+                  padding: '0.2rem 0.5rem',
+                  background: '#E8F4FD',
+                  borderRadius: '4px',
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: '0.6875rem',
+                  fontWeight: 600,
+                  color: '#0B2545',
+                  alignSelf: 'flex-start',
+                }}
+              >
+                {r.product}
+              </div>
+
+              {/* Reviewer info */}
+              <div>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8125rem', fontWeight: 600, color: '#1E1E1E' }}>
+                  {r.name}
+                </div>
+                <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.75rem', color: '#9CA3AF' }}>
+                  {r.location}
                 </div>
               </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Navigation */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1.5rem' }}>
-            {testimonials.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setActive(i)}
-                aria-label={`Testimonial ${i + 1}`}
-                style={{
-                  width: i === active ? '32px' : '8px',
-                  height: '8px',
-                  borderRadius: '4px',
-                  background: i === active ? 'var(--gold)' : 'var(--border-medium)',
-                  transition: 'all 0.3s ease',
-                  cursor: 'pointer',
-                  border: 'none',
-                }}
-              />
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
+
+      <style jsx>{`
+        @media (max-width: 1024px) {
+          .vp-review-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .vp-review-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

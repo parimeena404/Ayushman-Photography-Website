@@ -1,12 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
-import SectionHeader from './SectionHeader';
+import { useState } from 'react';
 
 export default function Contact() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-60px' });
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', service: '', message: '' });
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [submitMessage, setSubmitMessage] = useState('');
@@ -33,232 +29,211 @@ export default function Contact() {
 
       if (res.ok && data.success) {
         setSubmitStatus('success');
-        setSubmitMessage('Thank you for your inquiry! Our team will contact you within 24 hours.');
+        setSubmitMessage('Thank you! Our team will contact you within 24 hours.');
         setFormData({ name: '', email: '', phone: '', service: '', message: '' });
       } else {
         setSubmitStatus('error');
-        setSubmitMessage(data.error || 'Failed to submit inquiry. Please try again.');
+        setSubmitMessage(data.error || 'Failed to submit. Please try again.');
       }
     } catch {
       setSubmitStatus('error');
-      setSubmitMessage('Network error. Please check your connection and try again.');
+      setSubmitMessage('Network error. Please check your connection.');
     }
   };
 
   return (
-    <section id="contact" className="section-padding" style={{ background: 'var(--bg-primary)' }}>
-      <div className="container">
-        <SectionHeader
-          eyebrow="Get in Touch"
-          title="Connect With Ayushman Cards & Graphics Press"
-          subtitle="Visit our printing press & graphics studio in Freeganj, Ujjain, or submit your design files & quote inquiries online."
-        />
-
+    <section
+      id="contact"
+      style={{
+        background: '#FFFFFF',
+        padding: 'clamp(3rem, 5vw, 4.5rem) clamp(1rem, 3vw, 2.5rem)',
+        borderTop: '1px solid #F3F4F6',
+      }}
+    >
+      <div style={{ maxWidth: '1440px', margin: '0 auto' }}>
         <div
-          ref={ref}
           style={{
             display: 'grid',
-            gridTemplateColumns: '1.2fr 1fr',
-            gap: 'clamp(2rem, 5vw, 4rem)',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '3rem',
             alignItems: 'start',
           }}
+          className="vp-contact-grid"
         >
-          {/* Form */}
-          <motion.form
-            initial={{ opacity: 0, x: -20 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            onSubmit={handleSubmit}
-            style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
-          >
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-              <div>
-                <label style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-tertiary)', display: 'block', marginBottom: '0.4rem' }}>
-                  Full Name
-                </label>
-                <input
-                  className="input"
-                  type="text"
-                  placeholder="Your full name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <label style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-tertiary)', display: 'block', marginBottom: '0.4rem' }}>
-                  Email Address
-                </label>
-                <input
-                  className="input"
-                  type="email"
-                  placeholder="your@email.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                />
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-              <div>
-                <label style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-tertiary)', display: 'block', marginBottom: '0.4rem' }}>
-                  Phone Number
-                </label>
-                <input
-                  className="input"
-                  type="tel"
-                  placeholder="+91 94797 84979"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <label style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-tertiary)', display: 'block', marginBottom: '0.4rem' }}>
-                  Printing Service Required
-                </label>
-                <select
-                  className="input"
-                  value={formData.service}
-                  onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <option value="">Select print service</option>
-                  <option value="wedding-cards">Royal Wedding Cards & Invitations</option>
-                  <option value="visiting-cards">Business & Visiting Cards</option>
-                  <option value="flex-banners">Flex Banners & Outdoor Signage</option>
-                  <option value="pamphlets">Flyers, Pamphlets & Bill Books</option>
-                  <option value="photobooks">HD Wedding Photobooks & Albums</option>
-                  <option value="custom-gifts">Custom Printed Mugs & Gifts</option>
-                  <option value="graphic-design">Custom Graphic Design & Layout</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-tertiary)', display: 'block', marginBottom: '0.4rem' }}>
-                Your Message
-              </label>
-              <textarea
-                className="input textarea"
-                placeholder="Tell us about your event date, location, festive requirements, or card design needs..."
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                rows={5}
-                style={{ resize: 'vertical', minHeight: '120px' }}
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={submitStatus === 'sending'}
-              className="btn btn-primary btn-lg"
+          {/* Left — Info */}
+          <div>
+            <h2
               style={{
-                alignSelf: 'flex-start',
-                background: '#D40000',
-                borderColor: '#D40000',
-                color: '#FFFFFF',
-                opacity: submitStatus === 'sending' ? 0.7 : 1,
-                cursor: submitStatus === 'sending' ? 'not-allowed' : 'pointer',
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+                fontWeight: 700,
+                color: '#1E1E1E',
+                marginBottom: '1rem',
               }}
             >
-              {submitStatus === 'sending' ? 'Sending...' : 'Send Inquiry'}
-              {submitStatus !== 'sending' && (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-                </svg>
-              )}
-            </button>
+              Get in touch
+            </h2>
+            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.95rem', color: '#6B7280', lineHeight: 1.7, marginBottom: '1.5rem' }}>
+              Visit our printing press in Freeganj, Ujjain or reach out for a free quote. We serve customers across India with premium card printing services.
+            </p>
 
-            {submitMessage && (
-              <div
-                style={{
-                  padding: '0.85rem 1rem',
-                  borderRadius: '6px',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  backgroundColor: submitStatus === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                  border: `1px solid ${submitStatus === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
-                  color: submitStatus === 'success' ? '#10b981' : '#ef4444',
-                }}
-              >
-                {submitMessage}
-              </div>
-            )}
-          </motion.form>
-
-          {/* Official Contact Info */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-            style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}
-          >
-            <div
-              style={{
-                background: 'var(--bg-secondary)',
-                borderRadius: 'var(--radius-lg)',
-                padding: 'clamp(1.5rem, 3vw, 2.25rem)',
-                border: '1px solid var(--border-light)',
-              }}
-            >
-              {/* Studio Logo */}
-              <div style={{ marginBottom: '1.25rem' }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/logo.png"
-                  alt="Ayushman Cards n Graphics Logo"
-                  style={{ height: '48px', width: 'auto' }}
-                />
-              </div>
-
-              <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1.25rem' }}>
-                Ayushman Cards n Graphics
-              </h3>
-
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {[
-                { icon: '📍', label: 'Studio Address', value: '63 Varuchi Marg, Freeganj, Ujjain, Madhya Pradesh 456001' },
+                { icon: '📍', label: 'Address', value: 'Ayushman Cards n Graphics, Freeganj, Ujjain, Madhya Pradesh 456001' },
                 { icon: '📞', label: 'Phone / WhatsApp', value: '9479784979 | 9893022451' },
-                { icon: '✉️', label: 'Email Support', value: 'contact@ayushmancards.com' },
-                { icon: '🕐', label: 'Studio Hours', value: 'Mon – Sat: 10:00 AM – 9:00 PM | Sun: By Appointment' },
+                { icon: '📧', label: 'Email', value: 'ayushmancards@gmail.com' },
+                { icon: '🕐', label: 'Working Hours', value: 'Mon–Sat: 10 AM – 8 PM | Sun: Closed' },
               ].map((item) => (
-                <div key={item.label} style={{ display: 'flex', gap: '0.85rem', marginBottom: '1.1rem' }}>
+                <div key={item.label} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
                   <span style={{ fontSize: '1.25rem', flexShrink: 0, marginTop: '0.1rem' }}>{item.icon}</span>
                   <div>
-                    <div style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.6875rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#D40000', fontWeight: 700, marginBottom: '0.125rem' }}>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.75rem', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       {item.label}
                     </div>
-                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.90625rem', color: 'var(--text-primary)', lineHeight: 1.5, fontWeight: 500 }}>
+                    <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: '#1E1E1E', lineHeight: 1.5 }}>
                       {item.value}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+          </div>
 
-            {/* Studio Map */}
-            <div
+          {/* Right — Form */}
+          <div
+            style={{
+              background: '#F8F9FA',
+              borderRadius: '12px',
+              border: '1px solid #E5E7EB',
+              padding: '2rem',
+            }}
+          >
+            <h3
               style={{
-                width: '100%',
-                height: '200px',
-                borderRadius: 'var(--radius-lg)',
-                overflow: 'hidden',
-                background: 'var(--bg-tertiary)',
+                fontFamily: "'Inter', sans-serif",
+                fontSize: '1.125rem',
+                fontWeight: 700,
+                color: '#1E1E1E',
+                marginBottom: '1.25rem',
               }}
             >
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3669.1!2d75.7849!3d23.1828!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjPCsDEwJzU4LjEiTiA3NcKwNDcnMDUuNiJF!5e0!3m2!1sen!2sin!4v1"
-                width="100%"
-                height="100%"
-                style={{ border: 0, filter: 'contrast(1.05)' }}
-                loading="lazy"
-                title="Ayushman Cards n Graphics Location"
-              />
-            </div>
-          </motion.div>
+              Send us a message
+            </h3>
+
+            {submitStatus === 'success' ? (
+              <div
+                style={{
+                  background: 'rgba(16, 185, 129, 0.1)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '8px',
+                  padding: '1.5rem',
+                  textAlign: 'center',
+                  color: '#10B981',
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 600,
+                }}
+              >
+                ✓ {submitMessage}
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <input
+                  type="text"
+                  placeholder="Full Name *"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  style={inputStyle}
+                />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <input
+                    type="email"
+                    placeholder="Email Address"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    style={inputStyle}
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Phone / WhatsApp *"
+                    required
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    style={inputStyle}
+                  />
+                </div>
+                <select
+                  value={formData.service}
+                  onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                  style={{ ...inputStyle, color: formData.service ? '#1E1E1E' : '#9CA3AF' }}
+                >
+                  <option value="">Select a Service</option>
+                  <option value="Visiting Cards">Visiting Cards</option>
+                  <option value="Wedding Invitations">Wedding Invitations</option>
+                  <option value="Flex Banners">Flex Banners & Signage</option>
+                  <option value="Corporate Stationery">Corporate Stationery</option>
+                  <option value="Photo Albums & Gifts">Photo Albums & Gifts</option>
+                  <option value="Other">Other</option>
+                </select>
+                <textarea
+                  placeholder="Your message or requirements..."
+                  rows={4}
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  style={{ ...inputStyle, resize: 'vertical' }}
+                />
+
+                {submitStatus === 'error' && (
+                  <div style={{ color: '#EF4444', fontSize: '0.8125rem', fontFamily: "'Inter', sans-serif" }}>
+                    {submitMessage}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={submitStatus === 'sending'}
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    background: '#1E1E1E',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '999px',
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                    cursor: submitStatus === 'sending' ? 'not-allowed' : 'pointer',
+                    opacity: submitStatus === 'sending' ? 0.7 : 1,
+                    transition: 'opacity 0.2s ease',
+                    alignSelf: 'flex-start',
+                  }}
+                >
+                  {submitStatus === 'sending' ? 'Sending...' : 'Submit Inquiry'}
+                </button>
+              </form>
+            )}
+          </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .vp-contact-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '0.7rem 1rem',
+  fontFamily: "'Inter', sans-serif",
+  fontSize: '0.875rem',
+  color: '#1E1E1E',
+  background: '#FFFFFF',
+  border: '1.5px solid #E5E7EB',
+  borderRadius: '6px',
+  outline: 'none',
+};

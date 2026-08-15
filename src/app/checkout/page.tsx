@@ -69,14 +69,12 @@ export default function CheckoutPage() {
       const loaded = await loadRazorpayScript();
 
       if (loaded && (window as any).Razorpay) {
-        // Launch Razorpay Modal
-        const options = {
+        const options: any = {
           key: data.keyId || 'rzp_test_TMSAlhSBWAt4fa',
           amount: data.amount,
           currency: 'INR',
           name: 'Ayushman Cards n Graphics',
           description: `Print Order (${cart.length} item(s))`,
-          order_id: data.orderId,
           handler: async function (response: any) {
             try {
               await fetch('/api/razorpay/verify-payment', {
@@ -110,17 +108,22 @@ export default function CheckoutPage() {
           },
         };
 
+        // CRITICAL FIX: Only attach order_id if it's a real server order created on Razorpay API.
+        // Synthetic order_test_ IDs cause Razorpay's iframe to throw "Order not found" Payment Failed errors.
+        if (data.orderId && !data.orderId.startsWith('order_test_')) {
+          options.order_id = data.orderId;
+        }
+
         const paymentObject = new (window as any).Razorpay(options);
 
         paymentObject.on('payment.failed', function () {
-          // Automatic verification fallback so user is not stranded
           confirmTestPayment(data.orderId, data.bookingId);
         });
 
         paymentObject.open();
         setLoading(false);
       } else {
-        // Direct test confirmation if Razorpay SDK script fails to load
+        // Direct test confirmation if Razorpay SDK script is blocked
         confirmTestPayment(data.orderId, data.bookingId);
       }
     } catch (err: any) {

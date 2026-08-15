@@ -5,10 +5,9 @@ import Link from 'next/link';
 export default function Hero() {
   return (
     <section
-      id="hero"
       style={{
-        background: 'linear-gradient(180deg, #E8F4FD 0%, #F0F7FC 100%)',
-        padding: 'clamp(1rem, 2vw, 1.5rem) clamp(1rem, 3vw, 2.5rem)',
+        background: '#FFFFFF',
+        padding: 'clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2.5rem)',
       }}
     >
       <div
@@ -16,24 +15,22 @@ export default function Hero() {
           maxWidth: '1440px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '1rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '1.5rem',
         }}
-        className="vp-hero-grid"
       >
-        {/* ─── Left Banner: Visiting Cards ─── */}
+        {/* ─── Left Banner: Visiting Cards Deal ─── */}
         <div
           style={{
             position: 'relative',
             borderRadius: '12px',
             overflow: 'hidden',
             minHeight: '380px',
-            background: 'linear-gradient(135deg, #F5F0EB 0%, #EDE6DC 100%)',
+            background: 'linear-gradient(135deg, #0B2545 0%, #134074 100%)',
             display: 'flex',
             alignItems: 'flex-end',
           }}
         >
-          {/* Product image background */}
           <div
             style={{
               position: 'absolute',
@@ -41,23 +38,40 @@ export default function Hero() {
               backgroundImage: 'url(https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=900&q=80)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
+              mixBlendMode: 'luminosity',
+              opacity: 0.85,
             }}
           />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%)' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(11,37,69,0.9) 0%, rgba(11,37,69,0.3) 60%, transparent 100%)' }} />
 
-          {/* Text overlay */}
           <div style={{ position: 'relative', zIndex: 2, padding: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
+            <span
+              style={{
+                display: 'inline-block',
+                background: '#B2E4F7',
+                color: '#0B2545',
+                fontFamily: "'Inter', sans-serif",
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                padding: '0.25rem 0.75rem',
+                borderRadius: '4px',
+                marginBottom: '0.75rem',
+                textTransform: 'uppercase',
+              }}
+            >
+              BEST SELLER DEAL
+            </span>
             <h2
               style={{
                 fontFamily: "'Inter', sans-serif",
-                fontSize: 'clamp(1.5rem, 3vw, 2.25rem)',
+                fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)',
                 fontWeight: 700,
                 color: '#FFFFFF',
                 marginBottom: '0.5rem',
-                lineHeight: 1.2,
+                lineHeight: 1.15,
               }}
             >
-              Visiting Cards
+              Standard Visiting Cards
             </h2>
             <p
               style={{
@@ -70,21 +84,21 @@ export default function Hero() {
               100 Visiting Cards at Rs 200
             </p>
             <Link
-              href="/booking?pkg=wedding-cards"
+              href="/products?category=Business Cards"
               style={{
                 display: 'inline-block',
                 padding: '0.6rem 1.5rem',
-                background: '#1E1E1E',
-                color: '#FFFFFF',
+                background: '#FFFFFF',
+                color: '#0B2545',
                 fontFamily: "'Inter', sans-serif",
-                fontWeight: 600,
+                fontWeight: 700,
                 fontSize: '0.875rem',
                 borderRadius: '999px',
                 textDecoration: 'none',
                 transition: 'transform 0.2s ease',
               }}
             >
-              Shop Now
+              Explore Products
             </Link>
           </div>
         </div>
@@ -110,7 +124,7 @@ export default function Hero() {
               backgroundPosition: 'center',
             }}
           />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 50%)' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 60%)' }} />
 
           <div style={{ position: 'relative', zIndex: 2, padding: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
             <h2
@@ -137,14 +151,14 @@ export default function Hero() {
             </p>
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <Link
-                href="/booking?pkg=royal-wedding"
+                href="/products?category=Wedding Cards"
                 style={{
                   display: 'inline-block',
                   padding: '0.6rem 1.5rem',
-                  background: '#1E1E1E',
-                  color: '#FFFFFF',
+                  background: '#FFFFFF',
+                  color: '#1E1E1E',
                   fontFamily: "'Inter', sans-serif",
-                  fontWeight: 600,
+                  fontWeight: 700,
                   fontSize: '0.875rem',
                   borderRadius: '999px',
                   textDecoration: 'none',
@@ -153,17 +167,19 @@ export default function Hero() {
                 Wedding Cards
               </Link>
               <Link
-                href="/booking?pkg=flex-banners"
+                href="/products?category=Flex Banners"
                 style={{
                   display: 'inline-block',
                   padding: '0.6rem 1.5rem',
-                  background: '#1E1E1E',
+                  background: 'rgba(255,255,255,0.25)',
+                  backdropFilter: 'blur(4px)',
                   color: '#FFFFFF',
                   fontFamily: "'Inter', sans-serif",
                   fontWeight: 600,
                   fontSize: '0.875rem',
                   borderRadius: '999px',
                   textDecoration: 'none',
+                  border: '1px solid rgba(255,255,255,0.4)',
                 }}
               >
                 Flex Banners
@@ -172,14 +188,6 @@ export default function Hero() {
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .vp-hero-grid {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }

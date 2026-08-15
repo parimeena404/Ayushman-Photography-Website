@@ -149,7 +149,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const gstAmount = Math.round(taxableAmount * 0.18); // 18% GST on print work
   const shippingFee = taxableAmount > 999 || cart.length === 0 ? 0 : 99; // Free shipping over ₹999
   const grandTotal = taxableAmount + gstAmount + shippingFee;
-  const totalItemCount = cart.reduce((count, item) => count + item.quantity, 0);
+
+  // Number of DISTINCT packages/items in cart (e.g. 1 package of 500 cards = 1 in red badge count)
+  const totalItemCount = cart.length;
 
   return (
     <CartContext.Provider

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
 import Link from 'next/link';
 
 interface MegaColumn {
@@ -324,6 +325,7 @@ const megaNavTabs: NavTab[] = [
 export default function Navbar() {
   const { user, logout } = useAuth();
   const { totalItemCount } = useCart();
+  const { wishlistCount } = useWishlist();
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedCode, setCopiedCode] = useState(false);
   const [hoveredTab, setHoveredTab] = useState<NavTab | null>(null);
@@ -480,15 +482,18 @@ export default function Navbar() {
               <span style={{ fontSize: '0.8125rem', color: '#1E1E1E', fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>9479784979</span>
             </a>
 
+            {/* My Favourites with live counter */}
             <Link
               href="/dashboard"
               className="vp-desktop-only"
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none' }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none', position: 'relative' }}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="1.8">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill={wishlistCount > 0 ? '#D40000' : 'none'} stroke={wishlistCount > 0 ? '#D40000' : '#1E1E1E'} strokeWidth="1.8">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
               </svg>
-              <span style={{ fontSize: '0.6875rem', color: '#1E1E1E', fontFamily: "'Inter', sans-serif" }}>My Favourites</span>
+              <span style={{ fontSize: '0.6875rem', color: '#1E1E1E', fontFamily: "'Inter', sans-serif" }}>
+                My Favourites {wishlistCount > 0 ? `(${wishlistCount})` : ''}
+              </span>
             </Link>
 
             {user ? (
@@ -531,6 +536,7 @@ export default function Navbar() {
               </Link>
             )}
 
+            {/* Cart with distinct items count */}
             <Link
               href="/cart"
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none', position: 'relative' }}
@@ -567,7 +573,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ═══ 3. Perfectly Spaced Category Navigation Ribbon ═══ */}
+      {/* ═══ 3. Category Navigation Ribbon ═══ */}
       <div
         style={{
           background: '#FFFFFF',
@@ -618,7 +624,7 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* ═══ 4. Mega Menu Dropdown Overlay for ALL Tabs ═══ */}
+        {/* ═══ 4. Mega Menu Dropdown Overlay ═══ */}
         {hoveredTab && hoveredTab.columns && hoveredTab.columns.length > 0 && (
           <div
             onMouseEnter={() => setHoveredTab(hoveredTab)}

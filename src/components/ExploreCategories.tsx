@@ -2,8 +2,10 @@
 
 import { useRef } from 'react';
 import Link from 'next/link';
+import { useWishlist } from '@/context/WishlistContext';
 
 interface CategoryProduct {
+  id: string;
   name: string;
   image: string;
   badge?: string;
@@ -17,6 +19,7 @@ interface CategoryProduct {
 
 const bestSellers: CategoryProduct[] = [
   {
+    id: 'bs-1',
     name: 'Standard Visiting Cards',
     image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&auto=format&fit=crop&q=80',
     badge: 'BUY 100 @ Rs.200',
@@ -28,6 +31,7 @@ const bestSellers: CategoryProduct[] = [
     href: '/booking?pkg=wedding-cards',
   },
   {
+    id: 'bs-2',
     name: 'Rounded Corner Cards',
     image: 'https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=600&auto=format&fit=crop&q=80',
     badge: 'BUY 100 @ Rs.250',
@@ -39,6 +43,7 @@ const bestSellers: CategoryProduct[] = [
     href: '/booking?pkg=wedding-cards',
   },
   {
+    id: 'bs-3',
     name: 'Letterheads',
     image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=600&auto=format&fit=crop&q=80',
     badge: 'BUY 100 @ Rs.350',
@@ -50,6 +55,7 @@ const bestSellers: CategoryProduct[] = [
     href: '/booking?pkg=wedding-cards',
   },
   {
+    id: 'bs-4',
     name: 'Photo Albums',
     image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80',
     badge: 'BUY 1 @ Rs.1,050',
@@ -61,6 +67,7 @@ const bestSellers: CategoryProduct[] = [
     href: '/booking?pkg=sangeet-haldi',
   },
   {
+    id: 'bs-5',
     name: 'Stickers & Labels',
     image: 'https://images.unsplash.com/photo-1572375992501-4b0892d50c69?w=600&auto=format&fit=crop&q=80',
     badge: 'BUY 100 @ Rs.180',
@@ -72,6 +79,7 @@ const bestSellers: CategoryProduct[] = [
     href: '/booking?pkg=flex-banners',
   },
   {
+    id: 'bs-6',
     name: 'Wedding Invitation Cards',
     image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&auto=format&fit=crop&q=80',
     badge: 'BUY 100 @ Rs.2,500',
@@ -86,6 +94,7 @@ const bestSellers: CategoryProduct[] = [
 
 const trending: CategoryProduct[] = [
   {
+    id: 'tr-1',
     name: 'Classic Visiting Cards',
     image: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&auto=format&fit=crop&q=80',
     badge: 'BUY 100 @ Rs.230',
@@ -95,6 +104,7 @@ const trending: CategoryProduct[] = [
     href: '/booking?pkg=wedding-cards',
   },
   {
+    id: 'tr-2',
     name: 'Spot UV Visiting Cards',
     image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&auto=format&fit=crop&q=80',
     badge: 'BUY 100 @ Rs.580',
@@ -104,6 +114,7 @@ const trending: CategoryProduct[] = [
     href: '/booking?pkg=wedding-cards',
   },
   {
+    id: 'tr-3',
     name: 'Flex Banners',
     image: 'https://images.unsplash.com/photo-1542744094-3a31b272c490?w=600&auto=format&fit=crop&q=80',
     badge: 'START @ Rs.18/sq ft',
@@ -113,6 +124,7 @@ const trending: CategoryProduct[] = [
     href: '/booking?pkg=flex-banners',
   },
   {
+    id: 'tr-4',
     name: 'Roll-up Standees',
     image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&auto=format&fit=crop&q=80',
     badge: 'BUY 1 @ Rs.860',
@@ -122,6 +134,7 @@ const trending: CategoryProduct[] = [
     href: '/booking?pkg=flex-banners',
   },
   {
+    id: 'tr-5',
     name: 'Custom Photo Mugs',
     image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80',
     badge: 'BUY 1 @ Rs.205',
@@ -131,6 +144,7 @@ const trending: CategoryProduct[] = [
     href: '/booking?pkg=sangeet-haldi',
   },
   {
+    id: 'tr-6',
     name: 'Gold Foil Wedding Cards',
     image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop&q=80',
     badge: 'BUY 100 @ Rs.4,500',
@@ -168,6 +182,7 @@ function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
 
 function ProductRow({ title, items }: { title: string; items: CategoryProduct[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   const scroll = (dir: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -190,7 +205,6 @@ function ProductRow({ title, items }: { title: string; items: CategoryProduct[] 
       </h2>
 
       <div style={{ position: 'relative' }}>
-        {/* Scroll Right Button */}
         <button
           onClick={() => scroll('right')}
           style={{
@@ -217,7 +231,6 @@ function ProductRow({ title, items }: { title: string; items: CategoryProduct[] 
           ›
         </button>
 
-        {/* Products scroll container */}
         <div
           ref={scrollRef}
           style={{
@@ -228,136 +241,149 @@ function ProductRow({ title, items }: { title: string; items: CategoryProduct[] 
             paddingBottom: '0.5rem',
           }}
         >
-          {items.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              style={{
-                flex: '0 0 210px',
-                textDecoration: 'none',
-                color: 'inherit',
-              }}
-            >
+          {items.map((item) => {
+            const isFav = isInWishlist(item.id) || isInWishlist(item.name);
+            return (
               <div
+                key={item.name}
                 style={{
-                  position: 'relative',
-                  background: item.bgGradient,
-                  borderRadius: '12px',
-                  overflow: 'hidden',
-                  border: '1px solid #E5E7EB',
-                  transition: 'box-shadow 0.2s ease, transform 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.12)';
-                  e.currentTarget.style.transform = 'translateY(-3px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = 'none';
-                  e.currentTarget.style.transform = 'translateY(0)';
+                  flex: '0 0 210px',
+                  display: 'flex',
+                  flexDirection: 'column',
                 }}
               >
-                {/* Price Badge */}
-                {item.badge && (
-                  <div
+                <div
+                  style={{
+                    position: 'relative',
+                    background: item.bgGradient,
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    border: '1px solid #E5E7EB',
+                    transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.12)';
+                    e.currentTarget.style.transform = 'translateY(-3px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = 'none';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  {/* Price Badge */}
+                  {item.badge && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        left: '10px',
+                        zIndex: 5,
+                        background: '#B2E4F7',
+                        color: '#0B2545',
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: '0.6875rem',
+                        fontWeight: 700,
+                        padding: '0.2rem 0.55rem',
+                        borderRadius: '4px',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+                      }}
+                    >
+                      {item.badge}
+                    </div>
+                  )}
+
+                  {/* Interactive Wishlist Heart Button */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleWishlist({ id: item.id, title: item.name, price: item.price || '', image: item.image });
+                    }}
                     style={{
                       position: 'absolute',
                       top: '10px',
-                      left: '10px',
-                      zIndex: 5,
-                      background: '#B2E4F7',
-                      color: '#0B2545',
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: '0.6875rem',
-                      fontWeight: 700,
-                      padding: '0.2rem 0.55rem',
-                      borderRadius: '4px',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+                      right: '10px',
+                      zIndex: 10,
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.95)',
+                      border: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                      cursor: 'pointer',
+                      transition: 'transform 0.15s ease',
                     }}
+                    title={isFav ? 'Remove from Favourites' : 'Add to Favourites'}
                   >
-                    {item.badge}
-                  </div>
-                )}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill={isFav ? '#D40000' : 'none'} stroke={isFav ? '#D40000' : '#1E1E1E'} strokeWidth="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                  </button>
 
-                {/* Favourite heart */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    zIndex: 5,
-                    width: '30px',
-                    height: '30px',
-                    borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.92)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
-                  }}
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                  </svg>
+                  <Link href={item.href} style={{ textDecoration: 'none' }}>
+                    <div style={{ width: '100%', aspectRatio: '1', overflow: 'hidden' }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          display: 'block',
+                        }}
+                      />
+                    </div>
+                  </Link>
                 </div>
 
-                {/* Product Image taking full card area */}
-                <div style={{ width: '100%', aspectRatio: '1', overflow: 'hidden' }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      display: 'block',
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Product Info */}
-              <div style={{ padding: '0.6rem 0.25rem' }}>
-                <div
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: '0.875rem',
-                    fontWeight: 600,
-                    color: '#1E1E1E',
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {item.name}
-                </div>
-                {item.rating && <StarRating rating={item.rating} reviews={item.reviews || 0} />}
-                {item.price && (
-                  <div style={{ marginTop: '0.35rem' }}>
-                    <span
+                <Link href={item.href} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <div style={{ padding: '0.6rem 0.25rem' }}>
+                    <div
                       style={{
                         fontFamily: "'Inter', sans-serif",
-                        fontSize: '0.9375rem',
-                        fontWeight: 700,
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
                         color: '#1E1E1E',
+                        lineHeight: 1.3,
                       }}
                     >
-                      From {item.price}
-                    </span>
+                      {item.name}
+                    </div>
+                    {item.rating && <StarRating rating={item.rating} reviews={item.reviews || 0} />}
+                    {item.price && (
+                      <div style={{ marginTop: '0.35rem' }}>
+                        <span
+                          style={{
+                            fontFamily: "'Inter', sans-serif",
+                            fontSize: '0.9375rem',
+                            fontWeight: 700,
+                            color: '#1E1E1E',
+                          }}
+                        >
+                          From {item.price}
+                        </span>
+                      </div>
+                    )}
+                    {item.unit && (
+                      <div
+                        style={{
+                          fontFamily: "'Inter', sans-serif",
+                          fontSize: '0.75rem',
+                          color: '#6B7280',
+                        }}
+                      >
+                        {item.unit}
+                      </div>
+                    )}
                   </div>
-                )}
-                {item.unit && (
-                  <div
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: '0.75rem',
-                      color: '#6B7280',
-                    }}
-                  >
-                    {item.unit}
-                  </div>
-                )}
+                </Link>
               </div>
-            </Link>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

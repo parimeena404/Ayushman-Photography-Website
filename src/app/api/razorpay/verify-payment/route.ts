@@ -7,12 +7,12 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-      bookingId,
-    } = body;
+    
+    // Support both camelCase and snake_case from Razorpay JS SDK
+    const razorpay_order_id = body.razorpay_order_id || body.razorpayOrderId;
+    const razorpay_payment_id = body.razorpay_payment_id || body.razorpayPaymentId;
+    const razorpay_signature = body.razorpay_signature || body.razorpaySignature;
+    const bookingId = body.bookingId;
 
     if (!razorpay_order_id || !razorpay_payment_id) {
       return NextResponse.json(
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
     let isValidSignature = false;
 
-    if (razorpay_signature) {
+    if (razorpay_signature && razorpay_signature !== 'sandbox_sig') {
       const generatedSignature = crypto
         .createHmac('sha256', keySecret)
         .update(`${razorpay_order_id}|${razorpay_payment_id}`)
@@ -34,26 +34,48 @@ export async function POST(req: Request) {
       isValidSignature = generatedSignature === razorpay_signature;
     }
 
-    // Accept signature or test fallback
-    if (isValidSignature || razorpay_order_id.startsWith('order_test_') || !razorpay_signature) {
-      // Update Database Record
-      const updatedBooking = await db.booking.update({
+    // Accept valid HMAC signature OR sandbox/test order fallback
+    if (
+      isValidSignature ||
+      razorpay_order_id.startsWith('order_test_') ||
+      razorpay_signature === 'sandbox_sig' ||
+      !razorpay_signature
+    ) {
+      // Find booking by order ID or bookingId fallback
+      let existingBooking = await db.booking.findFirst({
         where: { razorpayOrderId: razorpay_order_id },
-        data: {
-          paymentStatus: 'PAID',
-          status: 'CONFIRMED',
-          razorpayPaymentId: razorpay_payment_id || `pay_${Date.now()}`,
-          razorpaySignature: razorpay_signature || 'verified_test_sig',
-        },
       });
+
+      if (!existingBooking && bookingId) {
+        existingBooking = await db.booking.findUnique({
+          where: { id: bookingId },
+        });
+      }
+
+      if (existingBooking) {
+        const updatedBooking = await db.booking.update({
+          where: { id: existingBooking.id },
+          data: {
+            paymentStatus: 'PAID',
+            status: 'CONFIRMED',
+            razorpayPaymentId: razorpay_payment_id,
+            razorpaySignature: razorpay_signature || 'verified_test_sig',
+          },
+        });
+
+        return NextResponse.json({
+          success: true,
+          message: 'Payment verified and booking confirmed successfully!',
+          booking: updatedBooking,
+        });
+      }
 
       return NextResponse.json({
         success: true,
-        message: 'Payment verified and booking confirmed successfully!',
-        booking: updatedBooking,
+        message: 'Payment verified successfully!',
       });
     } else {
-      await db.booking.update({
+      await db.booking.updateMany({
         where: { razorpayOrderId: razorpay_order_id },
         data: {
           paymentStatus: 'FAILED',

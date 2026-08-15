@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import Link from 'next/link';
+import { useWishlist } from '@/context/WishlistContext';
 
 export interface ProductItem {
   id: string;
@@ -24,16 +25,17 @@ interface ProductCarouselProps {
 }
 
 const defaultGradients = [
-  '#FAF0E6', // Amber Gold
-  '#FDF2F2', // Coral Blush
-  '#F5F2ED', // Linen Sand
-  '#F0F7F2', // Sage Mint
-  '#F4F0F9', // Lavender Lilac
-  '#F9EBE6', // Terracotta Clay
+  '#FAF0E6',
+  '#FDF2F2',
+  '#F5F2ED',
+  '#F0F7F2',
+  '#F4F0F9',
+  '#F9EBE6',
 ];
 
 export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, items }: ProductCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   const scroll = (dir: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -51,7 +53,6 @@ export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, ite
       }}
     >
       <div style={{ maxWidth: '1440px', margin: '0 auto' }}>
-        {/* Section header */}
         <div style={{ marginBottom: '1.25rem' }}>
           <h2
             style={{
@@ -77,7 +78,6 @@ export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, ite
           )}
         </div>
 
-        {/* Product scroll area */}
         <div style={{ position: 'relative' }}>
           <button
             onClick={() => scroll('right')}
@@ -117,14 +117,14 @@ export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, ite
           >
             {items.map((item, idx) => {
               const cardBg = item.bgGradient || defaultGradients[idx % defaultGradients.length];
+              const isFav = isInWishlist(item.id) || isInWishlist(item.title);
               return (
-                <Link
+                <div
                   key={item.id}
-                  href={`/booking?pkg=${item.category?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'wedding-cards'}`}
                   style={{
                     flex: '0 0 210px',
-                    textDecoration: 'none',
-                    color: 'inherit',
+                    display: 'flex',
+                    flexDirection: 'column',
                   }}
                 >
                   <div
@@ -167,78 +167,94 @@ export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, ite
                       </div>
                     )}
 
-                    {/* Heart */}
-                    <div
+                    {/* Interactive Wishlist Heart Button */}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleWishlist({ id: item.id, title: item.title, price: item.price, image: item.image });
+                      }}
                       style={{
                         position: 'absolute',
                         top: '10px',
                         right: '10px',
-                        zIndex: 5,
-                        width: '30px',
-                        height: '30px',
+                        zIndex: 10,
+                        width: '32px',
+                        height: '32px',
                         borderRadius: '50%',
-                        background: 'rgba(255,255,255,0.92)',
+                        background: 'rgba(255,255,255,0.95)',
+                        border: 'none',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                        cursor: 'pointer',
                       }}
+                      title={isFav ? 'Remove from Favourites' : 'Add to Favourites'}
                     >
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="2">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill={isFav ? '#D40000' : 'none'} stroke={isFav ? '#D40000' : '#1E1E1E'} strokeWidth="2">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                       </svg>
-                    </div>
+                    </button>
 
-                    {/* Image taking 100% full card width */}
-                    <div style={{ width: '100%', aspectRatio: '1', overflow: 'hidden' }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                      />
-                    </div>
+                    <Link
+                      href={`/booking?pkg=${item.category?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'wedding-cards'}`}
+                      style={{ textDecoration: 'none' }}
+                    >
+                      <div style={{ width: '100%', aspectRatio: '1', overflow: 'hidden' }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        />
+                      </div>
+                    </Link>
                   </div>
 
-                  {/* Title + Price */}
-                  <div style={{ padding: '0.6rem 0.25rem' }}>
-                    <div
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: '0.875rem',
-                        fontWeight: 600,
-                        color: '#1E1E1E',
-                        lineHeight: 1.35,
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                      }}
-                    >
-                      {item.title}
-                    </div>
-                    {item.rating && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.3rem' }}>
-                        {[...Array(5)].map((_, i) => (
-                          <span key={i} style={{ color: i < Math.floor(item.rating!) ? '#F59E0B' : '#D1D5DB', fontSize: '0.75rem' }}>★</span>
-                        ))}
-                        <span style={{ fontSize: '0.7rem', color: '#6B7280' }}>
-                          {item.rating} ({item.reviews?.toLocaleString()})
+                  <Link
+                    href={`/booking?pkg=${item.category?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'wedding-cards'}`}
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    <div style={{ padding: '0.6rem 0.25rem' }}>
+                      <div
+                        style={{
+                          fontFamily: "'Inter', sans-serif",
+                          fontSize: '0.875rem',
+                          fontWeight: 600,
+                          color: '#1E1E1E',
+                          lineHeight: 1.35,
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        {item.title}
+                      </div>
+                      {item.rating && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.3rem' }}>
+                          {[...Array(5)].map((_, i) => (
+                            <span key={i} style={{ color: i < Math.floor(item.rating!) ? '#F59E0B' : '#D1D5DB', fontSize: '0.75rem' }}>★</span>
+                          ))}
+                          <span style={{ fontSize: '0.7rem', color: '#6B7280' }}>
+                            {item.rating} ({item.reviews?.toLocaleString()})
+                          </span>
+                        </div>
+                      )}
+                      <div style={{ marginTop: '0.25rem' }}>
+                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', fontWeight: 700, color: '#1E1E1E' }}>
+                          From {item.price}
                         </span>
                       </div>
-                    )}
-                    <div style={{ marginTop: '0.25rem' }}>
-                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.9rem', fontWeight: 700, color: '#1E1E1E' }}>
-                        From {item.price}
-                      </span>
+                      {item.unit && (
+                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.725rem', color: '#6B7280' }}>
+                          {item.unit}
+                        </div>
+                      )}
                     </div>
-                    {item.unit && (
-                      <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.725rem', color: '#6B7280' }}>
-                        {item.unit}
-                      </div>
-                    )}
-                  </div>
-                </Link>
+                  </Link>
+                </div>
               );
             })}
           </div>

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 import { db } from '@/lib/db';
+import { getCurrentUser } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,9 +64,17 @@ export async function POST(req: Request) {
     let bookingId = `bk_${Date.now()}`;
 
     try {
+      // Get current user if logged in
+      let currentUserId: string | null = null;
+      try {
+        const currentUser = await getCurrentUser();
+        if (currentUser) currentUserId = currentUser.id;
+      } catch {}
+
       // Save pending booking in database
       const booking = await db.booking.create({
         data: {
+          userId: currentUserId,
           customerName,
           customerEmail: customerEmail || 'client@ayushmancards.com',
           customerPhone,

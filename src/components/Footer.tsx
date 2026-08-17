@@ -12,7 +12,6 @@ const footerColumns = [
       { label: 'Returns & Refunds', href: '/cancellation' },
       { label: 'FAQs', href: '/faq' },
       { label: 'Contact Us', href: '/contact' },
-      { label: '🛡️ Admin Portal', href: '/admin' },
     ],
   },
   {

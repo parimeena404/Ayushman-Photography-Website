@@ -212,34 +212,25 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            {/* Admin Login Shortcut */}
+            {/* Subtle admin access for authorized staff */}
             <div
               style={{
                 textAlign: 'center',
-                marginTop: '1.25rem',
-                paddingTop: '1.25rem',
+                marginTop: '1.5rem',
+                paddingTop: '1rem',
                 borderTop: '1px solid var(--border-medium)',
               }}
             >
               <Link
                 href="/admin"
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  padding: '0.55rem 1.25rem',
-                  borderRadius: '999px',
-                  background: '#0B2545',
-                  color: '#FFFFFF',
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
+                  fontSize: '0.7rem',
+                  color: '#9CA3AF',
                   textDecoration: 'none',
-                  boxShadow: '0 2px 8px rgba(11,37,69,0.2)',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  fontFamily: "'Inter', sans-serif",
                 }}
               >
-                <span>🛡️</span> Admin Portal Login
+                Staff Login →
               </Link>
             </div>
           </form>

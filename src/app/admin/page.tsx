@@ -10,19 +10,20 @@ export default function AdminPortalPage() {
   const { user, login } = useAuth();
 
   // Admin Login State (if not logged in as admin)
-  const [adminEmail, setAdminEmail] = useState('admin@ayushmancards.com');
-  const [adminPassword, setAdminPassword] = useState('admin123');
+  const [adminEmail, setAdminEmail] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
   // Data State
   const [orders, setOrders] = useState<any[]>([]);
   const [usersList, setUsersList] = useState<any[]>([]);
+  const [inquiries, setInquiries] = useState<any[]>([]);
   const [stats, setStats] = useState<any>({ totalOrders: 0, totalRevenue: 0, pendingOrders: 0, paidOrders: 0 });
   const [loadingData, setLoadingData] = useState(true);
 
   // Filters & Tabs
-  const [activeTab, setActiveTab] = useState<'orders' | 'users' | 'analytics'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'users' | 'inquiries'>('orders');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [actionNotice, setActionNotice] = useState<string | null>(null);
@@ -34,9 +35,10 @@ export default function AdminPortalPage() {
   const fetchAdminData = async () => {
     setLoadingData(true);
     try {
-      const [ordersRes, usersRes] = await Promise.all([
+      const [ordersRes, usersRes, inquiriesRes] = await Promise.all([
         fetch('/api/admin/orders'),
         fetch('/api/admin/users'),
+        fetch('/api/inquiries'),
       ]);
 
       if (ordersRes.ok) {
@@ -51,6 +53,13 @@ export default function AdminPortalPage() {
         const usersData = await usersRes.json();
         if (usersData.success) {
           setUsersList(usersData.users || []);
+        }
+      }
+
+      if (inquiriesRes.ok) {
+        const inquiriesData = await inquiriesRes.json();
+        if (inquiriesData.success) {
+          setInquiries(inquiriesData.inquiries || []);
         }
       }
     } catch (err) {
@@ -257,7 +266,7 @@ export default function AdminPortalPage() {
             </form>
 
             <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #E5E7EB', fontSize: '0.75rem', color: '#6B7280' }}>
-              💡 Pre-seeded Admin: <strong>admin@ayushmancards.com</strong> | Pass: <strong>admin123</strong>
+              🔒 Restricted Area — Authorized personnel only. Contact the studio owner for access credentials.
             </div>
           </div>
         </main>
@@ -379,6 +388,23 @@ export default function AdminPortalPage() {
             >
               👥 Registered Accounts ({usersList.length})
             </button>
+
+            <button
+              onClick={() => setActiveTab('inquiries')}
+              style={{
+                padding: '0.65rem 1.25rem',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeTab === 'inquiries' ? '#0B2545' : 'transparent',
+                color: activeTab === 'inquiries' ? '#FFFFFF' : '#4B5563',
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 700,
+                fontSize: '0.875rem',
+                cursor: 'pointer',
+              }}
+            >
+              📩 Inquiries ({inquiries.length})
+            </button>
           </div>
 
           {/* ═══ TAB 1: ORDER MANAGEMENT ═══ */}
@@ -396,7 +422,7 @@ export default function AdminPortalPage() {
                 />
 
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  {['ALL', 'PAID', 'PENDING', 'PRINTING', 'SHIPPED', 'DELIVERED', 'CANCELLED'].map((st) => (
+                  {['ALL', 'PAID', 'PENDING', 'NEW', 'CONFIRMED', 'PRINTING', 'SHIPPED', 'DELIVERED', 'CANCELLED'].map((st) => (
                     <button
                       key={st}
                       onClick={() => setStatusFilter(st)}
@@ -430,9 +456,10 @@ export default function AdminPortalPage() {
                         <th style={{ padding: '0.75rem 1rem' }}>Order Ref</th>
                         <th style={{ padding: '0.75rem 1rem' }}>Customer</th>
                         <th style={{ padding: '0.75rem 1rem' }}>Product Job</th>
+                        <th style={{ padding: '0.75rem 1rem' }}>Delivery Address</th>
                         <th style={{ padding: '0.75rem 1rem' }}>Amount</th>
-                        <th style={{ padding: '0.75rem 1rem' }}>Payment Status</th>
-                        <th style={{ padding: '0.75rem 1rem' }}>Fulfillment Status</th>
+                        <th style={{ padding: '0.75rem 1rem' }}>Payment</th>
+                        <th style={{ padding: '0.75rem 1rem' }}>Fulfillment</th>
                         <th style={{ padding: '0.75rem 1rem' }}>Actions</th>
                       </tr>
                     </thead>
@@ -448,11 +475,16 @@ export default function AdminPortalPage() {
                           <td style={{ padding: '0.85rem 1rem' }}>
                             <div style={{ fontWeight: 700, color: '#1E1E1E' }}>{ord.customerName}</div>
                             <div style={{ color: '#6B7280', fontSize: '0.75rem' }}>📞 {ord.customerPhone}</div>
-                            <div style={{ color: '#9CA3AF', fontSize: '0.7rem' }}>📍 {ord.city || 'Ujjain'}</div>
+                            <div style={{ color: '#9CA3AF', fontSize: '0.7rem' }}>✉️ {ord.customerEmail}</div>
                           </td>
                           <td style={{ padding: '0.85rem 1rem', maxWidth: '220px' }}>
                             <div style={{ fontWeight: 600, color: '#1E1E1E' }}>{ord.eventType}</div>
                             {ord.notes && <div style={{ fontSize: '0.725rem', color: '#6B7280' }}>Note: {ord.notes}</div>}
+                            {ord.razorpayPaymentId && <div style={{ fontSize: '0.65rem', color: '#9CA3AF' }}>Pay ID: {ord.razorpayPaymentId}</div>}
+                          </td>
+                          <td style={{ padding: '0.85rem 1rem', maxWidth: '180px' }}>
+                            <div style={{ fontSize: '0.75rem', color: '#4B5563' }}>{ord.address || '—'}</div>
+                            <div style={{ fontSize: '0.7rem', color: '#9CA3AF' }}>{ord.city || 'Ujjain'}</div>
                           </td>
                           <td style={{ padding: '0.85rem 1rem', fontWeight: 800, color: '#10B981', fontSize: '0.9rem' }}>
                             ₹{ord.totalAmount?.toLocaleString()}
@@ -493,6 +525,7 @@ export default function AdminPortalPage() {
                               }}
                             >
                               <option value="NEW">NEW</option>
+                              <option value="CONFIRMED">CONFIRMED</option>
                               <option value="PRINTING">PRINTING</option>
                               <option value="SHIPPED">SHIPPED</option>
                               <option value="DELIVERED">DELIVERED</option>
@@ -570,6 +603,44 @@ export default function AdminPortalPage() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          )}
+
+          {/* ═══ TAB 3: INQUIRIES MANAGEMENT ═══ */}
+          {activeTab === 'inquiries' && (
+            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.5rem' }}>
+              <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.1rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '1.25rem' }}>
+                Customer Inquiries & Messages ({inquiries.length})
+              </h3>
+
+              {inquiries.length === 0 ? (
+                <div style={{ padding: '3rem', textAlign: 'center', color: '#6B7280' }}>No inquiries received yet.</div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {inquiries.map((inq: any) => (
+                    <div key={inq.id} style={{ padding: '1.25rem', borderRadius: '8px', border: '1px solid #E5E7EB', background: '#FAFAFA' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.5rem' }}>
+                        <div>
+                          <div style={{ fontWeight: 700, color: '#1E1E1E', fontSize: '0.9rem' }}>{inq.name}</div>
+                          <div style={{ color: '#6B7280', fontSize: '0.78125rem' }}>📞 {inq.phone} • ✉️ {inq.email}</div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span style={{ fontSize: '0.7rem', color: '#9CA3AF' }}>{new Date(inq.createdAt).toLocaleDateString()}</span>
+                          <span style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, background: '#EDE9FE', color: '#5B21B6' }}>
+                            {inq.eventType}
+                          </span>
+                        </div>
+                      </div>
+                      <div style={{ fontSize: '0.84375rem', color: '#4B5563', lineHeight: 1.6, background: '#FFFFFF', padding: '0.75rem', borderRadius: '6px', border: '1px solid #F3F4F6' }}>
+                        {inq.message}
+                      </div>
+                      {inq.date && (
+                        <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: '#6B7280' }}>📅 Preferred Date: {inq.date}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

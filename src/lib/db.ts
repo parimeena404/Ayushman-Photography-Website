@@ -8,7 +8,11 @@ export interface UserRecord {
   email: string;
   password: string;
   phone?: string | null;
-  role: string;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+  role: string; // 'ADMIN' | 'CLIENT'
   createdAt: string;
   updatedAt: string;
 }
@@ -27,11 +31,11 @@ export interface BookingRecord {
   packageType: string;
   totalAmount: number;
   depositAmount: number;
-  paymentStatus: string;
+  paymentStatus: string; // 'PAID' | 'PENDING' | 'FAILED'
   razorpayOrderId?: string | null;
   razorpayPaymentId?: string | null;
   razorpaySignature?: string | null;
-  status: string;
+  status: string; // 'NEW' | 'PROCESSING' | 'PRINTING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
   createdAt: string;
   updatedAt: string;
 }
@@ -54,29 +58,125 @@ interface DBStore {
   inquiries: InquiryRecord[];
 }
 
-// In Vercel serverless environment, use OS temp directory (/tmp) which is 100% writable
 const DB_FILE_PATH = path.join(os.tmpdir(), 'ayushman_print_db.json');
 
-// Global in-memory cache to preserve state across warm serverless lambdas
 declare global {
   // eslint-disable-next-line no-var
   var __ayushmanInMemoryDB: DBStore | undefined;
 }
+
+// Pre-seeded default Admin and Sample Orders
+const DEFAULT_STORE: DBStore = {
+  users: [
+    {
+      id: 'usr_admin_default',
+      name: 'Studio Admin',
+      email: 'admin@ayushmancards.com',
+      password: 'admin123',
+      phone: '9479784979',
+      address: 'Freeganj Main Road',
+      city: 'Ujjain',
+      state: 'Madhya Pradesh',
+      pincode: '456010',
+      role: 'ADMIN',
+      createdAt: '2025-01-01T00:00:00.000Z',
+      updatedAt: '2025-01-01T00:00:00.000Z',
+    },
+    {
+      id: 'usr_client_demo',
+      name: 'Rahul Sharma',
+      email: 'rahul@example.com',
+      password: 'user123',
+      phone: '9893022451',
+      address: 'Tower Chowk',
+      city: 'Ujjain',
+      state: 'Madhya Pradesh',
+      pincode: '456001',
+      role: 'CLIENT',
+      createdAt: '2025-01-10T00:00:00.000Z',
+      updatedAt: '2025-01-10T00:00:00.000Z',
+    },
+  ],
+  bookings: [
+    {
+      id: 'bk_demo_101',
+      userId: 'usr_client_demo',
+      customerName: 'Rahul Sharma',
+      customerEmail: 'rahul@example.com',
+      customerPhone: '9893022451',
+      eventType: '350 GSM Velvet Touch Visiting Cards',
+      eventDate: '2025-02-20',
+      city: 'Ujjain',
+      address: 'Tower Chowk, Ujjain',
+      notes: 'Gold foil embossing on logo',
+      packageType: 'Visiting Cards',
+      totalAmount: 1250,
+      depositAmount: 1250,
+      paymentStatus: 'PAID',
+      razorpayOrderId: 'order_test_101',
+      razorpayPaymentId: 'pay_demo_998',
+      status: 'PRINTING',
+      createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+      updatedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+    },
+    {
+      id: 'bk_demo_102',
+      userId: 'usr_admin_default',
+      customerName: 'Priya Verma',
+      customerEmail: 'priya@example.com',
+      customerPhone: '9479784979',
+      eventType: 'Royal Velvet & Gold Foil Laser Cut Wedding Card Box',
+      eventDate: '2025-03-15',
+      city: 'Indore',
+      address: 'Vijay Nagar, Indore',
+      notes: '100 Wedding Box Cards with Wax Seal',
+      packageType: 'Wedding Cards',
+      totalAmount: 4500,
+      depositAmount: 4500,
+      paymentStatus: 'PAID',
+      razorpayOrderId: 'order_test_102',
+      razorpayPaymentId: 'pay_demo_999',
+      status: 'SHIPPED',
+      createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+      updatedAt: new Date(Date.now() - 86400000 * 1).toISOString(),
+    },
+  ],
+  inquiries: [
+    {
+      id: 'inq_1',
+      name: 'Vikram Mehta',
+      email: 'vikram@business.com',
+      phone: '9826012345',
+      eventType: 'Bulk Corporate Printing',
+      date: '2025-03-01',
+      message: 'Need 5000 letterheads, 2000 envelopes, and 10 rollup standees for annual summit.',
+      createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
+    },
+  ],
+};
 
 function readStore(): DBStore {
   if (globalThis.__ayushmanInMemoryDB) {
     return globalThis.__ayushmanInMemoryDB;
   }
 
-  let store: DBStore = { users: [], bookings: [], inquiries: [] };
+  let store: DBStore = DEFAULT_STORE;
 
   try {
     if (fs.existsSync(DB_FILE_PATH)) {
       const content = fs.readFileSync(DB_FILE_PATH, 'utf-8');
-      store = JSON.parse(content);
+      const parsed = JSON.parse(content);
+      if (parsed && Array.isArray(parsed.users) && parsed.users.length > 0) {
+        store = parsed;
+      }
     }
   } catch (err) {
     console.warn('Warning reading DB store:', err);
+  }
+
+  // Ensure default admin exists if store has no admin
+  if (!store.users.some((u) => u.email.toLowerCase().trim() === 'admin@ayushmancards.com')) {
+    store.users.push(DEFAULT_STORE.users[0]);
   }
 
   globalThis.__ayushmanInMemoryDB = store;
@@ -112,7 +212,7 @@ class UserClient {
     return null;
   }
 
-  async create(args: { data: { name: string; email: string; password: string; phone?: string; role?: string }; select?: any }): Promise<UserRecord> {
+  async create(args: { data: { name: string; email: string; password: string; phone?: string; role?: string; address?: string; city?: string; state?: string; pincode?: string }; select?: any }): Promise<UserRecord> {
     const store = readStore();
     const now = new Date().toISOString();
     const newUser: UserRecord = {
@@ -121,6 +221,10 @@ class UserClient {
       email: args.data.email.toLowerCase().trim(),
       password: args.data.password,
       phone: args.data.phone || null,
+      address: args.data.address || null,
+      city: args.data.city || null,
+      state: args.data.state || null,
+      pincode: args.data.pincode || null,
       role: args.data.role || 'CLIENT',
       createdAt: now,
       updatedAt: now,
@@ -128,6 +232,30 @@ class UserClient {
     store.users.push(newUser);
     writeStore(store);
     return newUser;
+  }
+
+  async update(args: { where: { id: string }; data: Partial<UserRecord> }): Promise<UserRecord> {
+    const store = readStore();
+    const idx = store.users.findIndex((u) => u.id === args.where.id);
+    if (idx === -1) {
+      throw new Error('User not found');
+    }
+    const updated: UserRecord = {
+      ...store.users[idx],
+      ...args.data,
+      updatedAt: new Date().toISOString(),
+    };
+    store.users[idx] = updated;
+    writeStore(store);
+    return updated;
+  }
+
+  async delete(args: { where: { id: string } }): Promise<boolean> {
+    const store = readStore();
+    const initialLen = store.users.length;
+    store.users = store.users.filter((u) => u.id !== args.where.id);
+    writeStore(store);
+    return store.users.length < initialLen;
   }
 
   async findMany(): Promise<UserRecord[]> {
@@ -156,7 +284,6 @@ class BookingClient {
     const { razorpayOrderId, id } = args.where;
     const idx = store.bookings.findIndex((b) => (razorpayOrderId && b.razorpayOrderId === razorpayOrderId) || (id && b.id === id));
     if (idx === -1) {
-      // If booking record not found in array, create synthetic updated record
       const syntheticBooking: BookingRecord = {
         id: id || generateId('bk'),
         customerName: 'Customer',
@@ -185,6 +312,14 @@ class BookingClient {
     store.bookings[idx] = updated;
     writeStore(store);
     return updated;
+  }
+
+  async delete(args: { where: { id: string } }): Promise<boolean> {
+    const store = readStore();
+    const initialLen = store.bookings.length;
+    store.bookings = store.bookings.filter((b) => b.id !== args.where.id);
+    writeStore(store);
+    return store.bookings.length < initialLen;
   }
 
   async findMany(args?: { where?: { customerEmail?: string; userId?: string }; orderBy?: any; take?: number }): Promise<BookingRecord[]> {
@@ -235,6 +370,14 @@ class InquiryClient {
       result = result.filter((i) => i.email.toLowerCase().trim() === cleanEmail);
     }
     return result;
+  }
+
+  async delete(args: { where: { id: string } }): Promise<boolean> {
+    const store = readStore();
+    const initialLen = store.inquiries.length;
+    store.inquiries = store.inquiries.filter((i) => i.id !== args.where.id);
+    writeStore(store);
+    return store.inquiries.length < initialLen;
   }
 }
 

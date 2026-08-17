@@ -481,6 +481,29 @@ export default function Navbar() {
               <span style={{ fontSize: '0.8125rem', color: '#1E1E1E', fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>9479784979</span>
             </a>
 
+            {/* Admin Portal Shortcut for Admins */}
+            {user?.role === 'ADMIN' && (
+              <Link
+                href="/admin"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  padding: '0.35rem 0.75rem',
+                  borderRadius: '999px',
+                  background: '#0B2545',
+                  color: '#FFFFFF',
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  boxShadow: '0 2px 6px rgba(11,37,69,0.25)',
+                }}
+              >
+                <span>🛡️</span> Admin Portal
+              </Link>
+            )}
+
             {/* My Favourites with live counter */}
             <Link
               href="/dashboard"
@@ -496,15 +519,18 @@ export default function Navbar() {
             </Link>
 
             {user ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                 <Link
-                  href="/dashboard"
+                  href="/profile"
                   style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none' }}
+                  title="View & Edit Profile"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="1.8">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                   </svg>
-                  <span style={{ fontSize: '0.6875rem', color: '#1E1E1E', fontFamily: "'Inter', sans-serif" }}>{user.name?.split(' ')[0]}</span>
+                  <span style={{ fontSize: '0.6875rem', color: '#1E1E1E', fontFamily: "'Inter', sans-serif" }}>
+                    {user.name?.split(' ')[0]} (Profile)
+                  </span>
                 </Link>
                 <button
                   onClick={() => logout()}

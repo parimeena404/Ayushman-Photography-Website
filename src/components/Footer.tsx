@@ -7,10 +7,12 @@ const footerColumns = [
     title: 'Let Us Help You',
     links: [
       { label: 'My Account', href: '/dashboard' },
+      { label: 'My Profile', href: '/profile' },
       { label: 'Track My Order', href: '/dashboard' },
       { label: 'Returns & Refunds', href: '/cancellation' },
       { label: 'FAQs', href: '/faq' },
       { label: 'Contact Us', href: '/contact' },
+      { label: '🛡️ Admin Portal', href: '/admin' },
     ],
   },
   {

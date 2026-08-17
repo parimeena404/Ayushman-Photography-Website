@@ -31,7 +31,12 @@ export default function LoginPage() {
     setIsSubmitting(false);
 
     if (result.success) {
-      router.push('/dashboard');
+      // Redirect admins to admin portal, clients to dashboard
+      if (result.user?.role === 'ADMIN') {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
     } else {
       setError(result.error || 'Login failed. Please check your credentials.');
     }
@@ -204,6 +209,37 @@ export default function LoginPage() {
               Don&rsquo;t have an account yet?{' '}
               <Link href="/signup" style={{ color: '#D40000', fontWeight: 700, textDecoration: 'none' }}>
                 Create Account
+              </Link>
+            </div>
+
+            {/* Admin Login Shortcut */}
+            <div
+              style={{
+                textAlign: 'center',
+                marginTop: '1.25rem',
+                paddingTop: '1.25rem',
+                borderTop: '1px solid var(--border-medium)',
+              }}
+            >
+              <Link
+                href="/admin"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.55rem 1.25rem',
+                  borderRadius: '999px',
+                  background: '#0B2545',
+                  color: '#FFFFFF',
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  boxShadow: '0 2px 8px rgba(11,37,69,0.2)',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                }}
+              >
+                <span>🛡️</span> Admin Portal Login
               </Link>
             </div>
           </form>

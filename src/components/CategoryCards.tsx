@@ -6,16 +6,16 @@ import SectionHeader from './SectionHeader';
 import Link from 'next/link';
 
 const categories = [
-  { name: '💍 Royal Wedding Cards', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&q=80', count: '500+ Designs' },
-  { name: '✨ Laser Acrylic Cards', image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80', count: '200+ Acrylic Cards' },
-  { name: '📜 Farman Scroll Cards', image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=600&q=80', count: '150+ Scrolls' },
-  { name: '📦 Velvet Box Cards', image: '/images/keepsakes/card2.png', count: '300+ Box Cards' },
-  { name: '💼 Business Visiting Cards', image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80', count: '2,000+ Orders' },
-  { name: '🚩 Flex Banners & Star Flex', image: 'https://images.unsplash.com/photo-1542744094-3a31b272c490?w=600&q=80', count: '1,500+ Banners' },
-  { name: '📄 Pamphlets & Flyers', image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&q=80', count: '3,000+ Flyers' },
-  { name: '🧾 Carbonless Bill Books', image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&q=80', count: '800+ Bill Books' },
-  { name: '📖 HD Wedding Photobooks', image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80', count: '400+ Albums' },
-  { name: '🎁 Custom Mugs & Gifts', image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&q=80', count: '1,200+ Gifts' },
+  { name: '💍 Royal Wedding Cards', image: '/images/wedding/royal_blue_wax_seal.jpg', count: '500+ Designs', href: '/products?category=Wedding Cards' },
+  { name: '✨ Laser Acrylic Cards', image: '/images/wedding/acrylic_navy_gold.png', count: '200+ Acrylic Cards', href: '/products?category=Wedding Cards' },
+  { name: '📜 Farman Scroll Cards', image: '/images/wedding/scroll_royal_blue_velvet.png', count: '150+ Scrolls', href: '/products?category=Wedding Cards' },
+  { name: '📦 Shahi Scroll Box Cards', image: '/images/wedding/scroll_white_gold.png', count: '300+ Box Cards', href: '/products?category=Wedding Cards' },
+  { name: '💼 Business Visiting Cards', image: '/images/keepsakes/visiting_cards.jpg', count: '2,000+ Orders', href: '/products?category=Business Cards' },
+  { name: '🚩 Flex Banners & Star Flex', image: 'https://images.unsplash.com/photo-1542744094-3a31b272c490?w=600&q=80', count: '1,500+ Banners', href: '/products?category=Flex Banners' },
+  { name: '📄 Pamphlets & Flyers', image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&q=80', count: '3,000+ Flyers', href: '/products?category=Flex Banners' },
+  { name: '🧾 Carbonless Bill Books', image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&q=80', count: '800+ Bill Books', href: '/products?category=Office Stationery' },
+  { name: '📖 HD Wedding Photobooks', image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80', count: '400+ Albums', href: '/products?category=Photobooks' },
+  { name: '🎁 Custom Mugs & Gifts', image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&q=80', count: '1,200+ Gifts', href: '/products?category=Custom Gifts' },
 ];
 
 export default function CategoryCards() {

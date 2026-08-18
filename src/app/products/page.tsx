@@ -27,7 +27,146 @@ export interface ProductCatalogItem {
 
 export const CATALOG_ITEMS: ProductCatalogItem[] = [
   // ════════════════════════════════════════════════════════════════════
-  // 1. BUSINESS & VISITING CARDS
+  // 1. WEDDING INVITATION CARDS (9 Unique Real Designs)
+  // ════════════════════════════════════════════════════════════════════
+  {
+    id: 'wed-1',
+    customizerId: 'wedding-card',
+    title: 'Royal Velvet Box & Gold Shahi Scroll Wedding Invitation',
+    category: 'Wedding Cards',
+    badge: '100 PCS @ ₹4,500',
+    price: '₹4,500',
+    numericPrice: 4500,
+    unit: '100 Box Cards (₹45/card)',
+    image: '/images/wedding/scroll_royal_blue_velvet.png',
+    description: 'Padded royal blue velvet box casing with gold filigree and matching silk royal scroll with gold finials.',
+    rating: 5.0,
+    reviews: 920,
+    features: ['Padded Velvet Box Casing', 'Gold Embroidered Silk Scroll', 'Handmade Metallic Finials'],
+  },
+  {
+    id: 'wed-2',
+    customizerId: 'wedding-card',
+    title: 'Clear Acrylic Wedding Card with Navy Velvet Lining & Gold Wax Seal',
+    category: 'Wedding Cards',
+    badge: '100 PCS @ ₹6,500',
+    price: '₹6,500',
+    numericPrice: 6500,
+    unit: '100 Acrylic Cards (₹65/card)',
+    image: '/images/wedding/acrylic_navy_gold.png',
+    description: '3mm thick crystal clear acrylic glass invitation card screen-printed with metallic gold foil UV ink & wax seal.',
+    rating: 4.9,
+    reviews: 640,
+    features: ['3mm Shatterproof Acrylic', 'Real Metallic Gold Screen Print', 'Hand-poured Botanical Wax Seal'],
+  },
+  {
+    id: 'wed-3',
+    customizerId: 'wedding-card',
+    title: 'Imperial White & Gold Carriage Farman Scroll Card with Box',
+    category: 'Wedding Cards',
+    badge: '100 PCS @ ₹3,800',
+    price: '₹3,800',
+    numericPrice: 3800,
+    unit: '100 Scroll Cards (₹38/card)',
+    image: '/images/wedding/scroll_white_gold.png',
+    description: 'Maharaja style white & gold royal carriage scroll invitation in a matching gold embossed box with tassels.',
+    rating: 4.8,
+    reviews: 730,
+    features: ['Metallic White Silk Scroll', 'Gold Carriage Emblem Print', 'Matching Gold Embossed Outer Box'],
+  },
+  {
+    id: 'wed-4',
+    customizerId: 'wedding-card',
+    title: 'Pastel Sky Blue Silver Laser-Cut Pocket Envelope Card with Tassels',
+    category: 'Wedding Cards',
+    badge: '100 PCS @ ₹2,950',
+    price: '₹2,950',
+    numericPrice: 2950,
+    unit: '100 Sets (₹29.50/card)',
+    image: '/images/wedding/pastel_blue_laser_tassel.png',
+    description: 'Delicate pastel sky blue pocket sleeve with silver foil monogram crest and luxury silk cord tassel.',
+    rating: 4.8,
+    reviews: 480,
+    features: ['Pastel Matte Pocket Sleeve', 'Silver Foil Monogram Seal', 'Silken Thread Hanging Tassel'],
+  },
+  {
+    id: 'wed-5',
+    customizerId: 'wedding-card',
+    title: 'Royal Blue Curved Pocket Wedding Card with Botanical Wax Seal',
+    category: 'Wedding Cards',
+    badge: '100 PCS @ ₹3,200',
+    price: '₹3,200',
+    numericPrice: 3200,
+    unit: '100 Cards (₹32/card)',
+    image: '/images/wedding/royal_blue_wax_seal.jpg',
+    description: 'Unique asymmetrical curved royal blue jacket with dried floral sprig and stamped gold metallic wax seal.',
+    rating: 4.9,
+    reviews: 510,
+    features: ['Asymmetrical Curved Sleeve', 'Real Dried Baby’s Breath Flowers', 'Antique Gold Wax Seal'],
+  },
+  {
+    id: 'wed-6',
+    customizerId: 'wedding-card',
+    title: '3D Pop-Up Lotus Flower Laser-Cut Traditional Luxury Card',
+    category: 'Wedding Cards',
+    badge: '100 PCS @ ₹4,200',
+    price: '₹4,200',
+    numericPrice: 4200,
+    unit: '100 Pop-Up Cards (₹42/card)',
+    image: '/images/wedding/lotus_popup_card.jpg',
+    description: 'Intricate mechanical 3D pop-up lotus flower that blooms automatically when card is opened.',
+    rating: 5.0,
+    reviews: 670,
+    features: ['Automatic 3D Pop-Up Bloom', 'Multi-Layered Shimmer Cardstock', 'Gold Glitter Floral Inlays'],
+  },
+  {
+    id: 'wed-7',
+    customizerId: 'wedding-card',
+    title: 'Navy Blue & Gold Gatefold Invitation with Details & RSVP QR Code',
+    category: 'Wedding Cards',
+    badge: '100 PCS @ ₹2,800',
+    price: '₹2,800',
+    numericPrice: 2800,
+    unit: '100 Gatefold Cards (₹28/card)',
+    image: '/images/wedding/navy_gold_rounded_gatefold.jpg',
+    description: 'Modern rounded 3-flap gatefold invitation with gold foil typography and digital wedding website QR code.',
+    rating: 4.9,
+    reviews: 840,
+    features: ['Rounded 3-Flap Gatefold', 'Gold Foil Calligraphy Typography', 'Custom Digital RSVP QR Code'],
+  },
+  {
+    id: 'wed-8',
+    customizerId: 'wedding-card',
+    title: 'Vintage Royal Arch Gate Laser-Cut Wedding Card',
+    category: 'Wedding Cards',
+    badge: '100 PCS @ ₹3,500',
+    price: '₹3,500',
+    numericPrice: 3500,
+    unit: '100 Gate Cards (₹35/card)',
+    image: '/images/wedding/royal_arch_laser_cut.png',
+    description: 'Intricate palace iron-gate laser-cut 2-door opening wedding invitation on deep navy shimmer cardstock.',
+    rating: 4.8,
+    reviews: 390,
+    features: ['Palace Arch 2-Door Opening', 'Micro Laser Lattice Cutout', 'Deep Shimmer Navy Cardstock'],
+  },
+  {
+    id: 'wed-9',
+    customizerId: 'wedding-card',
+    title: 'Royal Red Velvet & Gold Foil Laser Cut Box Card',
+    category: 'Wedding Cards',
+    badge: '100 PCS @ ₹4,800',
+    price: '₹4,800',
+    numericPrice: 4800,
+    unit: '100 Box Cards (₹48/card)',
+    image: '/images/keepsakes/wedding_cards.jpg',
+    description: 'Traditional Indian wedding box card with embossed gold foil mandala, Ganesh seal, and velvet cover.',
+    rating: 5.0,
+    reviews: 950,
+    features: ['Burgundy Royal Velvet Cover', 'Embossed Ganesh Mandala Seal', 'Gold Foil Laser Cut Borders'],
+  },
+
+  // ════════════════════════════════════════════════════════════════════
+  // 2. BUSINESS & VISITING CARDS
   // ════════════════════════════════════════════════════════════════════
   {
     id: 'vc-1',
@@ -103,85 +242,6 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     rating: 4.6,
     reviews: 512,
     features: ['Die-cut Smooth Corners', 'Anti-fray Edge Protection', 'Modern Sleek Aesthetics'],
-  },
-
-  // ════════════════════════════════════════════════════════════════════
-  // 2. WEDDING INVITATION CARDS
-  // ════════════════════════════════════════════════════════════════════
-  {
-    id: 'wed-1',
-    customizerId: 'wedding-card',
-    title: 'Royal Velvet & Gold Foil Laser Cut Wedding Card Box',
-    category: 'Wedding Cards',
-    badge: '100 PCS @ ₹4,500',
-    price: '₹4,500',
-    numericPrice: 4500,
-    unit: '100 Box Cards (₹45/card)',
-    image: '/images/keepsakes/wedding_cards.jpg',
-    description: 'Grand royal velvet padded invitation box with gold filigree laser-cut frame and matching inserts.',
-    rating: 5.0,
-    reviews: 860,
-    features: ['Padded Velvet Box Casing', 'Intricate Gold Laser Lattice', 'Handcrafted Wax Seal & Tassel'],
-  },
-  {
-    id: 'wed-2',
-    customizerId: 'wedding-card',
-    title: 'Premium Crystal Clear Acrylic Wedding Invitation with Wax Seal',
-    category: 'Wedding Cards',
-    badge: '100 PCS @ ₹6,500',
-    price: '₹6,500',
-    numericPrice: 6500,
-    unit: '100 Acrylic Cards (₹65/card)',
-    image: '/images/keepsakes/wedding_cards.jpg',
-    description: '3mm crystal clear acrylic glass invitation card screen-printed with metallic gold foil UV ink.',
-    rating: 4.9,
-    reviews: 540,
-    features: ['3mm Shatterproof Acrylic', 'Real Metallic Gold Screen Print', 'Hand-poured Botanical Wax Seal'],
-  },
-  {
-    id: 'wed-3',
-    customizerId: 'wedding-card',
-    title: 'Traditional Royal Farman Shahi Scroll Wedding Invitation',
-    category: 'Wedding Cards',
-    badge: '100 PCS @ ₹3,800',
-    price: '₹3,800',
-    numericPrice: 3800,
-    unit: '100 Scroll Cards (₹38/card)',
-    image: '/images/keepsakes/wedding_cards.jpg',
-    description: 'Maharaja style royal Farman parchment scroll in gold embossed velvet cylindrical casing.',
-    rating: 4.8,
-    reviews: 620,
-    features: ['Metallic Silk Scroll Fabric', 'Handmade Wooden Spindles', 'Royal Cylindrical Velvet Tube'],
-  },
-  {
-    id: 'wed-4',
-    customizerId: 'wedding-card',
-    title: 'Floral Pastel Hardboard Multi-Insert Wedding Card',
-    category: 'Wedding Cards',
-    badge: '100 PCS @ ₹2,950',
-    price: '₹2,950',
-    numericPrice: 2950,
-    unit: '100 Sets (₹29.50/card)',
-    image: '/images/keepsakes/wedding_cards.jpg',
-    description: 'Elegant pastel watercolor floral wedding card with 3 inserts (Haldi, Sangeet, Wedding Reception).',
-    rating: 4.7,
-    reviews: 410,
-    features: ['Rigid Hardboard Outer Jacket', '3 Themed Event Inserts', 'Gold Foil Ganesh Motif'],
-  },
-  {
-    id: 'wed-5',
-    customizerId: 'wedding-card',
-    title: 'The Shaadi Times Newspaper Themed Wedding Invitation',
-    category: 'Wedding Cards',
-    badge: '100 PCS @ ₹2,200',
-    price: '₹2,200',
-    numericPrice: 2200,
-    unit: '100 Newspaper Cards (₹22/card)',
-    image: '/images/keepsakes/wedding_cards.jpg',
-    description: 'Fun, trending 4-page custom newspaper themed wedding invitation with couple story and photos.',
-    rating: 4.9,
-    reviews: 780,
-    features: ['4-Page Custom Layout', 'Couple Love Story & Timeline', 'Vintage Newsprint Texture'],
   },
 
   // ════════════════════════════════════════════════════════════════════
@@ -496,8 +556,8 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
 
 export const CATEGORY_DEFINITIONS = [
   { id: 'All Products', label: '🌟 All Products', icon: '🌟', count: CATALOG_ITEMS.length },
+  { id: 'Wedding Cards', label: '💍 Wedding Invitation Cards', icon: '💍', count: 9 },
   { id: 'Business Cards', label: '💳 Visiting & Business Cards', icon: '💳', count: 5 },
-  { id: 'Wedding Cards', label: '💍 Wedding Invitation Cards', icon: '💍', count: 5 },
   { id: 'Birthday & Event Cards', label: '🎉 Birthday & Party Invitations', icon: '🎉', count: 4 },
   { id: 'Office Stationery', label: '🏢 Office Stationery & Letterheads', icon: '🏢', count: 4 },
   { id: 'Flex Banners', label: '🪧 Flex Banners & Standees', icon: '🪧', count: 3 },
@@ -564,8 +624,8 @@ function CatalogContent() {
       paperStock: 'Standard Premium Stock',
       cornerStyle: 'Standard Square Cut',
       finishOption: 'Matte Lamination',
-      quantity: 500,
-      unitPrice: Math.round(item.numericPrice / 500),
+      quantity: 100,
+      unitPrice: Math.round(item.numericPrice / 100),
       totalPrice: item.numericPrice,
       image: item.image,
     });
@@ -611,7 +671,7 @@ function CatalogContent() {
               Ayushman Cards & Printing Catalog
             </h1>
             <p style={{ fontSize: '0.875rem', color: '#6B7280', marginTop: '0.2rem' }}>
-              Browse products organized cleanly by category. Choose quantity, finishes, and order online with studio delivery.
+              Browse real customized wedding cards, visiting cards, stationery and gifts. Choose quantity, finishes, and order online with studio delivery.
             </p>
           </div>
 
@@ -795,7 +855,7 @@ function CatalogContent() {
                         </h2>
                       </div>
                       <p style={{ fontSize: '0.8125rem', color: '#6B7280', marginTop: '0.2rem' }}>
-                        High quality custom printed {catDef.id.toLowerCase()} manufactured in our Ujjain studio.
+                        High quality custom printed {catDef.id.toLowerCase()} manufactured in our studio.
                       </p>
                     </div>
 
@@ -899,7 +959,7 @@ function ProductCard({
       }}
     >
       {/* Image Container */}
-      <div style={{ position: 'relative', height: '180px', width: '100%', background: '#F3F4F6', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: '220px', width: '100%', background: '#F3F4F6', overflow: 'hidden' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={item.image}

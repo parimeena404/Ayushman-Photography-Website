@@ -24,10 +24,20 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { name, phone, address, city, state, pincode, newPassword } = body;
+    const { name, email, phone, address, city, state, pincode, newPassword } = body;
 
     const updateData: any = {};
     if (name) updateData.name = name.trim();
+    if (email && email.trim()) {
+      const cleanEmail = email.trim().toLowerCase();
+      if (cleanEmail !== currentUser.email.toLowerCase()) {
+        const existing = await db.user.findUnique({ where: { email: cleanEmail } });
+        if (existing && existing.id !== currentUser.id) {
+          return NextResponse.json({ error: 'This email address is already in use by another account.' }, { status: 400 });
+        }
+        updateData.email = cleanEmail;
+      }
+    }
     if (phone !== undefined) updateData.phone = phone ? phone.trim() : null;
     if (address !== undefined) updateData.address = address ? address.trim() : null;
     if (city !== undefined) updateData.city = city ? city.trim() : null;

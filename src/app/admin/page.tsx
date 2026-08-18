@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 
 export default function AdminPortalPage() {
-  const { user, login } = useAuth();
+  const { user, login, refreshUser } = useAuth();
 
   // Admin Login State (if not logged in as admin)
   const [adminEmail, setAdminEmail] = useState('');
@@ -23,7 +23,7 @@ export default function AdminPortalPage() {
   const [loadingData, setLoadingData] = useState(true);
 
   // Filters & Tabs
-  const [activeTab, setActiveTab] = useState<'orders' | 'users' | 'inquiries'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'users' | 'inquiries' | 'settings'>('orders');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [actionNotice, setActionNotice] = useState<string | null>(null);
@@ -31,6 +31,19 @@ export default function AdminPortalPage() {
   // Add User Form State
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [newUser, setNewUser] = useState({ name: '', email: '', password: '', role: 'CLIENT', phone: '' });
+
+  // Admin Settings State (to change own credentials inside)
+  const [settingName, setSettingName] = useState('');
+  const [settingEmail, setSettingEmail] = useState('');
+  const [settingPhone, setSettingPhone] = useState('');
+  const [settingAddress, setSettingAddress] = useState('');
+  const [settingCity, setSettingCity] = useState('');
+  const [settingState, setSettingState] = useState('');
+  const [settingPincode, setSettingPincode] = useState('');
+  const [settingNewPassword, setSettingNewPassword] = useState('');
+  const [settingConfirmPassword, setSettingConfirmPassword] = useState('');
+  const [settingSaving, setSettingSaving] = useState(false);
+  const [settingMessage, setSettingMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   const fetchAdminData = async () => {
     setLoadingData(true);
@@ -72,6 +85,13 @@ export default function AdminPortalPage() {
   useEffect(() => {
     if (user && user.role === 'ADMIN') {
       fetchAdminData();
+      setSettingName(user.name || '');
+      setSettingEmail(user.email || '');
+      setSettingPhone((user as any).phone || '');
+      setSettingAddress((user as any).address || '');
+      setSettingCity((user as any).city || 'Ujjain');
+      setSettingState((user as any).state || 'Madhya Pradesh');
+      setSettingPincode((user as any).pincode || '456010');
     }
   }, [user]);
 
@@ -83,7 +103,7 @@ export default function AdminPortalPage() {
     setLoginLoading(false);
 
     if (!result.success) {
-      setLoginError(result.error || 'Admin login failed. Invalid credentials.');
+      setLoginError(result.error || 'Admin login failed. Invalid email or password.');
     }
   };
 
@@ -165,12 +185,62 @@ export default function AdminPortalPage() {
     }
   };
 
+  const handleSaveAdminSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSettingMessage(null);
+
+    if (settingNewPassword && settingNewPassword !== settingConfirmPassword) {
+      setSettingMessage({ text: 'New passwords do not match.', type: 'error' });
+      return;
+    }
+
+    if (settingNewPassword && settingNewPassword.length < 6) {
+      setSettingMessage({ text: 'New password must be at least 6 characters.', type: 'error' });
+      return;
+    }
+
+    setSettingSaving(true);
+
+    try {
+      const res = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: settingName,
+          email: settingEmail,
+          phone: settingPhone,
+          address: settingAddress,
+          city: settingCity,
+          state: settingState,
+          pincode: settingPincode,
+          newPassword: settingNewPassword ? settingNewPassword : undefined,
+        }),
+      });
+
+      const data = await res.json();
+      setSettingSaving(false);
+
+      if (res.ok && data.success) {
+        setSettingMessage({ text: 'Admin credentials & studio settings updated successfully!', type: 'success' });
+        setSettingNewPassword('');
+        setSettingConfirmPassword('');
+        refreshUser();
+      } else {
+        setSettingMessage({ text: data.error || 'Failed to update settings', type: 'error' });
+      }
+    } catch {
+      setSettingSaving(false);
+      setSettingMessage({ text: 'Network connection error updating settings.', type: 'error' });
+    }
+  };
+
   // Filter Orders
   const filteredOrders = orders.filter((o) => {
     const matchesStatus = statusFilter === 'ALL' || o.status === statusFilter || o.paymentStatus === statusFilter;
     const matchesSearch =
       o.customerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       o.customerPhone?.includes(searchQuery) ||
+      o.customerEmail?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       o.id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       o.eventType?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
@@ -209,7 +279,7 @@ export default function AdminPortalPage() {
               Admin Portal Security Access
             </h1>
             <p style={{ fontSize: '0.84375rem', color: '#6B7280', marginBottom: '1.5rem' }}>
-              Restricted to authorized studio managers. Please sign in with admin credentials.
+              Restricted to authorized studio managers. Please sign in with your admin credentials.
             </p>
 
             {loginError && (
@@ -226,9 +296,10 @@ export default function AdminPortalPage() {
                 <input
                   type="email"
                   required
+                  placeholder="e.g. admin@ayushmancards.com"
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
-                  style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #E5E7EB', fontSize: '0.84375rem' }}
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.875rem', color: '#1E1E1E', background: '#FFFFFF' }}
                 />
               </div>
 
@@ -239,9 +310,10 @@ export default function AdminPortalPage() {
                 <input
                   type="password"
                   required
+                  placeholder="Enter password"
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
-                  style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #E5E7EB', fontSize: '0.84375rem' }}
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.875rem', color: '#1E1E1E', background: '#FFFFFF' }}
                 />
               </div>
 
@@ -266,7 +338,7 @@ export default function AdminPortalPage() {
             </form>
 
             <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #E5E7EB', fontSize: '0.75rem', color: '#6B7280' }}>
-              🔒 Restricted Area — Authorized personnel only. Contact the studio owner for access credentials.
+              🔒 Restricted Area — Authorized personnel only.
             </div>
           </div>
         </main>
@@ -295,7 +367,7 @@ export default function AdminPortalPage() {
                 <span style={{ background: '#0B2545', color: '#FFF', fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '4px', textTransform: 'uppercase' }}>
                   ADMIN CONTROL CENTER
                 </span>
-                <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>Welcome, {user.name}</span>
+                <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>Logged in as: <strong>{user.email}</strong></span>
               </div>
               <h1 style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(1.75rem, 3vw, 2.25rem)', fontWeight: 700, color: '#1E1E1E', marginTop: '0.2rem' }}>
                 Studio Orders & Management Portal
@@ -305,16 +377,16 @@ export default function AdminPortalPage() {
             <div style={{ display: 'flex', gap: '0.75rem' }}>
               <button
                 onClick={() => fetchAdminData()}
-                style={{ padding: '0.6rem 1.15rem', borderRadius: '999px', border: '1px solid #E5E7EB', background: '#FFFFFF', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer' }}
+                style={{ padding: '0.6rem 1.15rem', borderRadius: '999px', border: '1px solid #D1D5DB', background: '#FFFFFF', color: '#1E1E1E', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer' }}
               >
                 🔄 Refresh Live Data
               </button>
-              <Link
-                href="/profile"
-                style={{ padding: '0.6rem 1.15rem', borderRadius: '999px', background: '#0B2545', color: '#FFF', textDecoration: 'none', fontSize: '0.8125rem', fontWeight: 600 }}
+              <button
+                onClick={() => setActiveTab('settings')}
+                style={{ padding: '0.6rem 1.15rem', borderRadius: '999px', background: '#0B2545', color: '#FFF', border: 'none', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer' }}
               >
-                👤 My Admin Profile
-              </Link>
+                ⚙️ Change ID & Password
+              </button>
             </div>
           </div>
 
@@ -354,7 +426,7 @@ export default function AdminPortalPage() {
           </div>
 
           {/* Navigation Tabs */}
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem', flexWrap: 'wrap' }}>
             <button
               onClick={() => setActiveTab('orders')}
               style={{
@@ -405,6 +477,23 @@ export default function AdminPortalPage() {
             >
               📩 Inquiries ({inquiries.length})
             </button>
+
+            <button
+              onClick={() => setActiveTab('settings')}
+              style={{
+                padding: '0.65rem 1.25rem',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeTab === 'settings' ? '#0B2545' : 'transparent',
+                color: activeTab === 'settings' ? '#FFFFFF' : '#4B5563',
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 700,
+                fontSize: '0.875rem',
+                cursor: 'pointer',
+              }}
+            >
+              ⚙️ Admin Credentials & Settings
+            </button>
           </div>
 
           {/* ═══ TAB 1: ORDER MANAGEMENT ═══ */}
@@ -415,10 +504,10 @@ export default function AdminPortalPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
                 <input
                   type="text"
-                  placeholder="Search customer name, phone, order ID, product..."
+                  placeholder="Search customer name, phone, email, order ID, product..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{ flex: '1 1 300px', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #E5E7EB', fontSize: '0.84375rem' }}
+                  style={{ flex: '1 1 300px', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '0.84375rem', color: '#1E1E1E', background: '#FFFFFF' }}
                 />
 
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -447,7 +536,10 @@ export default function AdminPortalPage() {
               {loadingData ? (
                 <div style={{ padding: '3rem', textAlign: 'center', color: '#6B7280' }}>Loading orders data...</div>
               ) : filteredOrders.length === 0 ? (
-                <div style={{ padding: '3rem', textAlign: 'center', color: '#6B7280' }}>No orders found matching filters.</div>
+                <div style={{ padding: '3rem', textAlign: 'center', color: '#6B7280' }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📦</div>
+                  No orders found. When customers place orders on the website, they will appear here in real-time.
+                </div>
               ) : (
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem', textAlign: 'left' }}>
@@ -496,7 +588,7 @@ export default function AdminPortalPage() {
                               style={{
                                 padding: '0.35rem 0.5rem',
                                 borderRadius: '6px',
-                                border: '1px solid #E5E7EB',
+                                border: '1px solid #D1D5DB',
                                 fontSize: '0.75rem',
                                 fontWeight: 700,
                                 background: ord.paymentStatus === 'PAID' ? '#D1FAE5' : '#FEF3C7',
@@ -516,7 +608,7 @@ export default function AdminPortalPage() {
                               style={{
                                 padding: '0.35rem 0.5rem',
                                 borderRadius: '6px',
-                                border: '1px solid #E5E7EB',
+                                border: '1px solid #D1D5DB',
                                 fontSize: '0.75rem',
                                 fontWeight: 700,
                                 background: ord.status === 'DELIVERED' ? '#D1FAE5' : ord.status === 'SHIPPED' ? '#DBEAFE' : ord.status === 'PRINTING' ? '#EDE9FE' : '#F3F4F6',
@@ -552,10 +644,13 @@ export default function AdminPortalPage() {
           {/* ═══ TAB 2: USER ACCOUNT MANAGEMENT ═══ */}
           {activeTab === 'users' && (
             <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.1rem', fontWeight: 700, color: '#1E1E1E' }}>
-                  Registered Users & Studio Staff ({usersList.length})
-                </h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.1rem', fontWeight: 700, color: '#1E1E1E' }}>
+                    Registered Users & Studio Staff ({usersList.length})
+                  </h3>
+                  <p style={{ fontSize: '0.75rem', color: '#6B7280' }}>Manage customer accounts and assign Admin privileges.</p>
+                </div>
                 <button
                   onClick={() => setShowAddUserModal(true)}
                   style={{ padding: '0.6rem 1.25rem', borderRadius: '999px', background: '#0B2545', color: '#FFF', border: 'none', fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer' }}
@@ -593,7 +688,7 @@ export default function AdminPortalPage() {
                         <td style={{ padding: '0.85rem 1rem' }}>
                           <button
                             onClick={() => handleToggleUserRole(u)}
-                            style={{ padding: '0.3rem 0.6rem', borderRadius: '4px', border: '1px solid #CBD5E1', background: '#FFFFFF', fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer' }}
+                            style={{ padding: '0.3rem 0.6rem', borderRadius: '4px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#1E1E1E', fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer' }}
                           >
                             {u.role === 'ADMIN' ? 'Demote to Client' : 'Promote to Admin'}
                           </button>
@@ -614,7 +709,10 @@ export default function AdminPortalPage() {
               </h3>
 
               {inquiries.length === 0 ? (
-                <div style={{ padding: '3rem', textAlign: 'center', color: '#6B7280' }}>No inquiries received yet.</div>
+                <div style={{ padding: '3rem', textAlign: 'center', color: '#6B7280' }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📩</div>
+                  No inquiries received yet. Contact form submissions will appear here.
+                </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {inquiries.map((inq: any) => (
@@ -644,36 +742,227 @@ export default function AdminPortalPage() {
             </div>
           )}
 
+          {/* ═══ TAB 4: ADMIN SETTINGS & CREDENTIALS ═══ */}
+          {activeTab === 'settings' && (
+            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '2rem', maxWidth: '720px' }}>
+              <div style={{ borderBottom: '1px solid #E5E7EB', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+                <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.25rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.25rem' }}>
+                  ⚙️ Admin Account Credentials & Studio Settings
+                </h3>
+                <p style={{ fontSize: '0.8125rem', color: '#6B7280' }}>
+                  Update your Admin Login Email, set a new custom Password, and modify studio contact information.
+                </p>
+              </div>
+
+              {settingMessage && (
+                <div
+                  style={{
+                    padding: '0.85rem 1.25rem',
+                    borderRadius: '8px',
+                    fontSize: '0.84375rem',
+                    fontWeight: 600,
+                    marginBottom: '1.5rem',
+                    background: settingMessage.type === 'success' ? '#D1FAE5' : '#FFEBEE',
+                    color: settingMessage.type === 'success' ? '#065F46' : '#C62828',
+                  }}
+                >
+                  {settingMessage.type === 'success' ? '✓ ' : '⚠️ '}{settingMessage.text}
+                </div>
+              )}
+
+              <form onSubmit={handleSaveAdminSettings} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                
+                {/* Section 1: Admin Credentials */}
+                <div>
+                  <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    1. Admin Login ID & Name
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.3rem' }}>
+                        Admin Name *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={settingName}
+                        onChange={(e) => setSettingName(e.target.value)}
+                        style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.84375rem', color: '#1E1E1E', background: '#FFFFFF' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.3rem' }}>
+                        Admin Email (Your Login ID) *
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={settingEmail}
+                        onChange={(e) => setSettingEmail(e.target.value)}
+                        style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.84375rem', color: '#1E1E1E', background: '#FFFFFF' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 2: Change Password */}
+                <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: '1.25rem' }}>
+                  <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    2. Set Your Own Custom Admin Password
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.3rem' }}>
+                        New Password (Leave blank to keep current)
+                      </label>
+                      <input
+                        type="password"
+                        placeholder="Min 6 characters"
+                        value={settingNewPassword}
+                        onChange={(e) => setSettingNewPassword(e.target.value)}
+                        style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.84375rem', color: '#1E1E1E', background: '#FFFFFF' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.3rem' }}>
+                        Confirm New Password
+                      </label>
+                      <input
+                        type="password"
+                        placeholder="Repeat new password"
+                        value={settingConfirmPassword}
+                        onChange={(e) => setSettingConfirmPassword(e.target.value)}
+                        style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.84375rem', color: '#1E1E1E', background: '#FFFFFF' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 3: Studio Phone & Address */}
+                <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: '1.25rem' }}>
+                  <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    3. Studio Contact & Address Details
+                  </h4>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.3rem' }}>
+                        Studio Contact / WhatsApp Phone
+                      </label>
+                      <input
+                        type="tel"
+                        value={settingPhone}
+                        onChange={(e) => setSettingPhone(e.target.value)}
+                        style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.84375rem', color: '#1E1E1E', background: '#FFFFFF' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.3rem' }}>
+                        Studio Address
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={settingAddress}
+                        onChange={(e) => setSettingAddress(e.target.value)}
+                        style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.84375rem', color: '#1E1E1E', background: '#FFFFFF', fontFamily: 'inherit' }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#4B5563', marginBottom: '0.2rem' }}>
+                          City
+                        </label>
+                        <input
+                          type="text"
+                          value={settingCity}
+                          onChange={(e) => setSettingCity(e.target.value)}
+                          style={{ width: '100%', padding: '0.5rem 0.65rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.8125rem', color: '#1E1E1E', background: '#FFFFFF' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#4B5563', marginBottom: '0.2rem' }}>
+                          State
+                        </label>
+                        <input
+                          type="text"
+                          value={settingState}
+                          onChange={(e) => setSettingState(e.target.value)}
+                          style={{ width: '100%', padding: '0.5rem 0.65rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.8125rem', color: '#1E1E1E', background: '#FFFFFF' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#4B5563', marginBottom: '0.2rem' }}>
+                          Pincode
+                        </label>
+                        <input
+                          type="text"
+                          value={settingPincode}
+                          onChange={(e) => setSettingPincode(e.target.value)}
+                          style={{ width: '100%', padding: '0.5rem 0.65rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.8125rem', color: '#1E1E1E', background: '#FFFFFF' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={settingSaving}
+                  style={{
+                    padding: '0.85rem 1.5rem',
+                    borderRadius: '999px',
+                    background: '#0B2545',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 700,
+                    fontSize: '0.875rem',
+                    cursor: settingSaving ? 'not-allowed' : 'pointer',
+                    marginTop: '1rem',
+                  }}
+                >
+                  {settingSaving ? '⏳ Saving Admin Settings...' : '💾 Save New Admin Credentials & Settings'}
+                </button>
+              </form>
+            </div>
+          )}
+
         </div>
 
         {/* ═══ ADD USER MODAL ═══ */}
         {showAddUserModal && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={() => setShowAddUserModal(false)}>
             <div style={{ background: '#FFF', borderRadius: '12px', padding: '1.75rem', maxWidth: '420px', width: '100%', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
-              <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.2rem', fontWeight: 700, marginBottom: '1rem' }}>Create Account</h3>
+              <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.2rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '1rem' }}>Create Account</h3>
               <form onSubmit={handleCreateUserSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.2rem' }}>Full Name *</label>
-                  <input type="text" required value={newUser.name} onChange={(e) => setNewUser({ ...newUser, name: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #E5E7EB' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Full Name *</label>
+                  <input type="text" required value={newUser.name} onChange={(e) => setNewUser({ ...newUser, name: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB', color: '#1E1E1E', background: '#FFFFFF' }} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.2rem' }}>Email Address *</label>
-                  <input type="email" required value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #E5E7EB' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Email Address *</label>
+                  <input type="email" required value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB', color: '#1E1E1E', background: '#FFFFFF' }} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.2rem' }}>Password *</label>
-                  <input type="password" required value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #E5E7EB' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Password *</label>
+                  <input type="password" required value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB', color: '#1E1E1E', background: '#FFFFFF' }} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.2rem' }}>Role</label>
-                  <select value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #E5E7EB' }}>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Role</label>
+                  <select value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB', color: '#1E1E1E', background: '#FFFFFF' }}>
                     <option value="CLIENT">CLIENT</option>
                     <option value="ADMIN">ADMIN</option>
                   </select>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                  <button type="submit" style={{ flex: 1, padding: '0.7rem', borderRadius: '999px', background: '#0B2545', color: '#FFF', border: 'none', fontWeight: 700 }}>Create Account</button>
-                  <button type="button" onClick={() => setShowAddUserModal(false)} style={{ padding: '0.7rem 1rem', borderRadius: '999px', border: '1px solid #E5E7EB', background: '#FFF' }}>Cancel</button>
+                  <button type="submit" style={{ flex: 1, padding: '0.7rem', borderRadius: '999px', background: '#0B2545', color: '#FFF', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Create Account</button>
+                  <button type="button" onClick={() => setShowAddUserModal(false)} style={{ padding: '0.7rem 1rem', borderRadius: '999px', border: '1px solid #D1D5DB', background: '#FFF', color: '#1E1E1E', cursor: 'pointer' }}>Cancel</button>
                 </div>
               </form>
             </div>

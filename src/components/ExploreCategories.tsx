@@ -20,7 +20,7 @@ const bestSellers: CategoryProduct[] = [
   {
     id: 'bs-1',
     name: 'Standard Visiting Cards',
-    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&auto=format&fit=crop&q=80',
+    image: '/images/keepsakes/visiting_cards.jpg',
     badge: 'BUY 100 @ Rs.200',
     price: '₹200.00',
     unit: '₹2.00 each / 100 units',
@@ -31,7 +31,7 @@ const bestSellers: CategoryProduct[] = [
   {
     id: 'bs-2',
     name: 'Rounded Corner Cards',
-    image: 'https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=600&auto=format&fit=crop&q=80',
+    image: '/images/keepsakes/visiting_cards.jpg',
     badge: 'BUY 100 @ Rs.250',
     price: '₹250.00',
     unit: '₹2.50 each / 100 units',
@@ -41,7 +41,7 @@ const bestSellers: CategoryProduct[] = [
   },
   {
     id: 'bs-3',
-    name: 'Letterheads',
+    name: 'Letterheads & Stationery',
     image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=600&auto=format&fit=crop&q=80',
     badge: 'BUY 100 @ Rs.350',
     price: '₹350.00',
@@ -74,8 +74,8 @@ const bestSellers: CategoryProduct[] = [
   },
   {
     id: 'bs-6',
-    name: 'Wedding Invitation Cards',
-    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&auto=format&fit=crop&q=80',
+    name: 'Royal Wedding Cards',
+    image: '/images/keepsakes/wedding_cards.jpg',
     badge: 'BUY 100 @ Rs.2,500',
     price: '₹2,500.00',
     unit: '₹25.00 each / 100 units',
@@ -89,7 +89,7 @@ const trending: CategoryProduct[] = [
   {
     id: 'tr-1',
     name: 'Classic Visiting Cards',
-    image: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&auto=format&fit=crop&q=80',
+    image: '/images/keepsakes/visiting_cards.jpg',
     badge: 'BUY 100 @ Rs.230',
     price: '₹230.00',
     unit: '₹2.30 each / 100 units',
@@ -98,7 +98,7 @@ const trending: CategoryProduct[] = [
   {
     id: 'tr-2',
     name: 'Spot UV Visiting Cards',
-    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&auto=format&fit=crop&q=80',
+    image: '/images/keepsakes/visiting_cards.jpg',
     badge: 'BUY 100 @ Rs.580',
     price: '₹580.00',
     unit: '₹5.80 each / 100 units',
@@ -134,7 +134,7 @@ const trending: CategoryProduct[] = [
   {
     id: 'tr-6',
     name: 'Gold Foil Wedding Cards',
-    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop&q=80',
+    image: '/images/keepsakes/wedding_cards.jpg',
     badge: 'BUY 100 @ Rs.4,500',
     price: '₹4,500.00',
     unit: '₹45.00 each / 100 units',

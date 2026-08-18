@@ -31,7 +31,7 @@ const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,250',
     numericPrice: 1250,
     unit: '500 Cards',
-    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80',
+    image: '/images/keepsakes/visiting_cards.jpg',
     description: 'Ultra luxury velvet touch cards with real metallic gold foil embossing.',
   },
   {
@@ -43,7 +43,7 @@ const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹950',
     numericPrice: 950,
     unit: '500 Cards',
-    image: 'https://images.unsplash.com/photo-1572502643806-0bc1ef1ee24c?w=600&q=80',
+    image: '/images/keepsakes/visiting_cards.jpg',
     description: 'Smooth matte finish cards ideal for corporate branding & executives.',
   },
   {
@@ -55,7 +55,7 @@ const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,450',
     numericPrice: 1450,
     unit: '250 Plastic Cards',
-    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&q=80',
+    image: '/images/keepsakes/visiting_cards.jpg',
     description: '100% waterproof synthetic plastic cards that never tear or fade.',
   },
   {
@@ -67,7 +67,7 @@ const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,550',
     numericPrice: 1550,
     unit: '500 Cards',
-    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80',
+    image: '/images/keepsakes/visiting_cards.jpg',
     description: 'Raised high-gloss glossy spot UV highlighting logo and business details.',
   },
 
@@ -81,7 +81,7 @@ const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹4,500',
     numericPrice: 4500,
     unit: '100 Box Cards',
-    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&q=80',
+    image: '/images/keepsakes/wedding_cards.jpg',
     description: 'Traditional Indian wedding box card with embossed gold foil and velvet cover.',
   },
   {
@@ -93,7 +93,7 @@ const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹6,500',
     numericPrice: 6500,
     unit: '100 Acrylic Cards',
-    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80',
+    image: '/images/keepsakes/wedding_cards.jpg',
     description: '3mm thick crystal clear acrylic sheet printed with metallic gold UV inks.',
   },
   {
@@ -105,7 +105,7 @@ const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹3,800',
     numericPrice: 3800,
     unit: '100 Scroll Cards',
-    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80',
+    image: '/images/keepsakes/wedding_cards.jpg',
     description: 'Authentic royal scroll card in metallic tube casing for grand wedding invitations.',
   },
 

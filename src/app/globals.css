@@ -470,6 +470,10 @@ button {
    FORM INPUTS
    ══════════════════════════════════════════════ */
 
+input, textarea, select {
+  color: var(--text-primary);
+}
+
 .input {
   width: 100%;
   padding: 0.875rem 1.25rem;

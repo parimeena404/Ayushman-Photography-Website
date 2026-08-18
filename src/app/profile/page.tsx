@@ -72,6 +72,7 @@ export default function UserProfilePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
+          email,
           phone,
           address,
           city,
@@ -85,7 +86,7 @@ export default function UserProfilePage() {
       setSaving(false);
 
       if (res.ok && data.success) {
-        setMessage({ text: 'Profile & preferences updated successfully!', type: 'success' });
+        setMessage({ text: 'Profile & credentials updated successfully!', type: 'success' });
         setNewPassword('');
         setConfirmPassword('');
         refreshUser();
@@ -159,7 +160,7 @@ export default function UserProfilePage() {
                 <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>Member since {new Date(user.createdAt).getFullYear()}</span>
               </div>
               <h1 style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(1.75rem, 3vw, 2.25rem)', fontWeight: 700, color: '#1E1E1E' }}>
-                My Account Profile
+                My Account Profile & Settings
               </h1>
             </div>
 
@@ -189,7 +190,7 @@ export default function UserProfilePage() {
             {/* LEFT COLUMN: Profile Form */}
             <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.75rem' }}>
               <h2 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.15rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '1.25rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem' }}>
-                Personal Details & Shipping Address
+                Personal Details & Credentials
               </h2>
 
               {message && (
@@ -218,19 +219,20 @@ export default function UserProfilePage() {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #E5E7EB', fontSize: '0.84375rem' }}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.84375rem', color: '#1E1E1E', background: '#FFFFFF' }}
                   />
                 </div>
 
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.3rem' }}>
-                    Email Address (Account ID)
+                    Email Address (Login ID) *
                   </label>
                   <input
                     type="email"
-                    disabled
+                    required
                     value={email}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #E5E7EB', background: '#F3F4F6', color: '#6B7280', fontSize: '0.84375rem', cursor: 'not-allowed' }}
+                    onChange={(e) => setEmail(e.target.value)}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #D1D5DB', color: '#1E1E1E', background: '#FFFFFF', fontSize: '0.84375rem' }}
                   />
                 </div>
 
@@ -243,7 +245,7 @@ export default function UserProfilePage() {
                     placeholder="e.g. 9893022451"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #E5E7EB', fontSize: '0.84375rem' }}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.84375rem', color: '#1E1E1E', background: '#FFFFFF' }}
                   />
                 </div>
 
@@ -256,7 +258,7 @@ export default function UserProfilePage() {
                     placeholder="Shop/Office/House No., Street, Landmark"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #E5E7EB', fontSize: '0.84375rem', fontFamily: 'inherit' }}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.84375rem', color: '#1E1E1E', background: '#FFFFFF', fontFamily: 'inherit' }}
                   />
                 </div>
 
@@ -269,7 +271,7 @@ export default function UserProfilePage() {
                       type="text"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      style={{ width: '100%', padding: '0.5rem 0.65rem', borderRadius: '6px', border: '1px solid #E5E7EB', fontSize: '0.8125rem' }}
+                      style={{ width: '100%', padding: '0.5rem 0.65rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.8125rem', color: '#1E1E1E', background: '#FFFFFF' }}
                     />
                   </div>
 
@@ -281,7 +283,7 @@ export default function UserProfilePage() {
                       type="text"
                       value={state}
                       onChange={(e) => setState(e.target.value)}
-                      style={{ width: '100%', padding: '0.5rem 0.65rem', borderRadius: '6px', border: '1px solid #E5E7EB', fontSize: '0.8125rem' }}
+                      style={{ width: '100%', padding: '0.5rem 0.65rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.8125rem', color: '#1E1E1E', background: '#FFFFFF' }}
                     />
                   </div>
 
@@ -293,27 +295,27 @@ export default function UserProfilePage() {
                       type="text"
                       value={pincode}
                       onChange={(e) => setPincode(e.target.value)}
-                      style={{ width: '100%', padding: '0.5rem 0.65rem', borderRadius: '6px', border: '1px solid #E5E7EB', fontSize: '0.8125rem' }}
+                      style={{ width: '100%', padding: '0.5rem 0.65rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.8125rem', color: '#1E1E1E', background: '#FFFFFF' }}
                     />
                   </div>
                 </div>
 
                 {/* Password Change */}
                 <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.95rem', fontWeight: 700, color: '#1E1E1E', marginTop: '1rem', borderTop: '1px solid #E5E7EB', paddingTop: '1rem' }}>
-                  Security & Password Update
+                  Set New Password (Optional)
                 </h3>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#4B5563', marginBottom: '0.2rem' }}>
-                      New Password (Optional)
+                      New Password
                     </label>
                     <input
                       type="password"
                       placeholder="Min 6 characters"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #E5E7EB', fontSize: '0.8125rem' }}
+                      style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.8125rem', color: '#1E1E1E', background: '#FFFFFF' }}
                     />
                   </div>
 
@@ -326,7 +328,7 @@ export default function UserProfilePage() {
                       placeholder="Repeat new password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #E5E7EB', fontSize: '0.8125rem' }}
+                      style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.8125rem', color: '#1E1E1E', background: '#FFFFFF' }}
                     />
                   </div>
                 </div>

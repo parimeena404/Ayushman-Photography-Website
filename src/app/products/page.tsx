@@ -856,10 +856,6 @@ function CatalogContent() {
         <ProductModal
           product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
-          onAddToCart={() => {
-            setToastMessage(`✓ Added "${selectedProduct.name.substring(0, 25)}..." to your Cart!`);
-            setTimeout(() => setToastMessage(null), 3000);
-          }}
         />
       )}
     </main>

@@ -65,7 +65,7 @@ declare global {
   var __ayushmanInMemoryDB: DBStore | undefined;
 }
 
-// Pre-seeded default Admin and Sample Orders
+// Only the admin account is pre-seeded — all other data comes from real usage
 const DEFAULT_STORE: DBStore = {
   users: [
     {
@@ -82,77 +82,9 @@ const DEFAULT_STORE: DBStore = {
       createdAt: '2025-01-01T00:00:00.000Z',
       updatedAt: '2025-01-01T00:00:00.000Z',
     },
-    {
-      id: 'usr_client_demo',
-      name: 'Rahul Sharma',
-      email: 'rahul@example.com',
-      password: 'user123',
-      phone: '9893022451',
-      address: 'Tower Chowk',
-      city: 'Ujjain',
-      state: 'Madhya Pradesh',
-      pincode: '456001',
-      role: 'CLIENT',
-      createdAt: '2025-01-10T00:00:00.000Z',
-      updatedAt: '2025-01-10T00:00:00.000Z',
-    },
   ],
-  bookings: [
-    {
-      id: 'bk_demo_101',
-      userId: 'usr_client_demo',
-      customerName: 'Rahul Sharma',
-      customerEmail: 'rahul@example.com',
-      customerPhone: '9893022451',
-      eventType: '350 GSM Velvet Touch Visiting Cards',
-      eventDate: '2025-02-20',
-      city: 'Ujjain',
-      address: 'Tower Chowk, Ujjain',
-      notes: 'Gold foil embossing on logo',
-      packageType: 'Visiting Cards',
-      totalAmount: 1250,
-      depositAmount: 1250,
-      paymentStatus: 'PAID',
-      razorpayOrderId: 'order_test_101',
-      razorpayPaymentId: 'pay_demo_998',
-      status: 'PRINTING',
-      createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-      updatedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-    },
-    {
-      id: 'bk_demo_102',
-      userId: 'usr_admin_default',
-      customerName: 'Priya Verma',
-      customerEmail: 'priya@example.com',
-      customerPhone: '9479784979',
-      eventType: 'Royal Velvet & Gold Foil Laser Cut Wedding Card Box',
-      eventDate: '2025-03-15',
-      city: 'Indore',
-      address: 'Vijay Nagar, Indore',
-      notes: '100 Wedding Box Cards with Wax Seal',
-      packageType: 'Wedding Cards',
-      totalAmount: 4500,
-      depositAmount: 4500,
-      paymentStatus: 'PAID',
-      razorpayOrderId: 'order_test_102',
-      razorpayPaymentId: 'pay_demo_999',
-      status: 'SHIPPED',
-      createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-      updatedAt: new Date(Date.now() - 86400000 * 1).toISOString(),
-    },
-  ],
-  inquiries: [
-    {
-      id: 'inq_1',
-      name: 'Vikram Mehta',
-      email: 'vikram@business.com',
-      phone: '9826012345',
-      eventType: 'Bulk Corporate Printing',
-      date: '2025-03-01',
-      message: 'Need 5000 letterheads, 2000 envelopes, and 10 rollup standees for annual summit.',
-      createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
-    },
-  ],
+  bookings: [],
+  inquiries: [],
 };
 
 function readStore(): DBStore {

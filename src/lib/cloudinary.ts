@@ -1,7 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME || 'ayushmancards',
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME || 'hjrdxocb',
   api_key: process.env.CLOUDINARY_API_KEY || '227124848528486',
   api_secret: process.env.CLOUDINARY_API_SECRET || 'SdjjM963t7rJfFCP9j9tlwYub5I',
   secure: true,

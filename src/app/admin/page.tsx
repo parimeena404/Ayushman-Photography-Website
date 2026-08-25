@@ -31,6 +31,7 @@ export default function AdminPortalPage() {
   // Add User Form State
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [newUser, setNewUser] = useState({ name: '', email: '', password: '', role: 'CLIENT', phone: '' });
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<any | null>(null);
 
   // Admin Settings State (to change own credentials inside)
   const [settingName, setSettingName] = useState('');
@@ -510,7 +511,53 @@ export default function AdminPortalPage() {
                   style={{ flex: '1 1 300px', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '0.84375rem', color: '#1E1E1E', background: '#FFFFFF' }}
                 />
 
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <button
+                    onClick={() => {
+                      if (orders.length === 0) {
+                        alert('No orders to export.');
+                        return;
+                      }
+                      const headers = ['Order ID', 'Date', 'Customer Name', 'Phone', 'Email', 'Product Job', 'Amount', 'Payment Status', 'Fulfillment Status', 'Address', 'City'];
+                      const rows = orders.map(o => [
+                        `"${o.id}"`,
+                        `"${new Date(o.createdAt).toLocaleDateString()}"`,
+                        `"${o.customerName || ''}"`,
+                        `"${o.customerPhone || ''}"`,
+                        `"${o.customerEmail || ''}"`,
+                        `"${(o.eventType || '').replace(/"/g, '""')}"`,
+                        `"${o.totalAmount || 0}"`,
+                        `"${o.paymentStatus || ''}"`,
+                        `"${o.status || ''}"`,
+                        `"${(o.address || '').replace(/"/g, '""')}"`,
+                        `"${o.city || 'Ujjain'}"`
+                      ]);
+                      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+                      const encodedUri = encodeURI(csvContent);
+                      const link = document.createElement('a');
+                      link.setAttribute('href', encodedUri);
+                      link.setAttribute('download', `Ayushman_Orders_${new Date().toISOString().slice(0,10)}.csv`);
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}
+                    style={{
+                      padding: '0.5rem 1rem',
+                      borderRadius: '999px',
+                      border: '1.5px solid #10B981',
+                      background: '#ECFDF5',
+                      color: '#065F46',
+                      fontSize: '0.78125rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                    }}
+                  >
+                    📥 Export Orders CSV
+                  </button>
+
                   {['ALL', 'PAID', 'PENDING', 'NEW', 'CONFIRMED', 'PRINTING', 'SHIPPED', 'DELIVERED', 'CANCELLED'].map((st) => (
                     <button
                       key={st}
@@ -559,7 +606,7 @@ export default function AdminPortalPage() {
                       {filteredOrders.map((ord) => (
                         <tr key={ord.id} style={{ borderBottom: '1px solid #F3F4F6' }}>
                           <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#0B2545' }}>
-                            {ord.id}
+                            {ord.id.substring(0, 10)}...
                             <div style={{ fontSize: '0.7rem', color: '#9CA3AF', fontWeight: 400 }}>
                               {new Date(ord.createdAt).toLocaleDateString()}
                             </div>
@@ -625,12 +672,33 @@ export default function AdminPortalPage() {
                             </select>
                           </td>
                           <td style={{ padding: '0.85rem 1rem' }}>
-                            <button
-                              onClick={() => handleDeleteOrder(ord.id)}
-                              style={{ padding: '0.3rem 0.6rem', borderRadius: '4px', border: '1px solid #FCA5A5', background: '#FEF2F2', color: '#991B1B', fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer' }}
-                            >
-                              Delete
-                            </button>
+                            <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                              <a
+                                href={`https://wa.me/91${(ord.customerPhone || '').replace(/[^0-9]/g, '').slice(-10)}?text=${encodeURIComponent(
+                                  `Hello ${ord.customerName}, this is Ayushman Cards & Graphics. Regarding your order #${ord.id.substring(0, 8)} (${ord.eventType}): status is currently ${ord.status}.`
+                                )}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ padding: '0.3rem 0.6rem', borderRadius: '4px', border: '1px solid #10B981', background: '#ECFDF5', color: '#065F46', fontSize: '0.7rem', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+                                title="Chat with customer on WhatsApp"
+                              >
+                                💬 WhatsApp
+                              </a>
+
+                              <button
+                                onClick={() => setSelectedInvoiceOrder(ord)}
+                                style={{ padding: '0.3rem 0.6rem', borderRadius: '4px', border: '1px solid #0B2545', background: '#0B2545', color: '#FFFFFF', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+                              >
+                                📄 Invoice
+                              </button>
+
+                              <button
+                                onClick={() => handleDeleteOrder(ord.id)}
+                                style={{ padding: '0.3rem 0.6rem', borderRadius: '4px', border: '1px solid #FCA5A5', background: '#FEF2F2', color: '#991B1B', fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer' }}
+                              >
+                                🗑️
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -732,9 +800,64 @@ export default function AdminPortalPage() {
                       <div style={{ fontSize: '0.84375rem', color: '#4B5563', lineHeight: 1.6, background: '#FFFFFF', padding: '0.75rem', borderRadius: '6px', border: '1px solid #F3F4F6' }}>
                         {inq.message}
                       </div>
-                      {inq.date && (
-                        <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: '#6B7280' }}>📅 Preferred Date: {inq.date}</div>
-                      )}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.6rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        {inq.date ? (
+                          <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>📅 Preferred Date: {inq.date}</div>
+                        ) : <div />}
+
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <a
+                            href={`https://wa.me/91${(inq.phone || '').replace(/[^0-9]/g, '').slice(-10)}?text=${encodeURIComponent(
+                              `Hello ${inq.name}, thank you for contacting Ayushman Cards & Graphics (Ujjain). Regarding your inquiry for ${inq.eventType}: how can we assist you?`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              padding: '0.35rem 0.75rem',
+                              borderRadius: '4px',
+                              border: '1px solid #10B981',
+                              background: '#ECFDF5',
+                              color: '#065F46',
+                              fontSize: '0.725rem',
+                              fontWeight: 700,
+                              textDecoration: 'none',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '3px',
+                            }}
+                          >
+                            💬 Reply on WhatsApp
+                          </a>
+
+                          <button
+                            onClick={async () => {
+                              if (!confirm(`Delete inquiry from ${inq.name}?`)) return;
+                              try {
+                                const res = await fetch(`/api/inquiries?id=${inq.id}`, { method: 'DELETE' });
+                                if (res.ok) {
+                                  setActionNotice('Inquiry deleted.');
+                                  setTimeout(() => setActionNotice(null), 3000);
+                                  fetchAdminData();
+                                }
+                              } catch {
+                                alert('Failed to delete inquiry');
+                              }
+                            }}
+                            style={{
+                              padding: '0.35rem 0.65rem',
+                              borderRadius: '4px',
+                              border: '1px solid #FCA5A5',
+                              background: '#FEF2F2',
+                              color: '#991B1B',
+                              fontSize: '0.725rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            🗑️ Delete
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -965,6 +1088,193 @@ export default function AdminPortalPage() {
                   <button type="button" onClick={() => setShowAddUserModal(false)} style={{ padding: '0.7rem 1rem', borderRadius: '999px', border: '1px solid #D1D5DB', background: '#FFF', color: '#1E1E1E', cursor: 'pointer' }}>Cancel</button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+        {/* ═══ TAX INVOICE & RECEIPT MODAL ═══ */}
+        {selectedInvoiceOrder && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              background: 'rgba(0,0,0,0.65)',
+              backdropFilter: 'blur(4px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '1rem',
+              overflowY: 'auto',
+            }}
+            onClick={() => setSelectedInvoiceOrder(null)}
+          >
+            <div
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '12px',
+                padding: '2.5rem',
+                maxWidth: '680px',
+                width: '100%',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                boxShadow: '0 20px 48px rgba(0,0,0,0.25)',
+                position: 'relative',
+                color: '#1E1E1E',
+                fontFamily: "'Inter', sans-serif",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Actions Header (No-Print) */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '1rem' }}>
+                <div style={{ fontSize: '0.8125rem', color: '#6B7280', fontWeight: 600 }}>
+                  STUDIO TAX INVOICE / CASH RECEIPT
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    onClick={() => window.print()}
+                    style={{
+                      padding: '0.5rem 1rem',
+                      borderRadius: '999px',
+                      background: '#0B2545',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      fontSize: '0.8125rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                    }}
+                  >
+                    🖨️ Print Invoice
+                  </button>
+                  <button
+                    onClick={() => setSelectedInvoiceOrder(null)}
+                    style={{
+                      padding: '0.5rem 0.85rem',
+                      borderRadius: '999px',
+                      border: '1px solid #D1D5DB',
+                      background: '#FFFFFF',
+                      color: '#1E1E1E',
+                      fontSize: '0.8125rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    ✕ Close
+                  </button>
+                </div>
+              </div>
+
+              {/* Printable Invoice Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+                <div>
+                  <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0B2545', margin: 0 }}>
+                    AYUSHMAN CARDS & GRAPHICS
+                  </h2>
+                  <p style={{ fontSize: '0.78125rem', color: '#4B5563', margin: '0.25rem 0 0' }}>
+                    Complete Offset & Digital Printing Studio<br />
+                    Freeganj, Ujjain, Madhya Pradesh - 456010<br />
+                    📞 +91 9479784979 • ✉️ contact@ayushmancards.com
+                  </p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1E1E1E' }}>INVOICE</div>
+                  <div style={{ fontSize: '0.8125rem', color: '#6B7280', marginTop: '0.2rem' }}>
+                    Ref: <strong>#{selectedInvoiceOrder.id.substring(0, 10).toUpperCase()}</strong>
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>
+                    Date: {new Date(selectedInvoiceOrder.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Bill To & Status Details */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', background: '#F8F9FA', borderRadius: '8px', padding: '1.25rem', marginBottom: '1.5rem' }}>
+                <div>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                    CUSTOMER & DELIVERY TO:
+                  </div>
+                  <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#1E1E1E' }}>
+                    {selectedInvoiceOrder.customerName}
+                  </div>
+                  <div style={{ fontSize: '0.8125rem', color: '#4B5563', marginTop: '0.2rem' }}>
+                    📞 {selectedInvoiceOrder.customerPhone}<br />
+                    ✉️ {selectedInvoiceOrder.customerEmail}<br />
+                    📍 {selectedInvoiceOrder.address || 'Studio Pickup / Freeganj'}<br />
+                    {selectedInvoiceOrder.city || 'Ujjain'}, {selectedInvoiceOrder.pincode || '456010'}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                    PAYMENT & FULFILLMENT:
+                  </div>
+                  <div style={{ fontSize: '0.8125rem', color: '#4B5563' }}>
+                    Payment Status:{' '}
+                    <strong style={{ color: selectedInvoiceOrder.paymentStatus === 'PAID' ? '#065F46' : '#92400E' }}>
+                      {selectedInvoiceOrder.paymentStatus}
+                    </strong><br />
+                    {selectedInvoiceOrder.razorpayPaymentId && (
+                      <>Pay Reference: <code>{selectedInvoiceOrder.razorpayPaymentId}</code><br /></>
+                    )}
+                    Order Status: <strong>{selectedInvoiceOrder.status}</strong><br />
+                    Fulfillment: <strong>Expedited Studio Print & Dispatch</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Items Table */}
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84375rem', marginBottom: '1.5rem' }}>
+                <thead>
+                  <tr style={{ borderBottom: '2px solid #E5E7EB', background: '#F3F4F6', color: '#4B5563', textAlign: 'left' }}>
+                    <th style={{ padding: '0.75rem' }}>Item Description / Custom Job</th>
+                    <th style={{ padding: '0.75rem', textAlign: 'right' }}>Amount (INR)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+                    <td style={{ padding: '0.85rem 0.75rem' }}>
+                      <div style={{ fontWeight: 700, color: '#1E1E1E' }}>{selectedInvoiceOrder.eventType}</div>
+                      {selectedInvoiceOrder.notes && (
+                        <div style={{ fontSize: '0.75rem', color: '#6B7280', marginTop: '0.2rem' }}>
+                          Custom Notes: {selectedInvoiceOrder.notes}
+                        </div>
+                      )}
+                    </td>
+                    <td style={{ padding: '0.85rem 0.75rem', textAlign: 'right', fontWeight: 700, color: '#1E1E1E' }}>
+                      ₹{selectedInvoiceOrder.totalAmount?.toLocaleString()}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              {/* Summary Totals */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2rem' }}>
+                <div style={{ width: '240px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem', color: '#6B7280', padding: '0.35rem 0' }}>
+                    <span>Subtotal:</span>
+                    <span>₹{selectedInvoiceOrder.totalAmount?.toLocaleString()}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem', color: '#6B7280', padding: '0.35rem 0' }}>
+                    <span>CGST + SGST (Included):</span>
+                    <span>₹0.00</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem', color: '#6B7280', padding: '0.35rem 0' }}>
+                    <span>Shipping / Delivery:</span>
+                    <span style={{ color: '#10B981', fontWeight: 600 }}>FREE</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 800, color: '#0B2545', borderTop: '2px solid #0B2545', paddingTop: '0.6rem', marginTop: '0.4rem' }}>
+                    <span>Total Paid:</span>
+                    <span>₹{selectedInvoiceOrder.totalAmount?.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Invoice Footer */}
+              <div style={{ textAlign: 'center', borderTop: '1px dashed #D1D5DB', paddingTop: '1.25rem', fontSize: '0.75rem', color: '#6B7280' }}>
+                Thank you for choosing Ayushman Cards & Graphics! For queries, contact +91 9479784979.
+              </div>
             </div>
           </div>
         )}

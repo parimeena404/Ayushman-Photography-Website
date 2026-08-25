@@ -35,14 +35,14 @@ export default function Hero() {
             style={{
               position: 'absolute',
               inset: 0,
-              backgroundImage: 'url(https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=900&q=80)',
+              backgroundImage: 'url(/images/keepsakes/visiting_cards.jpg)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               mixBlendMode: 'luminosity',
               opacity: 0.85,
             }}
           />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(11,37,69,0.9) 0%, rgba(11,37,69,0.3) 60%, transparent 100%)' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(11,37,69,0.92) 0%, rgba(11,37,69,0.4) 60%, transparent 100%)' }} />
 
           <div style={{ position: 'relative', zIndex: 2, padding: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
             <span
@@ -110,7 +110,7 @@ export default function Hero() {
             borderRadius: '12px',
             overflow: 'hidden',
             minHeight: '380px',
-            background: 'linear-gradient(135deg, #FDE7E7 0%, #FCD5D5 100%)',
+            background: 'linear-gradient(135deg, #0B2545 0%, #1A365D 100%)',
             display: 'flex',
             alignItems: 'flex-end',
           }}
@@ -119,12 +119,12 @@ export default function Hero() {
             style={{
               position: 'absolute',
               inset: 0,
-              backgroundImage: 'url(https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=900&q=80)',
+              backgroundImage: 'url(/images/wedding/scroll_royal_blue_velvet.png)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
           />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 60%)' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)' }} />
 
           <div style={{ position: 'relative', zIndex: 2, padding: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
             <h2

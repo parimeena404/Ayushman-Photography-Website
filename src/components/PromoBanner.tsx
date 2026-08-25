@@ -105,8 +105,8 @@ export default function PromoBanner() {
           <div style={{ borderRadius: '10px', overflow: 'hidden', aspectRatio: '3/4' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&q=80"
-              alt="Wedding Cards"
+              src="/images/wedding/scroll_royal_blue_velvet.png"
+              alt="Royal Scroll Wedding Cards"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           </div>
@@ -114,16 +114,16 @@ export default function PromoBanner() {
             <div style={{ borderRadius: '10px', overflow: 'hidden', flex: 1 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=400&q=80"
-                alt="Gold Foil Cards"
+                src="/images/wedding/acrylic_navy_gold.png"
+                alt="Acrylic Wedding Cards"
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             </div>
             <div style={{ borderRadius: '10px', overflow: 'hidden', flex: 1 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=400&q=80"
-                alt="Luxury Invitations"
+                src="/images/wedding/royal_blue_wax_seal.jpg"
+                alt="Botanical Wax Seal Invitations"
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             </div>

@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     siteName: 'Ayushman Cards & Graphics',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?w=1200&q=85',
+        url: '/images/wedding/scroll_royal_blue_velvet.png',
         width: 1200,
         height: 630,
         alt: 'Ayushman Cards & Graphics — Premium Printing Press Ujjain',
@@ -85,7 +85,7 @@ export const metadata: Metadata = {
     title: 'Ayushman Cards & Graphics — Ujjain\'s Premier Printing Press',
     description:
       'High quality offset printing, luxury wedding cards, custom flex banners, visiting cards, photobooks and custom graphics in Ujjain.',
-    images: ['https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?w=1200&q=85'],
+    images: ['/images/wedding/scroll_royal_blue_velvet.png'],
   },
   robots: {
     index: true,

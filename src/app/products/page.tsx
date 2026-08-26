@@ -256,7 +256,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,250',
     numericPrice: 1250,
     unit: '100 Cards (₹12.50/card)',
-    image: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&q=80',
+    image: '/images/birthday/kids_birthday_card.jpg',
     description: 'Colorful custom photo invitation cards with cartoon, jungle, prince/princess themes for kids birthdays.',
     rating: 4.9,
     reviews: 320,
@@ -271,7 +271,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,850',
     numericPrice: 1850,
     unit: '100 Cards (₹18.50/card)',
-    image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&q=80',
+    image: '/images/birthday/anniversary_gold_card.jpg',
     description: 'Gold foil bordered luxury invitation cards for 25th / 50th Marriage Anniversary celebrations.',
     rating: 4.8,
     reviews: 190,
@@ -286,7 +286,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,450',
     numericPrice: 1450,
     unit: '100 Cards (₹14.50/card)',
-    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&q=80',
+    image: '/images/birthday/housewarming_card.jpg',
     description: 'Traditional Kalash & Rangoli themed auspicious Griha Pravesh and Vastu Puja invitation cards.',
     rating: 4.7,
     reviews: 280,
@@ -301,7 +301,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,350',
     numericPrice: 1350,
     unit: '100 Cards (₹13.50/card)',
-    image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80',
+    image: '/images/birthday/retirement_party_card.jpg',
     description: 'Dignified custom invitation cards celebrating career milestones, farewells, and retirement dinners.',
     rating: 4.6,
     reviews: 140,
@@ -320,7 +320,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,450',
     numericPrice: 1450,
     unit: '500 Letterheads (₹2.90/sheet)',
-    image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=600&q=80',
+    image: '/images/stationery/letterhead_bond.jpg',
     description: 'Premium watermarked bond paper letterheads compatible with laser & inkjet office printers.',
     rating: 4.8,
     reviews: 520,
@@ -335,7 +335,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,850',
     numericPrice: 1850,
     unit: '10 Books (100 Sets each)',
-    image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&q=80',
+    image: '/images/stationery/bill_book_carbonless.jpg',
     description: 'Pre-numbered 1+2 NCR carbonless copy bill books with hardboard binding and perforation.',
     rating: 4.9,
     reviews: 410,
@@ -350,7 +350,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹450',
     numericPrice: 450,
     unit: 'Per Self-Inking Unit',
-    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80',
+    image: '/images/stationery/rubber_stamp_seal.jpg',
     description: 'Durable automatic self-inking rubber stamps with crisp laser-engraved rubber text pad.',
     rating: 4.7,
     reviews: 350,
@@ -365,7 +365,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,200',
     numericPrice: 1200,
     unit: '500 Envelopes (₹2.40/unit)',
-    image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=600&q=80',
+    image: '/images/stationery/corporate_envelopes.jpg',
     description: 'Branded executive envelopes with self-adhesive peel & seal closure and company logo.',
     rating: 4.8,
     reviews: 290,
@@ -384,7 +384,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,800',
     numericPrice: 1800,
     unit: '100 Sq. Ft. Print',
-    image: 'https://images.unsplash.com/photo-1542744094-3a31b272c490?w=600&q=80',
+    image: '/images/banners/outdoor_flex_banner.jpg',
     description: 'High-density 340 GSM heavy Star Flex banner with eyelets, weatherproof for outdoor hoardings.',
     rating: 4.8,
     reviews: 730,
@@ -399,7 +399,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,450',
     numericPrice: 1450,
     unit: 'Complete Standee Set + Bag',
-    image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&q=80',
+    image: '/images/banners/rollup_standee.jpg',
     description: 'Portable aluminum roll-up standee base with high resolution non-tearable Star Flex print & carry bag.',
     rating: 4.9,
     reviews: 580,
@@ -414,7 +414,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹4,500',
     numericPrice: 4500,
     unit: 'Custom Shop Board',
-    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80',
+    image: '/images/banners/led_sign_board.jpg',
     description: 'Modern 3D raised acrylic letters with Samsung LED modules for storefront illumination.',
     rating: 4.9,
     reviews: 210,
@@ -433,7 +433,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹950',
     numericPrice: 950,
     unit: '500 Die-Cut Stickers',
-    image: 'https://images.unsplash.com/photo-1572375992501-4b0892d50c69?w=600&q=80',
+    image: '/images/stickers/vinyl_stickers.jpg',
     description: 'Scratch-proof waterproof vinyl stickers contour cut around your logo or illustration.',
     rating: 4.9,
     reviews: 470,
@@ -448,7 +448,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,650',
     numericPrice: 1650,
     unit: '1000 Roll Labels (₹1.65/unit)',
-    image: 'https://images.unsplash.com/photo-1572375992501-4b0892d50c69?w=600&q=80',
+    image: '/images/stickers/vinyl_stickers.jpg',
     description: 'High-speed dispenser roll labels for food products, cosmetics, oils, and shipping boxes.',
     rating: 4.8,
     reviews: 310,
@@ -463,7 +463,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹2,200',
     numericPrice: 2200,
     unit: '1000 Hologram Stickers',
-    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&q=80',
+    image: '/images/stickers/vinyl_stickers.jpg',
     description: 'Rainbow metallic hologram tamper-evident void stickers for electronic warranty & authentication.',
     rating: 4.9,
     reviews: 180,
@@ -482,7 +482,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹4,500',
     numericPrice: 4500,
     unit: '30 Page HD Album + Briefcase',
-    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80',
+    image: '/images/keepsakes/film1.jpg',
     description: 'Seamless lay-flat photobook album with non-tearable Fuji silk sheets and leatherette briefcase box.',
     rating: 5.0,
     reviews: 390,
@@ -497,7 +497,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,850',
     numericPrice: 1850,
     unit: '20 Page Hardcover Book',
-    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80',
+    image: '/images/keepsakes/card1.png',
     description: 'Gloss laminated hardcover memory book preserving childhood photos and family vacations.',
     rating: 4.8,
     reviews: 270,
@@ -516,7 +516,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,800',
     numericPrice: 1800,
     unit: '10 Magic Mugs (₹180/mug)',
-    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&q=80',
+    image: '/images/keepsakes/card2.png',
     description: 'Black ceramic mug that magically reveals your high resolution printed photo when hot liquid is poured.',
     rating: 4.9,
     reviews: 620,
@@ -531,7 +531,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹1,750',
     numericPrice: 1750,
     unit: '5 Polo T-Shirts (₹350/shirt)',
-    image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&q=80',
+    image: '/images/fashion/fashion1.png',
     description: '220 GSM 100% combed cotton pique polo with high precision Japanese machine embroidery of company logo.',
     rating: 4.8,
     reviews: 480,
@@ -546,7 +546,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
     price: '₹850',
     numericPrice: 850,
     unit: 'Custom Wooden Trophy',
-    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&q=80',
+    image: '/images/keepsakes/card3.png',
     description: 'Solid teak wood desktop photo stand with quartz clock mechanism and engraved felicitation text.',
     rating: 4.8,
     reviews: 190,
@@ -571,6 +571,8 @@ function CatalogContent() {
   const catParam = searchParams.get('category');
   const searchParam = searchParams.get('search');
 
+  const [catalogItems, setCatalogItems] = useState<ProductCatalogItem[]>(CATALOG_ITEMS);
+  const [categories, setCategories] = useState(CATEGORY_DEFINITIONS);
   const [selectedCategory, setSelectedCategory] = useState('All Products');
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -579,11 +581,32 @@ function CatalogContent() {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
+  // Fetch live products and categories from API
+  useEffect(() => {
+    async function loadLiveProducts() {
+      try {
+        const res = await fetch('/api/products');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.products) && data.products.length > 0) {
+            setCatalogItems(data.products);
+          }
+          if (data.success && Array.isArray(data.categories) && data.categories.length > 0) {
+            setCategories(data.categories);
+          }
+        }
+      } catch (err) {
+        console.warn('Using local fallback catalog data:', err);
+      }
+    }
+    loadLiveProducts();
+  }, []);
+
   // Normalize incoming URL category queries
   useEffect(() => {
     if (catParam) {
       const paramLower = catParam.toLowerCase().trim();
-      const match = CATEGORY_DEFINITIONS.find(
+      const match = categories.find(
         (c) =>
           c.id.toLowerCase() === paramLower ||
           c.label.toLowerCase().includes(paramLower) ||
@@ -596,15 +619,15 @@ function CatalogContent() {
     if (searchParam) {
       setSearchQuery(searchParam);
     }
-  }, [catParam, searchParam]);
+  }, [catParam, searchParam, categories]);
 
   // Group products by category when in 'All Products' mode
   const distinctCategories = useMemo(() => {
-    return CATEGORY_DEFINITIONS.filter((c) => c.id !== 'All Products');
-  }, []);
+    return categories.filter((c) => c.id !== 'All Products');
+  }, [categories]);
 
   const filteredItems = useMemo(() => {
-    return CATALOG_ITEMS.filter((item) => {
+    return catalogItems.filter((item) => {
       const matchesCat = selectedCategory === 'All Products' || item.category === selectedCategory;
       const matchesSearch =
         searchQuery === '' ||
@@ -613,7 +636,7 @@ function CatalogContent() {
         item.description.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCat && matchesSearch;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [catalogItems, selectedCategory, searchQuery]);
 
   const handleQuickAdd = (item: ProductCatalogItem, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -721,7 +744,7 @@ function CatalogContent() {
             borderBottom: '1px solid #E5E7EB',
           }}
         >
-          {CATEGORY_DEFINITIONS.map((cat) => {
+          {categories.map((cat) => {
             const isSelected = selectedCategory === cat.id;
             return (
               <button

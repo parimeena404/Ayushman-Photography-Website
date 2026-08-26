@@ -7,20 +7,20 @@ import SectionHeader from './SectionHeader';
 const categories = ['All', 'Wedding Cards', 'Visiting Cards', 'Flex & Banners', 'Photobooks', 'Stationery', 'Packaging'];
 
 const portfolioItems = [
-  { src: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80', category: 'Wedding Cards', title: '💍 Royal Velvet Box Wedding Invitation Card with Gold Foil', aspect: 'tall' },
-  { src: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500&q=80', category: 'Wedding Cards', title: '✨ Clear Acrylic Glass Wedding Card with Wax Seal', aspect: 'tall' },
-  { src: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=500&q=80', category: 'Wedding Cards', title: '📜 Royal Farman Scroll Invitation in Metallic Tube Case', aspect: 'tall' },
+  { src: '/images/wedding/scroll_royal_blue_velvet.png', category: 'Wedding Cards', title: '💍 Royal Velvet Box Wedding Invitation Card with Gold Foil', aspect: 'tall' },
+  { src: '/images/wedding/acrylic_navy_gold.png', category: 'Wedding Cards', title: '✨ Clear Acrylic Glass Wedding Card with Wax Seal', aspect: 'tall' },
+  { src: '/images/wedding/scroll_white_gold.png', category: 'Wedding Cards', title: '📜 Royal Farman Scroll Invitation in Metallic Tube Case', aspect: 'tall' },
   { src: '/images/keepsakes/card2.png', category: 'Wedding Cards', title: '🪔 Traditional Ganesh Floral Wedding Invitation Set', aspect: 'tall' },
   { src: '/images/keepsakes/card3.png', category: 'Wedding Cards', title: '📰 "The Shaadi Times" Custom Wedding Newspaper Card', aspect: 'tall' },
-  { src: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=500&q=80', category: 'Visiting Cards', title: '💼 350 GSM Velvet Touch Visiting Cards with Gold Foil', aspect: 'tall' },
-  { src: 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?w=500&q=80', category: 'Visiting Cards', title: '✨ 3D Raised Spot UV & Matte Black Business Cards', aspect: 'tall' },
-  { src: 'https://images.unsplash.com/photo-1542744094-3a31b272c490?w=500&q=80', category: 'Flex & Banners', title: '🚩 Heavy Duty Star Flex Banner Outdoor Grand Opening', aspect: 'wide' },
-  { src: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=500&q=80', category: 'Flex & Banners', title: '🎯 Promotional Roll-up Standee Display Frame', aspect: 'tall' },
-  { src: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&q=80', category: 'Photobooks', title: '📖 HD Flush Mount Wedding Photobook Album with Leatherette Box', aspect: 'tall' },
-  { src: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=500&q=80', category: 'Stationery', title: '📄 130 GSM Gloss Art Paper Pamphlets & Marketing Flyers', aspect: 'tall' },
-  { src: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=500&q=80', category: 'Stationery', title: '📑 Executive Printed Letterheads & Brand Envelopes', aspect: 'tall' },
-  { src: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=500&q=80', category: 'Stationery', title: '🧾 Duplicate Carbonless Bill Books & Receipt Books', aspect: 'tall' },
-  { src: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&q=80', category: 'Packaging', title: '🎁 Customized Ceramic Magic Photo Mugs & Gift Boxes', aspect: 'square' },
+  { src: '/images/keepsakes/visiting_cards.jpg', category: 'Visiting Cards', title: '💼 350 GSM Velvet Touch Visiting Cards with Gold Foil', aspect: 'tall' },
+  { src: '/images/keepsakes/visiting_cards.jpg', category: 'Visiting Cards', title: '✨ 3D Raised Spot UV & Matte Black Business Cards', aspect: 'tall' },
+  { src: '/images/banners/outdoor_flex_banner.jpg', category: 'Flex & Banners', title: '🚩 Heavy Duty Star Flex Banner Outdoor Grand Opening', aspect: 'wide' },
+  { src: '/images/banners/rollup_standee.jpg', category: 'Flex & Banners', title: '🎯 Promotional Roll-up Standee Display Frame', aspect: 'tall' },
+  { src: '/images/keepsakes/film1.jpg', category: 'Photobooks', title: '📖 HD Flush Mount Wedding Photobook Album with Leatherette Box', aspect: 'tall' },
+  { src: '/images/stationery/letterhead_bond.jpg', category: 'Stationery', title: '📄 130 GSM Gloss Art Paper Pamphlets & Marketing Flyers', aspect: 'tall' },
+  { src: '/images/stationery/corporate_envelopes.jpg', category: 'Stationery', title: '📑 Executive Printed Letterheads & Brand Envelopes', aspect: 'tall' },
+  { src: '/images/stationery/bill_book_carbonless.jpg', category: 'Stationery', title: '🧾 Duplicate Carbonless Bill Books & Receipt Books', aspect: 'tall' },
+  { src: '/images/keepsakes/card4.png', category: 'Packaging', title: '🎁 Customized Ceramic Magic Photo Mugs & Gift Boxes', aspect: 'square' },
 ];
 
 export default function PortfolioCategories() {

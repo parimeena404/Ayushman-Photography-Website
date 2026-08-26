@@ -190,7 +190,7 @@ export default function CartPage() {
                       <div style={{ fontWeight: 600, fontSize: '0.8125rem', color: 'var(--text-primary)' }}>Acrylic Card Holder</div>
                       <div style={{ fontSize: '0.75rem', color: '#D40000', fontWeight: 800 }}>₹250</div>
                       <button
-                        onClick={() => handleAddCrossSell('Desktop Acrylic Card Holder', 'Accessory', 250, 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=300&q=80')}
+                        onClick={() => handleAddCrossSell('Desktop Acrylic Card Holder', 'Accessory', 250, '/images/keepsakes/visiting_cards.jpg')}
                         style={{ marginTop: '0.4rem', width: '100%', padding: '0.35rem', borderRadius: '4px', background: '#D40000', color: '#FFF', border: 'none', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
                       >
                         + Add Holder
@@ -201,7 +201,7 @@ export default function CartPage() {
                       <div style={{ fontWeight: 600, fontSize: '0.8125rem', color: 'var(--text-primary)' }}>50 Matching Envelopes</div>
                       <div style={{ fontSize: '0.75rem', color: '#D40000', fontWeight: 800 }}>₹450</div>
                       <button
-                        onClick={() => handleAddCrossSell('50 Gold Foil Printed Envelopes', 'Accessory', 450, 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=300&q=80')}
+                        onClick={() => handleAddCrossSell('50 Gold Foil Printed Envelopes', 'Accessory', 450, '/images/stationery/corporate_envelopes.jpg')}
                         style={{ marginTop: '0.4rem', width: '100%', padding: '0.35rem', borderRadius: '4px', background: '#D40000', color: '#FFF', border: 'none', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
                       >
                         + Add Envelopes

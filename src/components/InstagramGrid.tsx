@@ -5,15 +5,15 @@ import { useRef, useState } from 'react';
 import { staggerContainer, fadeInUp } from '@/lib/animations';
 
 const images = [
-  { src: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1200&q=85&auto=format', alt: 'Royal Indian Bride' },
-  { src: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=1200&q=85&auto=format', alt: 'Holi Colors Celebration' },
-  { src: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1200&q=85&auto=format', alt: 'Palace Wedding' },
-  { src: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=1200&q=85&auto=format', alt: 'Saree Heritage Portrait' },
-  { src: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=1200&q=85&auto=format', alt: 'Ghats Golden Hour' },
-  { src: 'https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=1200&q=85&auto=format', alt: 'Classical Heritage Dance' },
-  { src: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=1200&q=85&auto=format', alt: 'Sunset Couple Portrait' },
-  { src: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1200&q=85&auto=format', alt: 'Jaipur Palace Architecture' },
-  { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=85&auto=format', alt: 'Mandap Ceremony' },
+  { src: '/images/wedding/wedding1.jpg', alt: 'Royal Indian Wedding Cards' },
+  { src: '/images/festivals/diwali-deepotsav.jpg', alt: 'Festive Print Designs' },
+  { src: '/images/wedding/wedding2.png', alt: 'Palace Wedding Collection' },
+  { src: '/images/portrait/portrait1.png', alt: 'Portrait Print Finishing' },
+  { src: '/images/festivals/palace-dance.jpg', alt: 'Heritage Print Showcase' },
+  { src: '/images/wedding/wedding3.jpg', alt: 'Traditional Invitation Suite' },
+  { src: '/images/portrait/portrait2.png', alt: 'Bespoke Stationery' },
+  { src: '/images/festivals/lohri-bonfire.jpg', alt: 'Festival Celebration Cards' },
+  { src: '/images/wedding/wedding4.jpg', alt: 'Mandap Foil Invitation' },
 ];
 
 export default function InstagramGrid() {

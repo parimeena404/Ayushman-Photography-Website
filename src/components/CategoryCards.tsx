@@ -11,11 +11,11 @@ const categories = [
   { name: '📜 Farman Scroll Cards', image: '/images/wedding/scroll_royal_blue_velvet.png', count: '150+ Scrolls', href: '/products?category=Wedding Cards' },
   { name: '📦 Shahi Scroll Box Cards', image: '/images/wedding/scroll_white_gold.png', count: '300+ Box Cards', href: '/products?category=Wedding Cards' },
   { name: '💼 Business Visiting Cards', image: '/images/keepsakes/visiting_cards.jpg', count: '2,000+ Orders', href: '/products?category=Business Cards' },
-  { name: '🚩 Flex Banners & Star Flex', image: 'https://images.unsplash.com/photo-1542744094-3a31b272c490?w=600&q=80', count: '1,500+ Banners', href: '/products?category=Flex Banners' },
-  { name: '📄 Pamphlets & Flyers', image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&q=80', count: '3,000+ Flyers', href: '/products?category=Flex Banners' },
-  { name: '🧾 Carbonless Bill Books', image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&q=80', count: '800+ Bill Books', href: '/products?category=Office Stationery' },
-  { name: '📖 HD Wedding Photobooks', image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80', count: '400+ Albums', href: '/products?category=Photobooks' },
-  { name: '🎁 Custom Mugs & Gifts', image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&q=80', count: '1,200+ Gifts', href: '/products?category=Custom Gifts' },
+  { name: '🚩 Flex Banners & Star Flex', image: '/images/banners/outdoor_flex_banner.jpg', count: '1,500+ Banners', href: '/products?category=Flex Banners' },
+  { name: '📄 Pamphlets & Flyers', image: '/images/stationery/letterhead_bond.jpg', count: '3,000+ Flyers', href: '/products?category=Flex Banners' },
+  { name: '🧾 Carbonless Bill Books', image: '/images/stationery/bill_book_carbonless.jpg', count: '800+ Bill Books', href: '/products?category=Office Stationery' },
+  { name: '📖 HD Wedding Photobooks', image: '/images/keepsakes/film1.jpg', count: '400+ Albums', href: '/products?category=Photobooks' },
+  { name: '🎁 Custom Mugs & Gifts', image: '/images/keepsakes/card4.png', count: '1,200+ Gifts', href: '/products?category=Custom Gifts' },
 ];
 
 export default function CategoryCards() {

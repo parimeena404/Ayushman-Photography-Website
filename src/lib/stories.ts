@@ -40,7 +40,7 @@ export const films: Film[] = [
     couple: 'Ayushman Crafts Studio',
     location: 'Freeganj Press, Ujjain MP',
     category: 'Card Printing Craft',
-    thumbnail: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
+    thumbnail: '/images/wedding/scroll_royal_blue_velvet.png',
     duration: '2:15',
   },
   {
@@ -49,7 +49,7 @@ export const films: Film[] = [
     couple: 'Royal Wedding Suite',
     location: 'Ujjain Press Studio',
     category: 'Laser Cutting',
-    thumbnail: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500&q=80',
+    thumbnail: '/images/wedding/acrylic_navy_gold.png',
     duration: '1:45',
   },
   {
@@ -58,7 +58,7 @@ export const films: Film[] = [
     couple: 'Commercial Press Unit',
     location: 'Ujjain, Madhya Pradesh',
     category: 'Offset Press',
-    thumbnail: 'https://images.unsplash.com/photo-1542744094-3a31b272c490?w=500&q=80',
+    thumbnail: '/images/banners/outdoor_flex_banner.jpg',
     duration: '3:10',
   },
 ];
@@ -72,15 +72,15 @@ export const stories: Story[] = [
     location: 'Jaipur & Ujjain',
     venue: 'Ayushman Cards & Graphics Studio',
     date: 'September 2024',
-    coverImage: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&q=80',
+    coverImage: '/images/wedding/scroll_royal_blue_velvet.png',
     introduction: 'For Anika & Rohan\'s grand wedding, our designers created a bespoke royal velvet box invitation suite featuring hot gold foil stamping, custom wax seals, and matching acrylic place cards.',
     quote: 'The wedding cards designed by Ayushman Cards & Graphics set the perfect royal tone for our celebration. All our relatives were in awe!',
     quoteAuthor: 'Anika',
     category: 'Royal Wedding Cards',
     images: [
-      { src: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80', alt: 'Royal Velvet Box Card', layout: 'full' },
-      { src: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500&q=80', alt: 'Clear Acrylic Wax Seal Card', layout: 'half' },
-      { src: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=500&q=80', alt: 'Metallic Farman Scroll', layout: 'half' },
+      { src: '/images/wedding/scroll_royal_blue_velvet.png', alt: 'Royal Velvet Box Card', layout: 'full' },
+      { src: '/images/wedding/acrylic_navy_gold.png', alt: 'Clear Acrylic Wax Seal Card', layout: 'half' },
+      { src: '/images/wedding/scroll_white_gold.png', alt: 'Metallic Farman Scroll', layout: 'half' },
     ],
   },
 ];
@@ -129,7 +129,7 @@ export const blogPosts: BlogPost[] = [
     excerpt: 'How to choose between 300 GSM Art Card, Imported Metallic Board, and Velvet Hardcover for your wedding invitations.',
     date: 'January 15, 2025',
     category: 'Printing Guide',
-    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
+    image: '/images/wedding/scroll_white_gold.png',
     content: 'GSM (Grams per Square Meter) defines paper thickness. For luxury wedding box cards, 350+ GSM heavy board provides a sturdy, premium handfeel.',
   },
 ];

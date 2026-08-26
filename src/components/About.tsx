@@ -54,7 +54,7 @@ export default function About() {
           {/* Portrait */}
           <motion.div variants={fadeInLeft}>
             <img
-              src="https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?w=800&q=85&auto=format"
+              src="/images/commercial/command-key-studio.png"
               alt="Ayushman Cards & Graphics Printing Press"
               style={{
                 width: '100%',

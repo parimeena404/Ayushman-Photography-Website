@@ -23,7 +23,7 @@ const PRODUCTS_DB: Record<string, ProductSpec> = {
     id: 'visiting-card',
     name: '350 GSM Premium Visiting Cards',
     category: 'Business Cards',
-    defaultImage: '/images/keepsakes/visiting_cards.jpg',
+    defaultImage: '/images/visiting_cards/velvet_touch.jpg',
     description: 'High quality 350 GSM silk cards with sharp offset print, velvet lamination and gold foil options.',
     basePrice100: 450,
     paperOptions: ['350 GSM Velvet Touch (Popular)', '300 GSM Matte Finish', '400 GSM Metallic Gold', 'Tearproof Synthetic Plastic'],

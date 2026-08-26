@@ -190,7 +190,7 @@ export default function CartPage() {
                       <div style={{ fontWeight: 600, fontSize: '0.8125rem', color: 'var(--text-primary)' }}>Acrylic Card Holder</div>
                       <div style={{ fontSize: '0.75rem', color: '#D40000', fontWeight: 800 }}>₹250</div>
                       <button
-                        onClick={() => handleAddCrossSell('Desktop Acrylic Card Holder', 'Accessory', 250, '/images/keepsakes/visiting_cards.jpg')}
+                        onClick={() => handleAddCrossSell('Desktop Acrylic Card Holder', 'Accessory', 250, '/images/visiting_cards/transparent.jpg')}
                         style={{ marginTop: '0.4rem', width: '100%', padding: '0.35rem', borderRadius: '4px', background: '#D40000', color: '#FFF', border: 'none', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
                       >
                         + Add Holder

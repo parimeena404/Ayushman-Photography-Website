@@ -20,7 +20,7 @@ const bestSellers: CategoryProduct[] = [
   {
     id: 'bs-1',
     name: 'Standard Visiting Cards',
-    image: '/images/keepsakes/visiting_cards.jpg',
+    image: '/images/visiting_cards/colorful.jpg',
     badge: 'BUY 100 @ Rs.200',
     price: '₹200.00',
     unit: '₹2.00 each / 100 units',
@@ -31,7 +31,7 @@ const bestSellers: CategoryProduct[] = [
   {
     id: 'bs-2',
     name: 'Velvet Touch Visiting Cards',
-    image: '/images/keepsakes/visiting_cards.jpg',
+    image: '/images/visiting_cards/velvet_touch.jpg',
     badge: 'BUY 100 @ Rs.250',
     price: '₹250.00',
     unit: '₹2.50 each / 100 units',
@@ -89,7 +89,7 @@ const trending: CategoryProduct[] = [
   {
     id: 'tr-1',
     name: 'Executive Gold Foil Cards',
-    image: '/images/keepsakes/visiting_cards.jpg',
+    image: '/images/visiting_cards/black_gold.jpg',
     badge: 'BUY 100 @ Rs.450',
     price: '₹450.00',
     unit: '₹4.50 each / 100 units',
@@ -98,7 +98,7 @@ const trending: CategoryProduct[] = [
   {
     id: 'tr-2',
     name: 'Raised Spot UV Visiting Cards',
-    image: '/images/keepsakes/visiting_cards.jpg',
+    image: '/images/visiting_cards/spot_uv.jpg',
     badge: 'BUY 100 @ Rs.580',
     price: '₹580.00',
     unit: '₹5.80 each / 100 units',

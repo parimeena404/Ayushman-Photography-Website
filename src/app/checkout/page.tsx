@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
@@ -12,17 +12,28 @@ export default function CheckoutPage() {
   const { cart, grandTotal, subtotal, discountAmount, gstAmount, shippingFee, clearCart } = useCart();
   const { user } = useAuth();
 
-  // Shipping Form State
   const [fullName, setFullName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [phone, setPhone] = useState(user?.phone || '');
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('Ujjain');
-  const [state, setState] = useState('Madhya Pradesh');
-  const [pincode, setPincode] = useState('');
+  const [address, setAddress] = useState(user?.address || '');
+  const [city, setCity] = useState(user?.city || 'Ujjain');
+  const [state, setState] = useState(user?.state || 'Madhya Pradesh');
+  const [pincode, setPincode] = useState(user?.pincode || '');
   const [gstin, setGstin] = useState('');
   const [deliverySpeed, setDeliverySpeed] = useState<'standard' | 'express'>('standard');
   const [notes, setNotes] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      if (user.name && !fullName) setFullName(user.name);
+      if (user.email && !email) setEmail(user.email);
+      if (user.phone && !phone) setPhone(user.phone);
+      if (user.address && !address) setAddress(user.address);
+      if (user.city && (!city || city === 'Ujjain')) setCity(user.city);
+      if (user.state && (!state || state === 'Madhya Pradesh')) setState(user.state);
+      if (user.pincode && !pincode) setPincode(user.pincode);
+    }
+  }, [user]);
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');

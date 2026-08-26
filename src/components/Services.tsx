@@ -15,7 +15,7 @@ const services = [
   {
     title: 'Business & Visiting Cards',
     desc: '350 GSM Velvet Touch cards with Gold Foil Stamping, 3D Raised Spot UV, and transparent PVC plastic options.',
-    image: '/images/keepsakes/visiting_cards.jpg',
+    image: '/images/visiting_cards/black_gold.jpg',
     cta: 'Get Estimate',
   },
   {

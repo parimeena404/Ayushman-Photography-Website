@@ -35,7 +35,7 @@ export default function Hero() {
             style={{
               position: 'absolute',
               inset: 0,
-              backgroundImage: 'url(/images/keepsakes/visiting_cards.jpg)',
+              backgroundImage: 'url(/images/visiting_cards/black_gold.jpg)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               mixBlendMode: 'luminosity',

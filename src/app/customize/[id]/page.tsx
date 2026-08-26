@@ -21,13 +21,27 @@ interface ProductSpec {
 const PRODUCTS_DB: Record<string, ProductSpec> = {
   'visiting-card': {
     id: 'visiting-card',
-    name: '350 GSM Premium Visiting Cards',
+    name: 'Luxury Visiting & Business Cards',
     category: 'Business Cards',
-    defaultImage: '/images/visiting_cards/velvet_touch.jpg',
-    description: 'High quality 350 GSM silk cards with sharp offset print, velvet lamination and gold foil options.',
-    basePrice100: 450,
-    paperOptions: ['350 GSM Velvet Touch (Popular)', '300 GSM Matte Finish', '400 GSM Metallic Gold', 'Tearproof Synthetic Plastic'],
-    finishOptions: ['Gold Foil Stamping', 'Spot UV Gloss Coating', 'Matte Lamination', 'Glossy Premium'],
+    defaultImage: '/images/visiting_cards/card_500gsm_velvet.jpg',
+    description: 'High-end business cards on 500 GSM Velvet, 800 Micron Sandwich Core, 180 Micron NT Synthetic, or Engraved Metal.',
+    basePrice100: 480,
+    paperOptions: [
+      '500 GSM Velvet Touch (Heavyweight)',
+      '800 Micron Triple-Layer Fused Core (Ultra-Thick)',
+      '180 Micron Non-Tearable (NT) Waterproof Synthetic',
+      'Solid Metal Plate (Stainless / Brass)',
+      '300 GSM Smooth Matte Finish',
+      'Textured Linen Executive Cardstock',
+    ],
+    finishOptions: [
+      'Hot Gold Foil Stamping',
+      'Raised Gloss Spot UV Coating',
+      'Silver / Red / Blue / Green Foil',
+      'Drip-Off Texturized UV',
+      '36+ Precision Die-Cut Shapes',
+      'Velvet Soft-Touch Lamination',
+    ],
   },
   'wedding-card': {
     id: 'wedding-card',

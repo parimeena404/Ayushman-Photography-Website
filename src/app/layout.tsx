@@ -111,7 +111,7 @@ export default function RootLayout({
       className={`${playfair.variable} ${cormorant.variable} ${inter.variable} ${manrope.variable}`}
       suppressHydrationWarning
     >
-      <body>
+      <body suppressHydrationWarning>
         <ClientBody>
           <Preloader />
           <CursorGlow />

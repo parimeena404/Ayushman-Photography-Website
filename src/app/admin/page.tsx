@@ -39,6 +39,8 @@ export default function AdminPortalPage() {
   // Product CMS Modal State
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [productForm, setProductForm] = useState({
     title: '',
     category: 'Wedding Cards',
@@ -277,6 +279,45 @@ export default function AdminPortalPage() {
       isActive: prod.isActive !== false,
     });
     setShowProductModal(true);
+  };
+
+  const handleProductImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    setUploadError(null);
+
+    try {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const base64Data = event.target?.result as string;
+        // Show preview immediately
+        setProductForm((prev) => ({ ...prev, image: base64Data }));
+
+        try {
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: base64Data, folder: 'ayushman_print_products' }),
+          });
+          const data = await res.json();
+          if (res.ok && data.url) {
+            setProductForm((prev) => ({ ...prev, image: data.url }));
+            setActionNotice('✓ Image uploaded to Cloud CDN successfully!');
+            setTimeout(() => setActionNotice(null), 3000);
+          }
+        } catch (err) {
+          console.warn('CDN upload fallback, using base64 preview:', err);
+        } finally {
+          setIsUploadingImage(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      setIsUploadingImage(false);
+      setUploadError('Failed to read image file. Please try another.');
+    }
   };
 
   const handleSaveProductSubmit = async (e: React.FormEvent) => {
@@ -1516,9 +1557,120 @@ export default function AdminPortalPage() {
                   <input type="text" value={productForm.badge} onChange={(e) => setProductForm({ ...productForm, badge: e.target.value })} placeholder="e.g. 100 PCS @ ₹3,500 or BESTSELLER" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #D1D5DB', color: '#1E1E1E', background: '#FFFFFF' }} />
                 </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Product Image URL / Local Path *</label>
-                  <input type="text" required value={productForm.image} onChange={(e) => setProductForm({ ...productForm, image: e.target.value })} placeholder="/images/wedding/scroll_royal_blue_velvet.png" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #D1D5DB', color: '#1E1E1E', background: '#FFFFFF' }} />
+                {/* ─── PRODUCT IMAGE UPLOADER & PREVIEW ─── */}
+                <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: '10px', padding: '1rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.5rem' }}>
+                    Product Image (Upload from Phone/PC or Paste URL) *
+                  </label>
+
+                  {/* Image Preview & Upload Button Row */}
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+                    <div style={{ width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', border: '2px solid #E5E7EB', background: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexShrink: 0 }}>
+                      {productForm.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={productForm.image} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <span style={{ fontSize: '1.75rem', color: '#9CA3AF' }}>📷</span>
+                      )}
+                      {isUploadingImage && (
+                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '0.7rem', fontWeight: 700 }}>
+                          ⏳
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{ flex: 1, minWidth: '200px' }}>
+                      <label
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          padding: '0.55rem 1rem',
+                          borderRadius: '8px',
+                          background: isUploadingImage ? '#9CA3AF' : '#0B2545',
+                          color: '#FFFFFF',
+                          fontSize: '0.8125rem',
+                          fontWeight: 700,
+                          cursor: isUploadingImage ? 'not-allowed' : 'pointer',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        {isUploadingImage ? '⏳ Uploading...' : '📁 Choose Photo from Device'}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          disabled={isUploadingImage}
+                          onChange={handleProductImageUpload}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
+                      <div style={{ fontSize: '0.72rem', color: '#6B7280', marginTop: '0.35rem' }}>
+                        Supports JPG, PNG, WEBP from your phone camera or laptop.
+                      </div>
+                    </div>
+                  </div>
+
+                  {uploadError && (
+                    <div style={{ fontSize: '0.75rem', color: '#DC2626', marginBottom: '0.5rem', fontWeight: 600 }}>
+                      ⚠️ {uploadError}
+                    </div>
+                  )}
+
+                  {/* Manual URL / Path Input */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, color: '#6B7280', marginBottom: '0.2rem' }}>
+                      Or Image URL / Local Path:
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={productForm.image}
+                      onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
+                      placeholder="https://... or /images/visiting_cards/..."
+                      style={{ width: '100%', padding: '0.45rem 0.65rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.78125rem', color: '#1E1E1E', background: '#FFFFFF' }}
+                    />
+                  </div>
+
+                  {/* Quick Preset Library Pills */}
+                  <div style={{ marginTop: '0.6rem' }}>
+                    <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#4B5563', marginBottom: '0.3rem' }}>
+                      ⚡ Quick Preset Gallery Assets:
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                      {[
+                        { label: '500 GSM Velvet', path: '/images/visiting_cards/card_500gsm_velvet.jpg' },
+                        { label: '800 Micron Velvet', path: '/images/visiting_cards/card_800_micron.jpg' },
+                        { label: 'Gold/Silver Fused', path: '/images/visiting_cards/card_800_gold_silver.jpg' },
+                        { label: 'Metal Card', path: '/images/visiting_cards/metal.jpg' },
+                        { label: '180 Micron NT', path: '/images/visiting_cards/card_180_nt_dripoff.jpg' },
+                        { label: 'Spot UV Card', path: '/images/visiting_cards/card_matt_spot_uv.jpg' },
+                        { label: 'Textured Linen', path: '/images/visiting_cards/card_matt_texture.jpg' },
+                        { label: 'Mini Cards', path: '/images/visiting_cards/card_mini_calling.jpg' },
+                        { label: 'Royal Blue Velvet', path: '/images/wedding/scroll_royal_blue_velvet.png' },
+                        { label: 'Acrylic Wedding', path: '/images/wedding/acrylic_navy_gold.png' },
+                        { label: 'Star Flex Banner', path: '/images/banners/outdoor_flex_banner.jpg' },
+                      ].map((item) => (
+                        <button
+                          key={item.label}
+                          type="button"
+                          onClick={() => setProductForm({ ...productForm, image: item.path })}
+                          style={{
+                            padding: '0.2rem 0.5rem',
+                            borderRadius: '4px',
+                            fontSize: '0.6875rem',
+                            fontWeight: productForm.image === item.path ? 700 : 500,
+                            border: productForm.image === item.path ? '1px solid #0B2545' : '1px solid #E5E7EB',
+                            background: productForm.image === item.path ? '#0B2545' : '#FFFFFF',
+                            color: productForm.image === item.path ? '#FFFFFF' : '#374151',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 <div>

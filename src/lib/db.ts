@@ -80,12 +80,27 @@ export interface ProductRecord {
   updatedAt: string;
 }
 
+export interface BannerRecord {
+  id: string;
+  title: string;
+  subtitle?: string;
+  badge?: string;
+  image: string;
+  link?: string;
+  buttonText?: string;
+  displayOrder?: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface DBStore {
   users: UserRecord[];
   bookings: BookingRecord[];
   inquiries: InquiryRecord[];
   categories: CategoryRecord[];
   products: ProductRecord[];
+  banners: BannerRecord[];
 }
 
 const DB_FILE_PATH = path.join(os.tmpdir(), 'ayushman_print_db.json');
@@ -844,6 +859,48 @@ export const INITIAL_PRODUCTS: ProductRecord[] = [
   },
 ];
 
+export const INITIAL_BANNERS: BannerRecord[] = [
+  {
+    id: 'bnr-1',
+    title: 'Royal Velvet Box Wedding Invitations & Farman Scrolls',
+    subtitle: 'Handcrafted Padded Velvet Boxes, 3mm Acrylic Plates & Botanical Gold Wax Seals',
+    badge: 'ROYAL COLLECTION 2026',
+    image: '/images/wedding/scroll_royal_blue_velvet.png',
+    link: '/products?category=Wedding Cards',
+    buttonText: 'Explore Wedding Cards',
+    displayOrder: 1,
+    isActive: true,
+    createdAt: '2025-01-01T00:00:00.000Z',
+    updatedAt: '2025-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'bnr-2',
+    title: '500 GSM Velvet Business Cards & Hot Gold Foil Finish',
+    subtitle: 'Ultra Heavyweight Rigid Board, Laser Engraved Metal & Precision Spot UV Raised Texture',
+    badge: 'STARTING @ ₹200',
+    image: '/images/visiting_cards/black_gold.jpg',
+    link: '/products?category=Business Cards',
+    buttonText: 'Order Visiting Cards',
+    displayOrder: 2,
+    isActive: true,
+    createdAt: '2025-01-01T00:00:00.000Z',
+    updatedAt: '2025-01-01T00:00:00.000Z',
+  },
+  {
+    id: 'bnr-3',
+    title: 'Outdoor Heavy Duty Star Flex Banners & Roll-Up Standees',
+    subtitle: 'Weatherproof 340 GSM Star Flex Material with Eyelets & Free Carry Bags',
+    badge: 'COMMERCIAL PROMOTIONS',
+    image: '/images/banners/outdoor_flex_banner.jpg',
+    link: '/products?category=Flex Banners',
+    buttonText: 'View Banners & Signs',
+    displayOrder: 3,
+    isActive: true,
+    createdAt: '2025-01-01T00:00:00.000Z',
+    updatedAt: '2025-01-01T00:00:00.000Z',
+  },
+];
+
 const DEFAULT_STORE: DBStore = {
   users: [
     {
@@ -865,6 +922,7 @@ const DEFAULT_STORE: DBStore = {
   inquiries: [],
   categories: INITIAL_CATEGORIES,
   products: INITIAL_PRODUCTS,
+  banners: INITIAL_BANNERS,
 };
 
 function readStore(): DBStore {
@@ -885,6 +943,7 @@ function readStore(): DBStore {
           inquiries: parsed.inquiries || [],
           categories: (parsed.categories && parsed.categories.length > 0) ? parsed.categories : DEFAULT_STORE.categories,
           products: (parsed.products && parsed.products.length > 0) ? parsed.products : DEFAULT_STORE.products,
+          banners: (parsed.banners && parsed.banners.length > 0) ? parsed.banners : DEFAULT_STORE.banners,
         };
       }
     }
@@ -897,12 +956,15 @@ function readStore(): DBStore {
     store.users.push(DEFAULT_STORE.users[0]);
   }
 
-  // Ensure categories and products are populated
+  // Ensure categories, products, and banners are populated
   if (!store.categories || store.categories.length === 0) {
     store.categories = DEFAULT_STORE.categories;
   }
   if (!store.products || store.products.length === 0) {
     store.products = DEFAULT_STORE.products;
+  }
+  if (!store.banners || store.banners.length === 0) {
+    store.banners = DEFAULT_STORE.banners;
   }
 
   globalThis.__ayushmanInMemoryDB = store;
@@ -1231,10 +1293,69 @@ class ProductClient {
   }
 }
 
+class BannerClient {
+  async findMany(args?: { where?: { isActive?: boolean } }): Promise<BannerRecord[]> {
+    const store = readStore();
+    let result = store.banners || [];
+    if (args?.where?.isActive !== undefined) {
+      result = result.filter((b) => (b.isActive !== false) === args.where?.isActive);
+    }
+    return result.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  }
+
+  async findUnique(args: { where: { id: string } }): Promise<BannerRecord | null> {
+    const store = readStore();
+    return (store.banners || []).find((b) => b.id === args.where.id) || null;
+  }
+
+  async create(args: { data: Omit<BannerRecord, 'id' | 'createdAt' | 'updatedAt'> }): Promise<BannerRecord> {
+    const store = readStore();
+    const now = new Date().toISOString();
+    const newBanner: BannerRecord = {
+      ...args.data,
+      id: generateId('bnr'),
+      isActive: args.data.isActive !== undefined ? args.data.isActive : true,
+      displayOrder: args.data.displayOrder || (store.banners?.length || 0) + 1,
+      createdAt: now,
+      updatedAt: now,
+    };
+    if (!store.banners) store.banners = [];
+    store.banners.push(newBanner);
+    writeStore(store);
+    return newBanner;
+  }
+
+  async update(args: { where: { id: string }; data: Partial<BannerRecord> }): Promise<BannerRecord> {
+    const store = readStore();
+    if (!store.banners) store.banners = [];
+    const idx = store.banners.findIndex((b) => b.id === args.where.id);
+    if (idx === -1) throw new Error('Banner not found');
+    const updated: BannerRecord = {
+      ...store.banners[idx],
+      ...args.data,
+      updatedAt: new Date().toISOString(),
+    };
+    store.banners[idx] = updated;
+    writeStore(store);
+    return updated;
+  }
+
+  async delete(args: { where: { id: string } }): Promise<boolean> {
+    const store = readStore();
+    if (!store.banners) return false;
+    const initialLen = store.banners.length;
+    store.banners = store.banners.filter((b) => b.id !== args.where.id);
+    writeStore(store);
+    return store.banners.length < initialLen;
+  }
+}
+
 export const db: any = {
   user: new UserClient(),
   booking: new BookingClient(),
   inquiry: new InquiryClient(),
   category: new CategoryClient(),
   product: new ProductClient(),
+  banner: new BannerClient(),
 };
+

@@ -1,6 +1,7 @@
 'use client';
 
 import Navbar from '@/components/Navbar';
+import HeroBanner from '@/components/HeroBanner';
 import Hero from '@/components/Hero';
 import TrustBar from '@/components/TrustBar';
 import ExploreCategories from '@/components/ExploreCategories';
@@ -245,10 +246,13 @@ export default function Home() {
     <>
       <Navbar />
       <main>
-        {/* 1. Vistaprint Split Hero Banners */}
+        {/* 1. Dynamic Admin-Managed Full-Width Hero Banners */}
+        <HeroBanner />
+
+        {/* 2. Featured Split Deals */}
         <Hero />
 
-        {/* 2. Trust Value Bar */}
+        {/* 3. Trust Value Bar */}
         <TrustBar />
 
         {/* 3. Best Sellers & Trending */}

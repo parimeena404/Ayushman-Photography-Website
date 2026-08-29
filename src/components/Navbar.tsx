@@ -1,279 +1,223 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import Link from 'next/link';
+
+export interface NavCategory {
+  id: string;
+  label: string;
+  icon?: string;
+  description?: string;
+  count?: number;
+}
+
+export interface NavProduct {
+  id: string;
+  customizerId: string;
+  title: string;
+  category: string;
+  badge: string;
+  price: string;
+  numericPrice: number;
+  unit?: string;
+  image: string;
+  description?: string;
+  rating?: number;
+  reviews?: number;
+  isActive?: boolean;
+}
 
 interface MegaColumn {
   heading: string;
   items: { label: string; href: string; isNew?: boolean }[];
 }
 
-interface NavTab {
-  label: string;
-  href: string;
-  columns?: MegaColumn[];
-}
-
-const megaNavTabs: NavTab[] = [
-  {
-    label: 'View All',
-    href: '/products',
-    columns: [
-      {
-        heading: 'All Print Categories',
-        items: [
-          { label: 'Visiting Cards', href: '/products?category=Business Cards' },
-          { label: 'Wedding Invitations', href: '/products?category=Wedding Cards' },
-          { label: 'Stationery & Letterheads', href: '/products?category=Business Cards' },
-          { label: 'Signs, Banners & Standees', href: '/products?category=Flex Banners' },
-          { label: 'Labels, Stickers & Packaging', href: '/products?category=Flex Banners' },
-          { label: 'Mugs, Albums & Gifts', href: '/products?category=Custom Gifts' },
-          { label: 'Custom Polo T-Shirts', href: '/products?category=Custom Gifts' },
-          { label: 'Deals & Bulk Offers', href: '/products' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Visiting Cards',
-    href: '/products?category=Business Cards',
-    columns: [
-      {
-        heading: 'Shop by Shape',
-        items: [
-          { label: 'Standard Visiting Cards', href: '/products?category=Business Cards' },
-          { label: 'Classic Visiting Cards', href: '/products?category=Business Cards' },
-          { label: 'Rounded Corner Cards', href: '/products?category=Business Cards' },
-          { label: 'Square Visiting Cards', href: '/products?category=Business Cards' },
-          { label: 'Leaf Visiting Cards', href: '/products?category=Business Cards' },
-          { label: 'Oval Visiting Cards', href: '/products?category=Business Cards' },
-          { label: 'Custom Shape Cards', href: '/products?category=Business Cards', isNew: true },
-        ],
-      },
-      {
-        heading: 'Shop by Paper & Finish',
-        items: [
-          { label: 'Matte Finish (350 GSM)', href: '/products?category=Business Cards' },
-          { label: 'Glossy Laminated Cards', href: '/products?category=Business Cards' },
-          { label: 'Velvet Touch Cards', href: '/products?category=Business Cards', isNew: true },
-          { label: 'Spot UV Coating Cards', href: '/products?category=Business Cards' },
-          { label: 'Gold Foil Stamping Cards', href: '/products?category=Business Cards' },
-          { label: 'Transparent Acrylic Cards', href: '/products?category=Wedding Cards' },
-          { label: 'Metallic Silver Foil Cards', href: '/products?category=Business Cards', isNew: true },
-        ],
-      },
-      {
-        heading: 'Specialty Cards',
-        items: [
-          { label: 'Premium Plus Glossy', href: '/products?category=Business Cards' },
-          { label: 'Non-Tearable Silk Cards', href: '/products?category=Business Cards' },
-          { label: 'Magnet Visiting Cards', href: '/products?category=Business Cards' },
-          { label: 'Kraft Paper Cards', href: '/products?category=Business Cards' },
-        ],
-      },
-      {
-        heading: 'Visiting Card Accessories',
-        items: [
-          { label: 'Metal Card Holder', href: '/products?category=Business Cards' },
-          { label: 'Executive Desktop Card Stand', href: '/products?category=Business Cards' },
-          { label: 'Leatherette Pocket Case', href: '/products?category=Business Cards' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Wedding Invitations',
-    href: '/products?category=Wedding Cards',
-    columns: [
-      {
-        heading: 'Royal Invitations',
-        items: [
-          { label: 'Royal Velvet & Gold Box Cards', href: '/products?category=Wedding Cards' },
-          { label: 'Clear Acrylic Invitations', href: '/products?category=Wedding Cards' },
-          { label: 'Royal Farman Scroll Invitations', href: '/products?category=Wedding Cards' },
-          { label: 'Traditional Ganesh Cards', href: '/products?category=Wedding Cards' },
-          { label: '"The Shaadi Times" Newspaper Card', href: '/products?category=Wedding Cards', isNew: true },
-        ],
-      },
-      {
-        heading: 'Ceremony & Event Cards',
-        items: [
-          { label: 'Haldi & Sangeet Cards', href: '/products?category=Wedding Cards' },
-          { label: 'Wedding Menu Cards', href: '/products?category=Wedding Cards' },
-          { label: 'Wedding Program Folders', href: '/products?category=Wedding Cards' },
-          { label: 'Save The Date Cards', href: '/products?category=Wedding Cards' },
-          { label: 'Thank You Cards', href: '/products?category=Business Cards' },
-        ],
-      },
-      {
-        heading: 'Envelopes & Seals',
-        items: [
-          { label: 'Wax Seal Stamps', href: '/products?category=Wedding Cards' },
-          { label: 'Custom Envelope Seals', href: '/products?category=Wedding Cards' },
-          { label: 'Foil Embossed Envelopes', href: '/products?category=Wedding Cards' },
-          { label: 'Velvet Outer Boxes', href: '/products?category=Wedding Cards' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Stationery, Letterheads & Notebooks',
-    href: '/products?category=Office Stationery',
-    columns: [
-      {
-        heading: 'Custom Stationery',
-        items: [
-          { label: 'Letterheads', href: '/products?category=Office Stationery' },
-          { label: 'Custom Letterhead Pads', href: '/products?category=Office Stationery' },
-          { label: 'Bill Books', href: '/products?category=Office Stationery' },
-          { label: 'Envelopes', href: '/products?category=Office Stationery' },
-          { label: 'Rubber Stamps & Seals', href: '/products?category=Office Stationery' },
-          { label: 'Invoice Books', href: '/products?category=Office Stationery' },
-          { label: 'Custom Certificates', href: '/products?category=Office Stationery' },
-          { label: 'Presentation Folders', href: '/products?category=Office Stationery' },
-        ],
-      },
-      {
-        heading: 'Invitations & Announcements',
-        items: [
-          { label: 'Kids Birthday Invitations', href: '/products?category=Birthday & Event Cards' },
-          { label: 'Anniversary Party Cards', href: '/products?category=Birthday & Event Cards' },
-          { label: 'Griha Pravesh Cards', href: '/products?category=Birthday & Event Cards' },
-          { label: 'Retirement Invitations', href: '/products?category=Birthday & Event Cards' },
-          { label: 'Shop all Party Cards', href: '/products?category=Birthday & Event Cards' },
-        ],
-      },
-      {
-        heading: 'Wedding Stationery',
-        items: [
-          { label: 'Wedding Invitations', href: '/products?category=Wedding Cards' },
-          { label: 'Save The Date Cards', href: '/products?category=Wedding Cards' },
-          { label: 'Haldi & Sangeet Cards', href: '/products?category=Wedding Cards' },
-          { label: 'Wedding Program Folders', href: '/products?category=Wedding Cards' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Signs, Posters & Marketing Materials',
-    href: '/products?category=Flex Banners',
-    columns: [
-      {
-        heading: 'Banners & Displays',
-        items: [
-          { label: 'Star Flex Outdoor Banners', href: '/products?category=Flex Banners' },
-          { label: 'Roll-up Display Standees (6x3 ft)', href: '/products?category=Flex Banners' },
-          { label: 'Heavy Duty Vinyl Banners', href: '/products?category=Flex Banners' },
-          { label: 'Acrylic LED Glow Sign Boards', href: '/products?category=Flex Banners' },
-          { label: 'Promotional Canopy Tents', href: '/products?category=Flex Banners', isNew: true },
-        ],
-      },
-      {
-        heading: 'Marketing Prints',
-        items: [
-          { label: 'Pamphlets & Flyers (A4/A5)', href: '/products?category=Flex Banners' },
-          { label: 'Corporate Postcards', href: '/products?category=Office Stationery' },
-          { label: 'Restaurant Menu Cards', href: '/products?category=Office Stationery' },
-          { label: 'Tri-Fold Brochures', href: '/products?category=Flex Banners' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Labels, Stickers & Packaging',
-    href: '/products?category=Stickers & Labels',
-    columns: [
-      {
-        heading: 'Stickers & Labels',
-        items: [
-          { label: 'Custom Die-Cut Vinyl Stickers', href: '/products?category=Stickers & Labels' },
-          { label: 'Product Packaging Roll Labels', href: '/products?category=Stickers & Labels' },
-          { label: 'Holographic Warranty Seals', href: '/products?category=Stickers & Labels' },
-          { label: 'Transparent Waterproof Labels', href: '/products?category=Stickers & Labels', isNew: true },
-        ],
-      },
-      {
-        heading: 'Packaging Solutions',
-        items: [
-          { label: 'Printed Envelopes', href: '/products?category=Office Stationery' },
-          { label: 'Custom Shipping Boxes', href: '/products?category=Stickers & Labels' },
-          { label: 'Branded Carry Bags', href: '/products?category=Stickers & Labels' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Mugs, Albums & Gifts',
-    href: '/products?category=Custom Gifts',
-    columns: [
-      {
-        heading: 'Custom Gifts & Merchandise',
-        items: [
-          { label: 'Magic Color Changing Photo Mugs', href: '/products?category=Custom Gifts' },
-          { label: 'HD Lay-Flat Wedding Photobooks', href: '/products?category=Photobooks' },
-          { label: 'Baby Milestone Memory Albums', href: '/products?category=Photobooks' },
-          { label: 'Laser Engraved Wooden Photo Plaques', href: '/products?category=Custom Gifts' },
-          { label: 'Embroidered Corporate Polo T-Shirts', href: '/products?category=Custom Gifts' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Custom Polo T-shirts',
-    href: '/products?category=Custom Gifts',
-    columns: [
-      {
-        heading: 'Apparel & Wearables',
-        items: [
-          { label: 'Corporate Embroidered Polo T-Shirt', href: '/products?category=Custom Gifts' },
-          { label: 'Dry-Fit Sports Polo', href: '/products?category=Custom Gifts' },
-          { label: 'Printed Team Hoodies', href: '/products?category=Custom Gifts', isNew: true },
-          { label: 'Custom Printed Caps & Visors', href: '/products?category=Custom Gifts' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Deals & Offers',
-    href: '/products',
-    columns: [
-      {
-        heading: 'Festive Deals & Discounts',
-        items: [
-          { label: 'Flat 20% OFF 1,000+ Visiting Cards (BULK20)', href: '/products?category=Business Cards', isNew: true },
-          { label: '15% OFF Royal Wedding Cards (WEDDING15)', href: '/products?category=Wedding Cards' },
-          { label: '10% OFF Flex Banners (BANNER10)', href: '/products?category=Flex Banners' },
-          { label: 'Flat 5% OFF Orders ₹10,000+ (SAVE5)', href: '/products' },
-        ],
-      },
-      {
-        heading: 'Combo Value Bundles',
-        items: [
-          { label: 'Corporate Starter Pack (Cards + Letterhead + Stamp)', href: '/products?category=Business Cards' },
-          { label: 'Wedding Royal Pack (Box Cards + Acrylic + Scroll)', href: '/products?category=Wedding Cards' },
-          { label: 'Shop Promotion Kit (Flex + Standee + Pamphlets)', href: '/products?category=Flex Banners' },
-        ],
-      },
-    ],
-  },
+// Fallback initial categories for instantaneous zero-latency SSR
+const INITIAL_FALLBACK_CATEGORIES: NavCategory[] = [
+  { id: 'Business Cards', label: 'Visiting Cards', icon: '💳', description: '350 GSM Velvet Touch, Gold Foil, Spot UV' },
+  { id: 'Wedding Cards', label: 'Wedding Invitations', icon: '💍', description: 'Royal velvet box, clear acrylic, Farman scrolls' },
+  { id: 'Office Stationery', label: 'Stationery, Letterheads & Notebooks', icon: '🏢', description: 'Bond letterheads, bill books, stamps' },
+  { id: 'Flex Banners', label: 'Signs, Posters & Marketing Materials', icon: '🪧', description: 'Star Flex, roll-up standees, LED signboards' },
+  { id: 'Stickers & Labels', label: 'Labels, Stickers & Packaging', icon: '🏷️', description: 'Die-cut waterproof vinyl, roll packaging' },
+  { id: 'Photobooks', label: 'Mugs, Albums & Gifts', icon: '📖', description: 'HD lay-flat albums, magic photo mugs' },
+  { id: 'Custom Gifts', label: 'Custom Polo T-shirts', icon: '🎁', description: 'Corporate polo t-shirts, caps & merchandise' },
+  { id: 'Birthday & Event Cards', label: 'Deals & Offers', icon: '🎉', description: 'Special volume discounts & combo packs' },
 ];
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const { totalItemCount } = useCart();
   const { wishlistCount } = useWishlist();
+
+  const [categories, setCategories] = useState<NavCategory[]>(INITIAL_FALLBACK_CATEGORIES);
+  const [products, setProducts] = useState<NavProduct[]>([]);
+  const [hoveredTab, setHoveredTab] = useState<string | null>(null); // 'VIEW_ALL' or category ID
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedCode, setCopiedCode] = useState(false);
-  const [hoveredTab, setHoveredTab] = useState<NavTab | null>(null);
+
+  // Mobile 3-line Category Drawer State
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const [mobileExpandedCat, setMobileExpandedCat] = useState<string | null>(null);
+  const [mobileCatSearch, setMobileCatSearch] = useState('');
+
+  // Fetch live products and categories from Admin Portal / public API
+  const loadLiveCatalog = useCallback(async () => {
+    try {
+      const res = await fetch('/api/products');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          if (Array.isArray(data.categories) && data.categories.length > 0) {
+            const cleanCats = data.categories.filter((c: any) => c.id !== 'All Products');
+            setCategories(cleanCats);
+          }
+          if (Array.isArray(data.products) && data.products.length > 0) {
+            setProducts(data.products.filter((p: any) => p.isActive !== false));
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Navbar live catalog load fallback:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadLiveCatalog();
+
+    const handleCatalogUpdate = () => {
+      loadLiveCatalog();
+    };
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'ayushman_catalog_updated_at') {
+        loadLiveCatalog();
+      }
+    };
+
+    window.addEventListener('catalogUpdated', handleCatalogUpdate);
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('focus', loadLiveCatalog);
+
+    return () => {
+      window.removeEventListener('catalogUpdated', handleCatalogUpdate);
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('focus', loadLiveCatalog);
+    };
+  }, [loadLiveCatalog]);
+
+  // Clean label helper: strip leading emojis and numbers
+  const formatCatLabel = (label: string) => {
+    return (
+      label
+        .replace(/^[\p{Emoji}\p{Emoji_Presentation}\p{Extended_Pictographic}\s]+/u, '')
+        .replace(/\s*\(\d+\)$/, '')
+        .trim() || label
+    );
+  };
+
+  // Products grouped by category
+  const productsByCategory = useMemo(() => {
+    const map: Record<string, NavProduct[]> = {};
+    categories.forEach((cat) => {
+      map[cat.id] = products.filter((p) => p.category.toLowerCase() === cat.id.toLowerCase());
+    });
+    return map;
+  }, [categories, products]);
+
+  // Build clean text columns for the active hovered category
+  const activeMegaColumns = useMemo((): MegaColumn[] => {
+    if (!hoveredTab) return [];
+
+    if (hoveredTab === 'VIEW_ALL') {
+      // 'View All' Mega Menu: Group by top print categories
+      const cols: MegaColumn[] = [];
+      const catsWithProds = categories.slice(0, 4);
+
+      catsWithProds.forEach((cat) => {
+        const catProds = productsByCategory[cat.id] || [];
+        const items = catProds.slice(0, 7).map((p) => ({
+          label: p.title,
+          href: `/products?category=${encodeURIComponent(cat.id)}&search=${encodeURIComponent(p.title)}`,
+          isNew: p.badge?.toLowerCase().includes('new') || p.badge?.toLowerCase().includes('festive'),
+        }));
+
+        cols.push({
+          heading: formatCatLabel(cat.label),
+          items: items.length > 0
+            ? items
+            : [{ label: `Shop all ${formatCatLabel(cat.label)}`, href: `/products?category=${encodeURIComponent(cat.id)}` }],
+        });
+      });
+
+      return cols;
+    }
+
+    // Specific Category Mega Menu: Organize products into clean columns of text
+    const catProds = productsByCategory[hoveredTab] || [];
+    const catObj = categories.find((c) => c.id === hoveredTab);
+    const catName = catObj ? formatCatLabel(catObj.label) : hoveredTab;
+
+    if (catProds.length === 0) {
+      return [
+        {
+          heading: `All ${catName}`,
+          items: [
+            { label: `Shop all ${catName}`, href: `/products?category=${encodeURIComponent(hoveredTab)}` },
+            { label: 'Custom Bulk Printing', href: `/products?category=${encodeURIComponent(hoveredTab)}` },
+          ],
+        },
+      ];
+    }
+
+    // Split products into 2 to 4 clean columns
+    const numCols = catProds.length <= 4 ? 2 : catProds.length <= 8 ? 3 : 4;
+    const itemsPerCol = Math.ceil(catProds.length / numCols);
+    const cols: MegaColumn[] = [];
+
+    const columnHeadings = [
+      `Popular ${catName}`,
+      'Finishes & Specialty Formats',
+      'Custom Formats & Sizes',
+      'Value Packs & Accessories',
+    ];
+
+    for (let i = 0; i < numCols; i++) {
+      const chunk = catProds.slice(i * itemsPerCol, (i + 1) * itemsPerCol);
+      if (chunk.length > 0) {
+        cols.push({
+          heading: columnHeadings[i] || `Collection ${i + 1}`,
+          items: chunk.map((p) => ({
+            label: p.title,
+            href: `/products?category=${encodeURIComponent(hoveredTab)}&search=${encodeURIComponent(p.title)}`,
+            isNew: p.badge?.toLowerCase().includes('new') || p.badge?.toLowerCase().includes('500') || p.badge?.toLowerCase().includes('velvet'),
+          })),
+        });
+      }
+    }
+
+    return cols;
+  }, [hoveredTab, categories, productsByCategory]);
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText('SAVE5');
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
+
+  // Close drawer on escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMobileDrawerOpen(false);
+        setHoveredTab(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <header
@@ -312,12 +256,13 @@ export default function Navbar() {
             cursor: 'pointer',
             fontFamily: "'Inter', sans-serif",
           }}
+          title="Click to copy code"
         >
           {copiedCode ? '✓ Copied' : '📋'}
         </button>
       </div>
 
-      {/* ═══ 2. Main Header Bar ═══ */}
+      {/* ═══ 2. Main Header Bar (Logo, Search, Actions) ═══ */}
       <div
         style={{
           background: '#FFFFFF',
@@ -334,6 +279,32 @@ export default function Navbar() {
             gap: '1.25rem',
           }}
         >
+          {/* Mobile 3-Lines Button in Header */}
+          <button
+            type="button"
+            onClick={() => setIsMobileDrawerOpen(true)}
+            className="vp-mobile-only"
+            aria-label="Open Categories Menu"
+            style={{
+              background: '#F1F5F9',
+              border: '1px solid #CBD5E1',
+              borderRadius: '8px',
+              padding: '0.5rem 0.65rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#0B2545',
+              flexShrink: 0,
+            }}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+
           {/* Logo */}
           <Link
             href="/"
@@ -349,7 +320,7 @@ export default function Navbar() {
             <img
               src="/logo.png"
               alt="Ayushman Cards n Graphics"
-              style={{ height: '38px', width: 'auto', objectFit: 'contain' }}
+              style={{ height: '48px', width: 'auto', objectFit: 'contain' }}
             />
           </Link>
 
@@ -369,6 +340,7 @@ export default function Navbar() {
                 borderRadius: '6px',
                 overflow: 'hidden',
                 background: '#FFFFFF',
+                width: '100%',
               }}
             >
               <input
@@ -403,7 +375,7 @@ export default function Navbar() {
                 }}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
               </button>
             </form>
@@ -450,7 +422,7 @@ export default function Navbar() {
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none', position: 'relative' }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill={wishlistCount > 0 ? '#D40000' : 'none'} stroke={wishlistCount > 0 ? '#D40000' : '#1E1E1E'} strokeWidth="1.8">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
               <span style={{ fontSize: '0.6875rem', color: '#1E1E1E', fontFamily: "'Inter', sans-serif" }}>
                 My Favourites {wishlistCount > 0 ? `(${wishlistCount})` : ''}
@@ -465,7 +437,7 @@ export default function Navbar() {
                   title="View & Edit Profile"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="1.8">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
                   </svg>
                   <span style={{ fontSize: '0.6875rem', color: '#1E1E1E', fontFamily: "'Inter', sans-serif" }}>
                     {user.name?.split(' ')[0]} (Profile)
@@ -507,8 +479,8 @@ export default function Navbar() {
               aria-label="Cart"
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="1.8">
-                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
               </svg>
               <span style={{ fontSize: '0.6875rem', color: '#1E1E1E', fontFamily: "'Inter', sans-serif" }}>Cart</span>
               {totalItemCount > 0 && (
@@ -535,9 +507,64 @@ export default function Navbar() {
             </Link>
           </div>
         </div>
+
+        {/* Mobile Search Input Bar */}
+        <div className="vp-mobile-only" style={{ marginTop: '0.65rem' }}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (searchQuery.trim()) {
+                window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`;
+              }
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              border: '1.5px solid #CBD5E1',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              background: '#F8FAFC',
+              width: '100%',
+            }}
+          >
+            <input
+              type="text"
+              placeholder="Search business cards, wedding cards, letterheads..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                flex: 1,
+                padding: '0.5rem 0.75rem',
+                fontFamily: "'Inter', sans-serif",
+                fontSize: '0.8125rem',
+                color: '#1E1E1E',
+                border: 'none',
+                outline: 'none',
+                background: 'transparent',
+              }}
+            />
+            <button
+              type="submit"
+              aria-label="Search"
+              style={{
+                padding: '0.5rem 0.75rem',
+                background: 'transparent',
+                border: 'none',
+                color: '#0B2545',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
+          </form>
+        </div>
       </div>
 
-      {/* ═══ 3. Category Navigation Ribbon ═══ */}
+      {/* ═══ 3. DESKTOP CATEGORY NAVIGATION RIBBON (Clean, Elegant Text Links like Original) ═══ */}
       <div
         style={{
           background: '#FFFFFF',
@@ -557,39 +584,65 @@ export default function Navbar() {
             width: '100%',
           }}
         >
-          {megaNavTabs.map((tab, idx) => {
-            const isHovered = hoveredTab?.label === tab.label;
+          {/* 'View All' Tab */}
+          <div
+            onMouseEnter={() => setHoveredTab('VIEW_ALL')}
+            style={{ position: 'relative' }}
+          >
+            <Link
+              href="/products"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0.75rem 0.4rem',
+                fontFamily: "'Inter', sans-serif",
+                fontSize: '0.78125rem',
+                fontWeight: hoveredTab === 'VIEW_ALL' ? 600 : 400,
+                color: hoveredTab === 'VIEW_ALL' ? '#0B2545' : '#374151',
+                textDecoration: 'none',
+                borderBottom: hoveredTab === 'VIEW_ALL' ? '2px solid #0B2545' : '2px solid transparent',
+                transition: 'all 0.15s ease',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              View All
+            </Link>
+          </div>
+
+          {/* Dynamic Category Tabs from Admin Portal (Clean Text Format) */}
+          {categories.map((cat, idx) => {
+            const isHovered = hoveredTab === cat.id;
             return (
               <div
-                key={tab.label}
-                onMouseEnter={() => setHoveredTab(tab)}
+                key={cat.id}
+                onMouseEnter={() => setHoveredTab(cat.id)}
                 style={{ position: 'relative' }}
               >
                 <Link
-                  href={tab.href}
+                  href={`/products?category=${encodeURIComponent(cat.id)}`}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
                     padding: '0.75rem 0.4rem',
                     fontFamily: "'Inter', sans-serif",
                     fontSize: '0.78125rem',
-                    fontWeight: isHovered || idx === 0 ? 600 : 400,
-                    color: isHovered || idx === 0 ? '#0B2545' : '#374151',
+                    fontWeight: isHovered ? 600 : 400,
+                    color: isHovered ? '#0B2545' : '#374151',
                     textDecoration: 'none',
-                    borderBottom: isHovered || idx === 0 ? '2px solid #0B2545' : '2px solid transparent',
+                    borderBottom: isHovered ? '2px solid #0B2545' : '2px solid transparent',
                     transition: 'all 0.15s ease',
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  {tab.label}
+                  {formatCatLabel(cat.label)}
                 </Link>
               </div>
             );
           })}
         </div>
 
-        {/* ═══ 4. Mega Menu Dropdown Overlay ═══ */}
-        {hoveredTab && hoveredTab.columns && hoveredTab.columns.length > 0 && (
+        {/* ═══ 4. MEGA MENU DROPDOWN OVERLAY (Clean Text Columns like Original) ═══ */}
+        {hoveredTab && activeMegaColumns.length > 0 && (
           <div
             onMouseEnter={() => setHoveredTab(hoveredTab)}
             onMouseLeave={() => setHoveredTab(null)}
@@ -612,12 +665,12 @@ export default function Navbar() {
                 maxWidth: '1440px',
                 margin: '0 auto',
                 display: 'grid',
-                gridTemplateColumns: `repeat(${Math.min(hoveredTab.columns.length, 6)}, 1fr)`,
+                gridTemplateColumns: `repeat(${Math.min(activeMegaColumns.length, 6)}, 1fr)`,
                 gap: '1.75rem',
                 alignItems: 'start',
               }}
             >
-              {hoveredTab.columns.map((col) => (
+              {activeMegaColumns.map((col) => (
                 <div key={col.heading}>
                   <h4
                     style={{
@@ -694,15 +747,292 @@ export default function Navbar() {
         )}
       </div>
 
+      {/* ═══ 5. MOBILE 3-LINE CATEGORY DRAWER / MODAL ═══ */}
+      {isMobileDrawerOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 99999,
+            display: 'flex',
+          }}
+        >
+          {/* Backdrop */}
+          <div
+            onClick={() => setIsMobileDrawerOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0,0,0,0.6)',
+              backdropFilter: 'blur(3px)',
+              animation: 'fadeIn 0.2s ease-out',
+            }}
+          />
+
+          {/* Drawer Panel */}
+          <div
+            style={{
+              position: 'relative',
+              width: '88%',
+              maxWidth: '360px',
+              height: '100%',
+              background: '#FFFFFF',
+              boxShadow: '4px 0 24px rgba(0,0,0,0.25)',
+              display: 'flex',
+              flexDirection: 'column',
+              zIndex: 100000,
+              animation: 'slideInLeft 0.22s ease-out',
+            }}
+          >
+            {/* Drawer Header */}
+            <div
+              style={{
+                padding: '1rem 1.25rem',
+                background: '#0B2545',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', width: '18px' }}>
+                  <span style={{ height: '2.5px', background: '#60B5FF', borderRadius: '2px' }}></span>
+                  <span style={{ height: '2.5px', background: '#60B5FF', borderRadius: '2px' }}></span>
+                  <span style={{ height: '2.5px', background: '#60B5FF', borderRadius: '2px' }}></span>
+                </div>
+                <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1rem', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+                  Print Categories
+                </h3>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsMobileDrawerOpen(false)}
+                style={{
+                  background: 'rgba(255,255,255,0.15)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '30px',
+                  height: '30px',
+                  color: '#FFFFFF',
+                  fontSize: '1rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                aria-label="Close Menu"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Quick Link to View All */}
+            <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #E2E8F0' }}>
+              <Link
+                href="/products"
+                onClick={() => setIsMobileDrawerOpen(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '0.6rem 0.85rem',
+                  background: '#F8FAFC',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '8px',
+                  color: '#0B2545',
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: '0.8125rem',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                }}
+              >
+                <span>View All Products</span>
+                <span>→</span>
+              </Link>
+            </div>
+
+            {/* Expandable Category Accordion with Clean Product Names */}
+            <div
+              style={{
+                flex: 1,
+                overflowY: 'auto',
+                padding: '0.5rem 0',
+                WebkitOverflowScrolling: 'touch',
+              }}
+            >
+              {categories.map((cat) => {
+                const isExpanded = mobileExpandedCat === cat.id;
+                const prodsInCat = productsByCategory[cat.id] || [];
+
+                return (
+                  <div key={cat.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '0.75rem 1rem',
+                        background: isExpanded ? '#F8FAFC' : 'transparent',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => setMobileExpandedCat(isExpanded ? null : cat.id)}
+                    >
+                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.85rem', fontWeight: 600, color: '#1E293B' }}>
+                        {formatCatLabel(cat.label)}
+                      </span>
+
+                      <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                        {isExpanded ? '▲' : '▼'}
+                      </span>
+                    </div>
+
+                    {isExpanded && (
+                      <div style={{ background: '#F8FAFC', padding: '0.5rem 1rem 0.75rem 1.25rem' }}>
+                        {prodsInCat.length === 0 ? (
+                          <Link
+                            href={`/products?category=${encodeURIComponent(cat.id)}`}
+                            onClick={() => setIsMobileDrawerOpen(false)}
+                            style={{ fontSize: '0.8125rem', color: '#4B5563', textDecoration: 'none' }}
+                          >
+                            Explore {formatCatLabel(cat.label)} →
+                          </Link>
+                        ) : (
+                          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            {prodsInCat.map((p) => (
+                              <li key={p.id}>
+                                <Link
+                                  href={`/products?category=${encodeURIComponent(cat.id)}&search=${encodeURIComponent(p.title)}`}
+                                  onClick={() => setIsMobileDrawerOpen(false)}
+                                  style={{
+                                    fontSize: '0.8125rem',
+                                    color: '#4B5563',
+                                    textDecoration: 'none',
+                                    display: 'block',
+                                  }}
+                                >
+                                  • {p.title}
+                                </Link>
+                              </li>
+                            ))}
+                            <li style={{ marginTop: '0.25rem' }}>
+                              <Link
+                                href={`/products?category=${encodeURIComponent(cat.id)}`}
+                                onClick={() => setIsMobileDrawerOpen(false)}
+                                style={{
+                                  fontSize: '0.78125rem',
+                                  fontWeight: 700,
+                                  color: '#0B2545',
+                                  textDecoration: 'underline',
+                                }}
+                              >
+                                View all in {formatCatLabel(cat.label)} →
+                              </Link>
+                            </li>
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Drawer Footer Actions */}
+            <div
+              style={{
+                padding: '1rem',
+                borderTop: '1px solid #E2E8F0',
+                background: '#F8FAFC',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.65rem',
+              }}
+            >
+              {user?.role === 'ADMIN' && (
+                <Link
+                  href="/admin"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.4rem',
+                    padding: '0.55rem',
+                    background: '#0B2545',
+                    color: '#FFFFFF',
+                    borderRadius: '6px',
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: '0.8125rem',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                  }}
+                >
+                  <span>🛡️</span> Admin Portal
+                </Link>
+              )}
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <a
+                  href="tel:9479784979"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    color: '#0B2545',
+                    fontSize: '0.78125rem',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                  }}
+                >
+                  <span>📞</span> 9479784979
+                </a>
+                <Link
+                  href="/cart"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    color: '#D40000',
+                    fontSize: '0.78125rem',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                  }}
+                >
+                  <span>🛒</span> Cart ({totalItemCount})
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Global CSS Styles for responsive & animations */}
       <style jsx global>{`
         .vp-desktop-only { display: flex !important; }
+        .vp-mobile-only { display: none !important; }
+
         @keyframes fadeInDown {
           from { opacity: 0; transform: translateY(-4px); }
           to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+          from { transform: translateX(-100%); }
+          to { transform: translateX(0); }
+        }
+
         @media (max-width: 900px) {
           .vp-desktop-only { display: none !important; }
+          .vp-mobile-only { display: flex !important; }
         }
       `}</style>
     </header>

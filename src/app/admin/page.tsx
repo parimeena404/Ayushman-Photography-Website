@@ -1,10 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
+
+interface CouponItem {
+  id: string;
+  code: string;
+  discountType: 'PERCENT' | 'FLAT';
+  discountValue: number;
+  minOrderAmount: number;
+  isActive: boolean;
+  expiryDate?: string;
+  usageCount: number;
+}
+
+const DEFAULT_COUPONS: CouponItem[] = [
+  { id: 'c-1', code: 'SAVE5', discountType: 'PERCENT', discountValue: 5, minOrderAmount: 10000, isActive: true, usageCount: 42 },
+  { id: 'c-2', code: 'FESTIVE10', discountType: 'PERCENT', discountValue: 10, minOrderAmount: 15000, isActive: true, usageCount: 19 },
+  { id: 'c-3', code: 'ROYAL500', discountType: 'FLAT', discountValue: 500, minOrderAmount: 5000, isActive: true, usageCount: 28 },
+];
 
 export default function AdminPortalPage() {
   const { user, login, logout, refreshUser } = useAuth();
@@ -22,22 +39,26 @@ export default function AdminPortalPage() {
   const [productsList, setProductsList] = useState<any[]>([]);
   const [categoriesList, setCategoriesList] = useState<any[]>([]);
   const [bannersList, setBannersList] = useState<any[]>([]);
+  const [couponsList, setCouponsList] = useState<CouponItem[]>(DEFAULT_COUPONS);
   const [stats, setStats] = useState<any>({ totalOrders: 0, totalRevenue: 0, pendingOrders: 0, paidOrders: 0 });
   const [loadingData, setLoadingData] = useState(true);
 
-  // Filters & Tabs
-  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'categories' | 'banners' | 'users' | 'inquiries' | 'settings'>('orders');
+  // Tabs
+  const [activeTab, setActiveTab] = useState<
+    'dashboard' | 'products' | 'categories' | 'banners' | 'orders' | 'customers' | 'discounts' | 'inquiries' | 'staff' | 'settings'
+  >('dashboard');
+
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [productCatFilter, setProductCatFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
-  // Add User Form State
+  // Modals
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [newUser, setNewUser] = useState({ name: '', email: '', password: '', role: 'CLIENT', phone: '' });
   const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<any | null>(null);
 
-  // Product CMS Modal State
+  // Product Modal State
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -56,7 +77,7 @@ export default function AdminPortalPage() {
     isActive: true,
   });
 
-  // Category CMS Modal State
+  // Category Modal State
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any | null>(null);
   const [categoryForm, setCategoryForm] = useState({
@@ -66,7 +87,7 @@ export default function AdminPortalPage() {
     description: '',
   });
 
-  // Hero Banner CMS Modal State
+  // Banner Modal State
   const [showBannerModal, setShowBannerModal] = useState(false);
   const [editingBanner, setEditingBanner] = useState<any | null>(null);
   const [isUploadingBannerImg, setIsUploadingBannerImg] = useState(false);
@@ -82,7 +103,17 @@ export default function AdminPortalPage() {
     isActive: true,
   });
 
-  // Admin Settings State (to change own credentials inside)
+  // Coupon Modal State
+  const [showCouponModal, setShowCouponModal] = useState(false);
+  const [couponForm, setCouponForm] = useState<Partial<CouponItem>>({
+    code: '',
+    discountType: 'PERCENT',
+    discountValue: 10,
+    minOrderAmount: 2000,
+    isActive: true,
+  });
+
+  // Admin Settings State
   const [settingName, setSettingName] = useState('');
   const [settingEmail, setSettingEmail] = useState('');
   const [settingPhone, setSettingPhone] = useState('');
@@ -168,6 +199,46 @@ export default function AdminPortalPage() {
       setSettingPincode((user as any).pincode || '');
     }
   }, [user]);
+
+  // Order Lifecycle Counters
+  const lifecycleCounts = useMemo(() => {
+    const counts = {
+      PENDING: 0,
+      CONFIRMED: 0,
+      PROCESSING: 0,
+      SHIPPED: 0,
+      DELIVERED: 0,
+      CANCELLED: 0,
+    };
+    orders.forEach((o) => {
+      const st = (o.status || 'PENDING').toUpperCase();
+      if (st.includes('CANCEL')) counts.CANCELLED++;
+      else if (st.includes('DELIVER')) counts.DELIVERED++;
+      else if (st.includes('SHIP')) counts.SHIPPED++;
+      else if (st.includes('PRINT') || st.includes('PROCESS')) counts.PROCESSING++;
+      else if (st.includes('CONFIRM') || o.paymentStatus === 'PAID') counts.CONFIRMED++;
+      else counts.PENDING++;
+    });
+    return counts;
+  }, [orders]);
+
+  // Calculated Metrics
+  const calculatedMetrics = useMemo(() => {
+    const paidRevenue = orders
+      .filter((o) => o.paymentStatus === 'PAID')
+      .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+    const paidCount = orders.filter((o) => o.paymentStatus === 'PAID').length;
+    const avgOrderVal = paidCount > 0 ? Math.round(paidRevenue / paidCount) : 0;
+    const pendingFulfillment = orders.filter((o) => o.status !== 'DELIVERED' && o.status !== 'CANCELLED').length;
+    const clientCount = usersList.filter((u) => u.role !== 'ADMIN').length;
+
+    return {
+      paidRevenue,
+      avgOrderVal,
+      pendingFulfillment,
+      clientCount,
+    };
+  }, [orders, usersList]);
 
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -554,6 +625,31 @@ export default function AdminPortalPage() {
     }
   };
 
+  // Coupons / Discounts
+  const handleSaveCouponSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!couponForm.code) return;
+    const newCoupon: CouponItem = {
+      id: `c-${Date.now()}`,
+      code: couponForm.code.toUpperCase().trim(),
+      discountType: couponForm.discountType || 'PERCENT',
+      discountValue: couponForm.discountValue || 10,
+      minOrderAmount: couponForm.minOrderAmount || 0,
+      isActive: couponForm.isActive !== false,
+      usageCount: 0,
+    };
+    setCouponsList([newCoupon, ...couponsList]);
+    setShowCouponModal(false);
+    setActionNotice(`✓ Coupon code "${newCoupon.code}" created!`);
+    setTimeout(() => setActionNotice(null), 3500);
+  };
+
+  const handleDeleteCoupon = (id: string) => {
+    setCouponsList(couponsList.filter((c) => c.id !== id));
+    setActionNotice('✓ Coupon deleted.');
+    setTimeout(() => setActionNotice(null), 3000);
+  };
+
   const handleCreateUserSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -744,31 +840,43 @@ export default function AdminPortalPage() {
     <>
       <Navbar />
 
-      <main style={{ minHeight: '85vh', background: '#F9FAFB', padding: '2rem 1rem' }}>
+      <main style={{ minHeight: '85vh', background: '#F8FAFC', padding: '2rem 1rem', fontFamily: "'Inter', sans-serif" }}>
         <div style={{ maxWidth: '1440px', margin: '0 auto' }}>
           {/* Header Bar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <h1 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.6rem', fontWeight: 800, color: '#0B2545', margin: 0 }}>
-                🛡️ Studio Admin Portal & Operations
-              </h1>
-              <p style={{ fontSize: '0.8125rem', color: '#6B7280', margin: '0.25rem 0 0' }}>
-                Manage live catalog products, categories, hero banners, orders fulfillment, customer accounts, and tax invoices.
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0B2545', margin: 0 }}>
+                  AYUSHMAN CARDS ADMIN PORTAL
+                </h1>
+                <span style={{ fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.55rem', borderRadius: '999px', background: '#FEF3C7', color: '#92400E' }}>
+                  SUPER ADMIN
+                </span>
+              </div>
+              <p style={{ fontSize: '0.8125rem', color: '#64748B', margin: '0.25rem 0 0' }}>
+                Real-time order fulfillment, revenue analytics, customer registrations and stock alerts
               </p>
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+              <Link
+                href="/"
+                target="_blank"
+                style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFF', color: '#0B2545', fontWeight: 700, fontSize: '0.8125rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+              >
+                <span>Visit Live Store</span> <span>↗</span>
+              </Link>
               <button
                 onClick={fetchAdminData}
-                style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #D1D5DB', background: '#FFF', color: '#0B2545', fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer' }}
+                style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFF', color: '#0B2545', fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
               >
-                🔄 Refresh Sync
+                <span>🔄</span> Refresh
               </button>
               <button
                 onClick={() => logout()}
                 style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', background: '#FEE2E2', color: '#991B1B', fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer' }}
               >
-                Logout
+                Sign Out
               </button>
             </div>
           </div>
@@ -779,184 +887,297 @@ export default function AdminPortalPage() {
             </div>
           )}
 
-          {/* Analytics Cards Header */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
-            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.25rem', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>Total Revenue</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0B2545', marginTop: '0.2rem' }}>
-                ₹{stats.totalRevenue ? stats.totalRevenue.toLocaleString() : '0'}
-              </div>
-              <div style={{ fontSize: '0.725rem', color: '#10B981', marginTop: '0.25rem' }}>✓ From verified paid orders</div>
-            </div>
-
-            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.25rem', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>Total Orders</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1E1E1E', marginTop: '0.2rem' }}>
-                {stats.totalOrders || 0}
-              </div>
-              <div style={{ fontSize: '0.725rem', color: '#6B7280', marginTop: '0.25rem' }}>{stats.paidOrders || 0} Paid • {stats.pendingOrders || 0} Active</div>
-            </div>
-
-            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.25rem', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>Catalog Products</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10B981', marginTop: '0.2rem' }}>
-                {productsList.length}
-              </div>
-              <div style={{ fontSize: '0.725rem', color: '#6B7280', marginTop: '0.25rem' }}>Across {categoriesList.length} categories</div>
-            </div>
-
-            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.25rem', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>Registered Users</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1E1E1E', marginTop: '0.2rem' }}>
-                {usersList.length}
-              </div>
-              <div style={{ fontSize: '0.725rem', color: '#0B2545', marginTop: '0.25rem' }}>{usersList.filter((u) => u.role === 'ADMIN').length} Admins • {usersList.filter((u) => u.role === 'CLIENT').length} Clients</div>
-            </div>
+          {/* Navigation Tabs Bar (Ayushman Website Theme) */}
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.75rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.65rem', flexWrap: 'wrap' }}>
+            {[
+              { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+              { id: 'orders', label: 'Orders', icon: '🛍️', count: orders.length },
+              { id: 'products', label: 'Products', icon: '📦', count: productsList.length },
+              { id: 'categories', label: 'Categories', icon: '📑', count: categoriesList.length },
+              { id: 'banners', label: 'Hero Banners', icon: '🖼️', count: bannersList.length },
+              { id: 'customers', label: 'Customers', icon: '👥', count: usersList.filter((u) => u.role !== 'ADMIN').length },
+              { id: 'discounts', label: 'Discounts', icon: '🏷️', count: couponsList.length },
+              { id: 'inquiries', label: 'Inquiries', icon: '💬', count: inquiries.length },
+              { id: 'staff', label: 'Staff & Roles', icon: '🛡️', count: usersList.filter((u) => u.role === 'ADMIN').length },
+              { id: 'settings', label: 'Store Settings', icon: '⚙️' },
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  style={{
+                    padding: '0.65rem 1.15rem',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: isActive ? '#0B2545' : '#FFFFFF',
+                    color: isActive ? '#FFFFFF' : '#475569',
+                    fontWeight: 700,
+                    fontSize: '0.84375rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    boxShadow: isActive ? '0 2px 8px rgba(11,37,69,0.2)' : '0 1px 2px rgba(0,0,0,0.03)',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <span>{tab.icon}</span>
+                  <span>{tab.label}</span>
+                  {tab.count !== undefined && (
+                    <span
+                      style={{
+                        fontSize: '0.6875rem',
+                        fontWeight: 800,
+                        padding: '0.15rem 0.45rem',
+                        borderRadius: '999px',
+                        background: isActive ? '#60B5FF' : '#F1F5F9',
+                        color: isActive ? '#002B52' : '#64748B',
+                      }}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Navigation Tabs Bar */}
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem', flexWrap: 'wrap' }}>
-            <button
-              onClick={() => setActiveTab('orders')}
-              style={{
-                padding: '0.65rem 1.25rem',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeTab === 'orders' ? '#0B2545' : 'transparent',
-                color: activeTab === 'orders' ? '#FFFFFF' : '#4B5563',
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 700,
-                fontSize: '0.875rem',
-                cursor: 'pointer',
-              }}
-            >
-              📦 Print Orders ({orders.length})
-            </button>
+          {/* ═══════════════════════════════════════════════
+              TAB: DASHBOARD OVERVIEW & ANALYTICS
+             ═══════════════════════════════════════════════ */}
+          {activeTab === 'dashboard' && (
+            <div>
+              {/* 4 KPI Metric Cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
+                <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <div>
+                    <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>PAID REVENUE</div>
+                    <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#059669', margin: '0.25rem 0 0.15rem' }}>
+                      ₹{calculatedMetrics.paidRevenue.toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                      Avg: ₹{calculatedMetrics.avgOrderVal.toLocaleString()} / order
+                    </div>
+                  </div>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#D1FAE5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', fontWeight: 800 }}>
+                    ₹
+                  </div>
+                </div>
 
-            <button
-              onClick={() => setActiveTab('products')}
-              style={{
-                padding: '0.65rem 1.25rem',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeTab === 'products' ? '#0B2545' : 'transparent',
-                color: activeTab === 'products' ? '#FFFFFF' : '#4B5563',
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 700,
-                fontSize: '0.875rem',
-                cursor: 'pointer',
-              }}
-            >
-              🛍️ Products Catalog ({productsList.length})
-            </button>
+                <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <div>
+                    <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>TOTAL ORDERS</div>
+                    <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0B2545', margin: '0.25rem 0 0.15rem' }}>
+                      {orders.length}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#D97706', fontWeight: 600 }}>
+                      {calculatedMetrics.pendingFulfillment} awaiting fulfillment
+                    </div>
+                  </div>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#FEF3C7', color: '#B45309', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
+                    🛍️
+                  </div>
+                </div>
 
-            <button
-              onClick={() => setActiveTab('categories')}
-              style={{
-                padding: '0.65rem 1.25rem',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeTab === 'categories' ? '#0B2545' : 'transparent',
-                color: activeTab === 'categories' ? '#FFFFFF' : '#4B5563',
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 700,
-                fontSize: '0.875rem',
-                cursor: 'pointer',
-              }}
-            >
-              📑 Categories ({categoriesList.length})
-            </button>
+                <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <div>
+                    <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>ACTIVE PRODUCTS</div>
+                    <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0B2545', margin: '0.25rem 0 0.15rem' }}>
+                      {productsList.filter((p) => p.isActive !== false).length}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                      across {categoriesList.length} categories
+                    </div>
+                  </div>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#F1F5F9', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
+                    📦
+                  </div>
+                </div>
 
-            <button
-              onClick={() => setActiveTab('banners')}
-              style={{
-                padding: '0.65rem 1.25rem',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeTab === 'banners' ? '#0B2545' : 'transparent',
-                color: activeTab === 'banners' ? '#FFFFFF' : '#4B5563',
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 700,
-                fontSize: '0.875rem',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-              }}
-            >
-              <span>🖼️</span> Hero Banners ({bannersList.length})
-            </button>
+                <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <div>
+                    <div style={{ fontSize: '0.725rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>PATRONS / USERS</div>
+                    <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0B2545', margin: '0.25rem 0 0.15rem' }}>
+                      {usersList.length}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#2563EB' }}>
+                      {inquiries.length} customer messages
+                    </div>
+                  </div>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#EDE9FE', color: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
+                    👥
+                  </div>
+                </div>
+              </div>
 
-            <button
-              onClick={() => setActiveTab('users')}
-              style={{
-                padding: '0.65rem 1.25rem',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeTab === 'users' ? '#0B2545' : 'transparent',
-                color: activeTab === 'users' ? '#FFFFFF' : '#4B5563',
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 700,
-                fontSize: '0.875rem',
-                cursor: 'pointer',
-              }}
-            >
-              👥 User Accounts ({usersList.length})
-            </button>
+              {/* Quick Action Buttons Row */}
+              <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+                <button
+                  onClick={handleOpenAddProduct}
+                  style={{ padding: '0.65rem 1.15rem', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#0B2545', fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}
+                >
+                  <span>➕</span> Add Product
+                </button>
+                <button
+                  onClick={() => setActiveTab('orders')}
+                  style={{ padding: '0.65rem 1.15rem', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#0B2545', fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}
+                >
+                  <span>🚚</span> Fulfill Orders
+                </button>
+                <button
+                  onClick={() => {
+                    setCouponForm({ code: '', discountType: 'PERCENT', discountValue: 10, minOrderAmount: 2000, isActive: true });
+                    setShowCouponModal(true);
+                  }}
+                  style={{ padding: '0.65rem 1.15rem', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#0B2545', fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}
+                >
+                  <span>🏷️</span> Create Coupon
+                </button>
+                <button
+                  onClick={() => setActiveTab('inquiries')}
+                  style={{ padding: '0.65rem 1.15rem', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#0B2545', fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}
+                >
+                  <span>💬</span> View Inquiries ({inquiries.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('settings')}
+                  style={{ padding: '0.65rem 1.15rem', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#0B2545', fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}
+                >
+                  <span>⚙️</span> Store Settings
+                </button>
+              </div>
 
-            <button
-              onClick={() => setActiveTab('inquiries')}
-              style={{
-                padding: '0.65rem 1.25rem',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeTab === 'inquiries' ? '#0B2545' : 'transparent',
-                color: activeTab === 'inquiries' ? '#FFFFFF' : '#4B5563',
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 700,
-                fontSize: '0.875rem',
-                cursor: 'pointer',
-              }}
-            >
-              💬 Messages & Quotes ({inquiries.length})
-            </button>
+              {/* Order Lifecycle Distribution Card */}
+              <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.5rem', marginBottom: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                  <div style={{ fontSize: '0.8125rem', fontWeight: 800, color: '#0B2545', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    ORDER LIFECYCLE DISTRIBUTION
+                  </div>
+                  <button
+                    onClick={() => setActiveTab('orders')}
+                    style={{ background: 'transparent', border: 'none', color: '#0B2545', fontSize: '0.8125rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                  >
+                    Manage All Orders →
+                  </button>
+                </div>
 
-            <button
-              onClick={() => setActiveTab('settings')}
-              style={{
-                padding: '0.65rem 1.25rem',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeTab === 'settings' ? '#0B2545' : 'transparent',
-                color: activeTab === 'settings' ? '#FFFFFF' : '#4B5563',
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 700,
-                fontSize: '0.875rem',
-                cursor: 'pointer',
-              }}
-            >
-              ⚙️ Studio & Admin Credentials
-            </button>
-          </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem' }}>
+                  {[
+                    { label: 'PENDING', count: lifecycleCounts.PENDING, bg: '#FEF3C7', color: '#92400E' },
+                    { label: 'CONFIRMED', count: lifecycleCounts.CONFIRMED, bg: '#DBEAFE', color: '#1E40AF' },
+                    { label: 'PROCESSING', count: lifecycleCounts.PROCESSING, bg: '#E0F2FE', color: '#0369A1' },
+                    { label: 'SHIPPED', count: lifecycleCounts.SHIPPED, bg: '#EDE9FE', color: '#5B21B6' },
+                    { label: 'DELIVERED', count: lifecycleCounts.DELIVERED, bg: '#D1FAE5', color: '#065F46' },
+                    { label: 'CANCELLED', count: lifecycleCounts.CANCELLED, bg: '#FEE2E2', color: '#991B1B' },
+                  ].map((st) => (
+                    <div
+                      key={st.label}
+                      onClick={() => {
+                        setStatusFilter(st.label);
+                        setActiveTab('orders');
+                      }}
+                      style={{
+                        background: st.bg,
+                        borderRadius: '8px',
+                        padding: '1rem 0.75rem',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        transition: 'transform 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-2px)')}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+                    >
+                      <div style={{ fontSize: '0.6875rem', fontWeight: 800, color: st.color, marginBottom: '0.35rem' }}>
+                        {st.label}
+                      </div>
+                      <div style={{ fontSize: '1.4rem', fontWeight: 800, color: st.color }}>
+                        {st.count}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-          {/* ═══ TAB 1: ORDERS FULFILLMENT ═══ */}
+              {/* Lower 2-Column Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '1.5rem' }}>
+                <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ fontSize: '0.875rem', fontWeight: 800, color: '#0B2545', textTransform: 'uppercase', margin: 0 }}>
+                      RECENT ORDERS
+                    </h3>
+                    <button onClick={() => setActiveTab('orders')} style={{ background: 'transparent', border: 'none', color: '#0B2545', fontSize: '0.78125rem', fontWeight: 700, cursor: 'pointer' }}>
+                      View All →
+                    </button>
+                  </div>
+
+                  {orders.length === 0 ? (
+                    <div style={{ padding: '2rem', textAlign: 'center', color: '#94A3B8', fontSize: '0.84375rem' }}>No customer print orders yet.</div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                      {orders.slice(0, 5).map((ord) => (
+                        <div key={ord.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem', borderRadius: '8px', background: '#F8FAFC', border: '1px solid #F1F5F9' }}>
+                          <div>
+                            <div style={{ fontWeight: 700, fontSize: '0.84375rem', color: '#0B2545' }}>#{ord.id.slice(-8).toUpperCase()}</div>
+                            <div style={{ fontSize: '0.75rem', color: '#64748B' }}>{ord.customerName} • {ord.eventType}</div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontWeight: 800, fontSize: '0.875rem', color: '#0B2545' }}>₹{ord.totalAmount?.toLocaleString()}</div>
+                            <span style={{ display: 'inline-block', fontSize: '0.65rem', fontWeight: 800, padding: '0.15rem 0.45rem', borderRadius: '4px', background: ord.paymentStatus === 'PAID' ? '#D1FAE5' : '#FEF3C7', color: ord.paymentStatus === 'PAID' ? '#065F46' : '#92400E' }}>
+                              {ord.paymentStatus || 'PENDING'}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ fontSize: '0.875rem', fontWeight: 800, color: '#0B2545', textTransform: 'uppercase', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <span>⚠️</span> LOW STOCK INVENTORY ALERTS
+                    </h3>
+                    <button onClick={() => setActiveTab('products')} style={{ background: 'transparent', border: 'none', color: '#0B2545', fontSize: '0.78125rem', fontWeight: 700, cursor: 'pointer' }}>
+                      Inventory →
+                    </button>
+                  </div>
+                  <div style={{ padding: '2.5rem 1rem', textAlign: 'center' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#D1FAE5', color: '#059669', fontSize: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem' }}>
+                      ✓
+                    </div>
+                    <div style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#065F46', marginBottom: '0.25rem' }}>
+                      All print raw materials & inventory variant stocks are healthy!
+                    </div>
+                    <p style={{ fontSize: '0.78125rem', color: '#64748B', margin: 0 }}>
+                      350 GSM Velvet Board, 3mm Acrylic Plates, Gold Foil ribbons, and Star Flex media reels are well-stocked.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════
+              TAB: ORDERS FULFILLMENT & INVOICES
+             ═══════════════════════════════════════════════ */}
           {activeTab === 'orders' && (
-            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.5rem' }}>
+            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <div style={{ display: 'flex', gap: '0.75rem', flex: '1 1 320px', flexWrap: 'wrap' }}>
                   <input
                     type="text"
-                    placeholder="Search client name, phone, order ID, event..."
+                    placeholder="Search client name, phone, order ID..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ flex: '1 1 220px', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '0.84375rem' }}
+                    style={{ flex: '1 1 200px', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84375rem' }}
                   />
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '0.84375rem', background: '#FFFFFF' }}
+                    style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84375rem', background: '#FFFFFF' }}
                   >
-                    <option value="ALL">All Order Statuses</option>
+                    <option value="ALL">All Order Statuses ({orders.length})</option>
                     <option value="NEW">NEW</option>
                     <option value="PROCESSING">PROCESSING</option>
                     <option value="PRINTING">PRINTING</option>
@@ -971,31 +1192,31 @@ export default function AdminPortalPage() {
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem', textAlign: 'left' }}>
                   <thead>
-                    <tr style={{ borderBottom: '2px solid #E5E7EB', color: '#4B5563', textTransform: 'uppercase', fontSize: '0.725rem' }}>
+                    <tr style={{ borderBottom: '2px solid #E2E8F0', color: '#64748B', textTransform: 'uppercase', fontSize: '0.725rem' }}>
                       <th style={{ padding: '0.75rem' }}>Order ID</th>
-                      <th style={{ padding: '0.75rem' }}>Customer & Contact</th>
+                      <th style={{ padding: '0.75rem' }}>Customer</th>
                       <th style={{ padding: '0.75rem' }}>Product / Specs</th>
                       <th style={{ padding: '0.75rem' }}>Total Amount</th>
-                      <th style={{ padding: '0.75rem' }}>Payment Status</th>
-                      <th style={{ padding: '0.75rem' }}>Fulfillment Status</th>
+                      <th style={{ padding: '0.75rem' }}>Payment</th>
+                      <th style={{ padding: '0.75rem' }}>Fulfillment</th>
                       <th style={{ padding: '0.75rem', textAlign: 'right' }}>Tax Invoice</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredOrders.map((o) => (
-                      <tr key={o.id} style={{ borderBottom: '1px solid #F3F4F6' }}>
+                      <tr key={o.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
                         <td style={{ padding: '0.75rem', fontFamily: 'monospace', fontWeight: 700, color: '#0B2545' }}>
-                          #{o.id.slice(-6).toUpperCase()}
+                          #{o.id.slice(-8).toUpperCase()}
                         </td>
                         <td style={{ padding: '0.75rem' }}>
-                          <div style={{ fontWeight: 700, color: '#1E1E1E' }}>{o.customerName}</div>
-                          <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>📱 {o.customerPhone}</div>
+                          <div style={{ fontWeight: 700, color: '#0B2545' }}>{o.customerName}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748B' }}>📱 {o.customerPhone}</div>
                         </td>
                         <td style={{ padding: '0.75rem' }}>
-                          <div style={{ fontWeight: 600, color: '#1E1E1E' }}>{o.eventType}</div>
-                          <div style={{ fontSize: '0.725rem', color: '#6B7280' }}>{o.packageType || 'Custom Print Job'}</div>
+                          <div style={{ fontWeight: 600, color: '#0F172A' }}>{o.eventType}</div>
+                          <div style={{ fontSize: '0.725rem', color: '#64748B' }}>{o.packageType || 'Custom Print Job'}</div>
                         </td>
-                        <td style={{ padding: '0.75rem', fontWeight: 800, color: '#1E1E1E' }}>
+                        <td style={{ padding: '0.75rem', fontWeight: 800, color: '#0B2545' }}>
                           ₹{o.totalAmount?.toLocaleString()}
                         </td>
                         <td style={{ padding: '0.75rem' }}>
@@ -1005,7 +1226,7 @@ export default function AdminPortalPage() {
                             style={{
                               padding: '0.3rem 0.6rem',
                               borderRadius: '6px',
-                              border: '1px solid #D1D5DB',
+                              border: '1px solid #CBD5E1',
                               fontSize: '0.75rem',
                               fontWeight: 700,
                               background: o.paymentStatus === 'PAID' ? '#D1FAE5' : '#FEF3C7',
@@ -1024,11 +1245,11 @@ export default function AdminPortalPage() {
                             style={{
                               padding: '0.3rem 0.6rem',
                               borderRadius: '6px',
-                              border: '1px solid #D1D5DB',
+                              border: '1px solid #CBD5E1',
                               fontSize: '0.75rem',
                               fontWeight: 700,
-                              background: '#F9FAFB',
-                              color: '#1E1E1E',
+                              background: '#F1F5F9',
+                              color: '#0B2545',
                             }}
                           >
                             <option value="NEW">NEW</option>
@@ -1055,9 +1276,11 @@ export default function AdminPortalPage() {
             </div>
           )}
 
-          {/* ═══ TAB 2: PRODUCTS CATALOG CMS ═══ */}
+          {/* ═══════════════════════════════════════════════
+              TAB: PRODUCTS CATALOG CMS
+             ═══════════════════════════════════════════════ */}
           {activeTab === 'products' && (
-            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.5rem' }}>
+            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <div style={{ display: 'flex', gap: '0.75rem', flex: '1 1 350px', flexWrap: 'wrap' }}>
                   <input
@@ -1065,12 +1288,12 @@ export default function AdminPortalPage() {
                     placeholder="Search product name, finish, badge..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ flex: '1 1 200px', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '0.84375rem' }}
+                    style={{ flex: '1 1 200px', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84375rem' }}
                   />
                   <select
                     value={productCatFilter}
                     onChange={(e) => setProductCatFilter(e.target.value)}
-                    style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '0.84375rem', background: '#FFFFFF' }}
+                    style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84375rem', background: '#FFFFFF' }}
                   >
                     <option value="ALL">All Categories ({productsList.length})</option>
                     {categoriesList.map((cat) => (
@@ -1087,7 +1310,6 @@ export default function AdminPortalPage() {
                     background: '#0B2545',
                     color: '#FFFFFF',
                     border: 'none',
-                    fontFamily: "'Inter', sans-serif",
                     fontWeight: 700,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
@@ -1103,7 +1325,7 @@ export default function AdminPortalPage() {
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem', textAlign: 'left' }}>
                   <thead>
-                    <tr style={{ borderBottom: '2px solid #E5E7EB', color: '#4B5563', textTransform: 'uppercase', fontSize: '0.725rem' }}>
+                    <tr style={{ borderBottom: '2px solid #E2E8F0', color: '#64748B', textTransform: 'uppercase', fontSize: '0.725rem' }}>
                       <th style={{ padding: '0.75rem' }}>Product</th>
                       <th style={{ padding: '0.75rem' }}>Category</th>
                       <th style={{ padding: '0.75rem' }}>Price & Unit</th>
@@ -1114,20 +1336,20 @@ export default function AdminPortalPage() {
                   </thead>
                   <tbody>
                     {filteredProducts.map((p) => (
-                      <tr key={p.id} style={{ borderBottom: '1px solid #F3F4F6' }}>
+                      <tr key={p.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
                         <td style={{ padding: '0.75rem' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={p.image} alt={p.title} style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover', background: '#F3F4F6' }} />
+                            <img src={p.image} alt={p.title} style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover', background: '#F1F5F9' }} />
                             <div>
-                              <div style={{ fontWeight: 700, color: '#1E1E1E' }}>{p.title}</div>
-                              <div style={{ fontSize: '0.725rem', color: '#6B7280' }}>Customizer: {p.customizerId || 'wedding-card'}</div>
+                              <div style={{ fontWeight: 700, color: '#0B2545' }}>{p.title}</div>
+                              <div style={{ fontSize: '0.725rem', color: '#64748B' }}>Customizer: {p.customizerId || 'wedding-card'}</div>
                             </div>
                           </div>
                         </td>
-                        <td style={{ padding: '0.75rem', color: '#4B5563' }}>{p.category}</td>
-                        <td style={{ padding: '0.75rem', fontWeight: 700, color: '#1E1E1E' }}>
-                          {p.price} <span style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: 500 }}>/ {p.unit || 'unit'}</span>
+                        <td style={{ padding: '0.75rem', color: '#475569' }}>{p.category}</td>
+                        <td style={{ padding: '0.75rem', fontWeight: 700, color: '#0B2545' }}>
+                          {p.price} <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 500 }}>/ {p.unit || 'unit'}</span>
                         </td>
                         <td style={{ padding: '0.75rem' }}>
                           {p.badge && (
@@ -1145,7 +1367,7 @@ export default function AdminPortalPage() {
                           <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
                             <button
                               onClick={() => handleOpenEditProduct(p)}
-                              style={{ padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid #D1D5DB', background: '#FFFFFF', color: '#0B2545', cursor: 'pointer', fontWeight: 600, fontSize: '0.75rem' }}
+                              style={{ padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#0B2545', cursor: 'pointer', fontWeight: 600, fontSize: '0.75rem' }}
                             >
                               ✏️ Edit
                             </button>
@@ -1165,25 +1387,16 @@ export default function AdminPortalPage() {
             </div>
           )}
 
-          {/* ═══ TAB 3: CATEGORIES CMS ═══ */}
+          {/* ═══ TAB: CATEGORIES CMS ═══ */}
           {activeTab === 'categories' && (
-            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.5rem' }}>
+            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: '#1E1E1E' }}>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: '#0B2545' }}>
                   Product Categories ({categoriesList.length})
                 </h3>
                 <button
                   onClick={handleOpenAddCategory}
-                  style={{
-                    padding: '0.65rem 1.35rem',
-                    borderRadius: '999px',
-                    background: '#0B2545',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    fontWeight: 700,
-                    fontSize: '0.875rem',
-                    cursor: 'pointer',
-                  }}
+                  style={{ padding: '0.65rem 1.35rem', borderRadius: '999px', background: '#0B2545', color: '#FFFFFF', border: 'none', fontWeight: 700, fontSize: '0.875rem', cursor: 'pointer' }}
                 >
                   ➕ Add New Category
                 </button>
@@ -1191,21 +1404,21 @@ export default function AdminPortalPage() {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
                 {categoriesList.map((cat) => (
-                  <div key={cat.id} style={{ border: '1px solid #E5E7EB', borderRadius: '10px', padding: '1.25rem', background: '#FAFAFA', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div key={cat.id} style={{ border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1.25rem', background: '#FAFAFA', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.5rem' }}>
                         <span style={{ fontSize: '1.5rem' }}>{cat.icon || '🏷️'}</span>
                         <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0B2545' }}>{cat.label}</div>
                       </div>
-                      <div style={{ fontSize: '0.78125rem', color: '#6B7280', marginBottom: '0.75rem' }}>
+                      <div style={{ fontSize: '0.78125rem', color: '#64748B', marginBottom: '0.75rem' }}>
                         {cat.description || 'No description'}
                       </div>
-                      <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10B981', marginBottom: '0.75rem' }}>
+                      <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#059669', marginBottom: '0.75rem' }}>
                         📦 {productsList.filter((p) => p.category === cat.id).length} Active Products
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid #E5E7EB', paddingTop: '0.75rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid #E2E8F0', paddingTop: '0.75rem' }}>
                       <button
                         onClick={() => handleOpenEditCategory(cat)}
                         style={{ flex: 1, padding: '0.4rem', borderRadius: '6px', border: '1px solid #0B2545', background: 'rgba(11,37,69,0.06)', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', color: '#0B2545' }}
@@ -1225,30 +1438,21 @@ export default function AdminPortalPage() {
             </div>
           )}
 
-          {/* ═══ TAB 4: HERO BANNERS CMS ═══ */}
+          {/* ═══ TAB: HERO BANNERS CMS ═══ */}
           {activeTab === 'banners' && (
-            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.5rem' }}>
+            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 0.25rem', color: '#1E1E1E' }}>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 0.25rem', color: '#0B2545' }}>
                     Homepage Hero Banners ({bannersList.length})
                   </h3>
-                  <p style={{ fontSize: '0.8125rem', color: '#6B7280', margin: 0 }}>
+                  <p style={{ fontSize: '0.8125rem', color: '#64748B', margin: 0 }}>
                     Recommended size: <strong>1920 × 600 px</strong>. Center-cropped and auto-advances on the homepage.
                   </p>
                 </div>
                 <button
                   onClick={handleOpenAddBanner}
-                  style={{
-                    padding: '0.65rem 1.35rem',
-                    borderRadius: '999px',
-                    background: '#0B2545',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    fontWeight: 700,
-                    fontSize: '0.875rem',
-                    cursor: 'pointer',
-                  }}
+                  style={{ padding: '0.65rem 1.35rem', borderRadius: '999px', background: '#0B2545', color: '#FFFFFF', border: 'none', fontWeight: 700, fontSize: '0.875rem', cursor: 'pointer' }}
                 >
                   ➕ Add Hero Banner
                 </button>
@@ -1256,7 +1460,7 @@ export default function AdminPortalPage() {
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
                 {bannersList.map((bnr, idx) => (
-                  <div key={bnr.id} style={{ border: '1px solid #E5E7EB', borderRadius: '10px', overflow: 'hidden', background: '#FFFFFF', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div key={bnr.id} style={{ border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', background: '#FFFFFF', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div style={{ height: '140px', position: 'relative', background: '#0B2545' }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={bnr.image} alt={bnr.title} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
@@ -1273,15 +1477,15 @@ export default function AdminPortalPage() {
 
                     <div style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                       <div>
-                        <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1E1E1E', marginBottom: '0.25rem' }}>
+                        <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#0B2545', marginBottom: '0.25rem' }}>
                           {bnr.title || 'Untitled Image Banner'}
                         </div>
                         {bnr.subtitle && (
-                          <div style={{ fontSize: '0.75rem', color: '#6B7280', marginBottom: '0.5rem' }}>
+                          <div style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '0.5rem' }}>
                             {bnr.subtitle}
                           </div>
                         )}
-                        <div style={{ fontSize: '0.725rem', color: '#4B5563', background: '#F8FAFC', padding: '0.4rem', borderRadius: '4px', marginBottom: '0.75rem' }}>
+                        <div style={{ fontSize: '0.725rem', color: '#475569', background: '#F8FAFC', padding: '0.4rem', borderRadius: '4px', marginBottom: '0.75rem' }}>
                           🔗 {bnr.link || '/products'}
                         </div>
                       </div>
@@ -1307,30 +1511,175 @@ export default function AdminPortalPage() {
             </div>
           )}
 
-          {/* ═══ TAB 5: USERS MANAGEMENT ═══ */}
-          {activeTab === 'users' && (
-            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.5rem' }}>
+          {/* ═══ TAB: CUSTOMERS / USERS ═══ */}
+          {activeTab === 'customers' && (
+            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: '#0B2545' }}>
+                  Registered Customers ({usersList.filter((u) => u.role !== 'ADMIN').length})
+                </h3>
                 <input
                   type="text"
-                  placeholder="Search user name, email, phone..."
+                  placeholder="Search customer name, email, phone..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{ width: '320px', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '0.84375rem' }}
+                  style={{ width: '300px', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.8125rem' }}
                 />
+              </div>
+
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem', textAlign: 'left' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '2px solid #E2E8F0', color: '#64748B', textTransform: 'uppercase', fontSize: '0.725rem' }}>
+                      <th style={{ padding: '0.75rem' }}>Customer Name</th>
+                      <th style={{ padding: '0.75rem' }}>Email Address</th>
+                      <th style={{ padding: '0.75rem' }}>Phone</th>
+                      <th style={{ padding: '0.75rem' }}>Orders Placed</th>
+                      <th style={{ padding: '0.75rem', textAlign: 'right' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredUsers.filter((u) => u.role !== 'ADMIN').map((u) => (
+                      <tr key={u.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                        <td style={{ padding: '0.75rem', fontWeight: 700, color: '#0B2545' }}>{u.name}</td>
+                        <td style={{ padding: '0.75rem', color: '#475569' }}>{u.email}</td>
+                        <td style={{ padding: '0.75rem', color: '#475569' }}>{u.phone || '—'}</td>
+                        <td style={{ padding: '0.75rem', fontWeight: 700, color: '#059669' }}>
+                          {orders.filter((o) => o.customerEmail === u.email || o.userId === u.id).length} Orders
+                        </td>
+                        <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                          <button onClick={() => handleDeleteUser(u.id)} style={{ padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontWeight: 600, fontSize: '0.75rem' }}>
+                            🗑️ Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ═══ TAB: DISCOUNTS & COUPONS CMS ═══ */}
+          {activeTab === 'discounts' && (
+            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 0.25rem', color: '#0B2545' }}>
+                    Coupons & Promo Codes ({couponsList.length})
+                  </h3>
+                  <p style={{ fontSize: '0.8125rem', color: '#64748B', margin: 0 }}>
+                    Create percentage or flat discount coupon codes for customer checkout.
+                  </p>
+                </div>
                 <button
-                  onClick={() => setShowAddUserModal(true)}
+                  onClick={() => {
+                    setCouponForm({ code: '', discountType: 'PERCENT', discountValue: 10, minOrderAmount: 2000, isActive: true });
+                    setShowCouponModal(true);
+                  }}
                   style={{ padding: '0.65rem 1.35rem', borderRadius: '999px', background: '#0B2545', color: '#FFFFFF', border: 'none', fontWeight: 700, fontSize: '0.875rem', cursor: 'pointer' }}
                 >
-                  ➕ Create User / Admin Account
+                  ➕ Create Coupon
+                </button>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
+                {couponsList.map((cpn) => (
+                  <div key={cpn.id} style={{ border: '1.5px dashed #CBD5E1', borderRadius: '10px', padding: '1.25rem', background: '#FAFAFA', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0B2545', fontFamily: 'monospace', letterSpacing: '0.05em' }}>
+                          {cpn.code}
+                        </span>
+                        <span style={{ padding: '0.15rem 0.5rem', borderRadius: '999px', fontSize: '0.6875rem', fontWeight: 700, background: cpn.isActive ? '#D1FAE5' : '#FEE2E2', color: cpn.isActive ? '#065F46' : '#991B1B' }}>
+                          {cpn.isActive ? 'Active' : 'Disabled'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '1rem', fontWeight: 800, color: '#0B2545', marginBottom: '0.35rem' }}>
+                        {cpn.discountType === 'PERCENT' ? `${cpn.discountValue}% OFF` : `₹${cpn.discountValue} FLAT OFF`}
+                      </div>
+                      <div style={{ fontSize: '0.78125rem', color: '#64748B', marginBottom: '0.75rem' }}>
+                        Min Order: ₹{cpn.minOrderAmount.toLocaleString()} • {cpn.usageCount} times redeemed
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid #E2E8F0', paddingTop: '0.75rem' }}>
+                      <button onClick={() => handleDeleteCoupon(cpn.id)} style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}>
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ═══ TAB: INQUIRIES ═══ */}
+          {activeTab === 'inquiries' && (
+            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.5rem' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 1.25rem', color: '#0B2545' }}>
+                Customer Messages & Quote Requests ({inquiries.length})
+              </h3>
+              {inquiries.length === 0 ? (
+                <div style={{ padding: '3rem', textAlign: 'center', color: '#6B7280' }}>No inquiries received yet.</div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {inquiries.map((inq) => (
+                    <div key={inq.id} style={{ padding: '1.25rem', border: '1px solid #E2E8F0', borderRadius: '10px', background: '#FAFAFA' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        <div>
+                          <span style={{ fontWeight: 800, color: '#0B2545', fontSize: '0.9375rem' }}>{inq.name}</span>
+                          <span style={{ color: '#6B7280', fontSize: '0.78125rem', marginLeft: '0.5rem' }}>📱 {inq.phone} • ✉️ {inq.email}</span>
+                        </div>
+                        <span style={{ fontSize: '0.72rem', color: '#9CA3AF' }}>{new Date(inq.createdAt).toLocaleString()}</span>
+                      </div>
+                      <div style={{ fontSize: '0.8125rem', color: '#1E1E1E', fontWeight: 600, marginBottom: '0.35rem' }}>
+                        Requested Service: <span style={{ color: '#059669' }}>{inq.eventType}</span>
+                      </div>
+                      <div style={{ fontSize: '0.84375rem', color: '#4B5563', background: '#FFFFFF', padding: '0.75rem', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+                        "{inq.message}"
+                      </div>
+                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', justifyContent: 'flex-end' }}>
+                        <a href={`https://wa.me/91${inq.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${inq.name}! Thank you for contacting Ayushman Cards regarding "${inq.eventType}". How can we help you?`)}`} target="_blank" rel="noreferrer" style={{ padding: '0.35rem 0.85rem', borderRadius: '6px', background: '#25D366', color: '#FFF', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 700 }}>
+                          💬 Reply on WhatsApp
+                        </a>
+                        <a href={`tel:${inq.phone}`} style={{ padding: '0.35rem 0.85rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF', color: '#0B2545', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 600 }}>
+                          📞 Call Customer
+                        </a>
+                        <button onClick={() => handleDeleteInquiry(inq.id)} style={{ padding: '0.35rem 0.6rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontSize: '0.75rem' }}>
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ═══ TAB: STAFF & ROLES ═══ */}
+          {activeTab === 'staff' && (
+            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: '#0B2545' }}>
+                  Admin & Studio Staff ({usersList.filter((u) => u.role === 'ADMIN').length})
+                </h3>
+                <button
+                  onClick={() => {
+                    setNewUser({ name: '', email: '', password: '', role: 'ADMIN', phone: '' });
+                    setShowAddUserModal(true);
+                  }}
+                  style={{ padding: '0.65rem 1.35rem', borderRadius: '999px', background: '#0B2545', color: '#FFFFFF', border: 'none', fontWeight: 700, fontSize: '0.875rem', cursor: 'pointer' }}
+                >
+                  ➕ Create Admin Account
                 </button>
               </div>
 
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem', textAlign: 'left' }}>
                   <thead>
-                    <tr style={{ borderBottom: '2px solid #E5E7EB', color: '#4B5563', textTransform: 'uppercase', fontSize: '0.725rem' }}>
-                      <th style={{ padding: '0.75rem' }}>Full Name</th>
+                    <tr style={{ borderBottom: '2px solid #E2E8F0', color: '#64748B', textTransform: 'uppercase', fontSize: '0.725rem' }}>
+                      <th style={{ padding: '0.75rem' }}>Staff Name</th>
                       <th style={{ padding: '0.75rem' }}>Email Address</th>
                       <th style={{ padding: '0.75rem' }}>Mobile</th>
                       <th style={{ padding: '0.75rem' }}>Role</th>
@@ -1338,14 +1687,14 @@ export default function AdminPortalPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredUsers.map((u) => (
-                      <tr key={u.id} style={{ borderBottom: '1px solid #F3F4F6' }}>
-                        <td style={{ padding: '0.75rem', fontWeight: 700, color: '#1E1E1E' }}>{u.name}</td>
-                        <td style={{ padding: '0.75rem', color: '#4B5563' }}>{u.email}</td>
-                        <td style={{ padding: '0.75rem', color: '#6B7280' }}>{u.phone || '—'}</td>
+                    {usersList.filter((u) => u.role === 'ADMIN').map((u) => (
+                      <tr key={u.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                        <td style={{ padding: '0.75rem', fontWeight: 700, color: '#0B2545' }}>{u.name}</td>
+                        <td style={{ padding: '0.75rem', color: '#475569' }}>{u.email}</td>
+                        <td style={{ padding: '0.75rem', color: '#475569' }}>{u.phone || '—'}</td>
                         <td style={{ padding: '0.75rem' }}>
-                          <span style={{ padding: '0.2rem 0.55rem', borderRadius: '999px', fontSize: '0.7rem', fontWeight: 800, background: u.role === 'ADMIN' ? '#FEF3C7' : '#E0E7FF', color: u.role === 'ADMIN' ? '#92400E' : '#3730A3' }}>
-                            {u.role}
+                          <span style={{ padding: '0.2rem 0.55rem', borderRadius: '999px', fontSize: '0.7rem', fontWeight: 800, background: '#FEF3C7', color: '#92400E' }}>
+                            ADMIN
                           </span>
                         </td>
                         <td style={{ padding: '0.75rem', textAlign: 'right' }}>
@@ -1363,56 +1712,13 @@ export default function AdminPortalPage() {
             </div>
           )}
 
-          {/* ═══ TAB 6: INQUIRIES ═══ */}
-          {activeTab === 'inquiries' && (
-            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 1.25rem', color: '#1E1E1E' }}>
-                Customer Messages & Quote Requests ({inquiries.length})
-              </h3>
-              {inquiries.length === 0 ? (
-                <div style={{ padding: '3rem', textAlign: 'center', color: '#6B7280' }}>No inquiries received yet.</div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  {inquiries.map((inq) => (
-                    <div key={inq.id} style={{ padding: '1.25rem', border: '1px solid #E5E7EB', borderRadius: '10px', background: '#FAFAFA' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                        <div>
-                          <span style={{ fontWeight: 800, color: '#0B2545', fontSize: '0.9375rem' }}>{inq.name}</span>
-                          <span style={{ color: '#6B7280', fontSize: '0.78125rem', marginLeft: '0.5rem' }}>📱 {inq.phone} • ✉️ {inq.email}</span>
-                        </div>
-                        <span style={{ fontSize: '0.72rem', color: '#9CA3AF' }}>{new Date(inq.createdAt).toLocaleString()}</span>
-                      </div>
-                      <div style={{ fontSize: '0.8125rem', color: '#1E1E1E', fontWeight: 600, marginBottom: '0.35rem' }}>
-                        Requested Service: <span style={{ color: '#10B981' }}>{inq.eventType}</span>
-                      </div>
-                      <div style={{ fontSize: '0.84375rem', color: '#4B5563', background: '#FFFFFF', padding: '0.75rem', borderRadius: '6px', border: '1px solid #E5E7EB' }}>
-                        "{inq.message}"
-                      </div>
-                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', justifyContent: 'flex-end' }}>
-                        <a href={`https://wa.me/91${inq.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${inq.name}! Thank you for contacting Ayushman Cards regarding "${inq.eventType}". How can we help you?`)}`} target="_blank" rel="noreferrer" style={{ padding: '0.35rem 0.85rem', borderRadius: '6px', background: '#25D366', color: '#FFF', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 700 }}>
-                          💬 Reply on WhatsApp
-                        </a>
-                        <a href={`tel:${inq.phone}`} style={{ padding: '0.35rem 0.85rem', borderRadius: '6px', border: '1px solid #D1D5DB', background: '#FFF', color: '#1E1E1E', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 600 }}>
-                          📞 Call Customer
-                        </a>
-                        <button onClick={() => handleDeleteInquiry(inq.id)} style={{ padding: '0.35rem 0.6rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontSize: '0.75rem' }}>
-                          🗑️
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* ═══ TAB 7: SETTINGS & MASTER CREDENTIALS ═══ */}
+          {/* ═══ TAB: STORE SETTINGS & CREDENTIALS ═══ */}
           {activeTab === 'settings' && (
-            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '1.75rem', maxWidth: '640px' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#1E1E1E', margin: '0 0 0.3rem' }}>
+            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.75rem', maxWidth: '640px' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0B2545', margin: '0 0 0.3rem' }}>
                 Admin Master Credentials & Studio Info
               </h2>
-              <p style={{ fontSize: '0.8125rem', color: '#6B7280', margin: '0 0 1.5rem' }}>
+              <p style={{ fontSize: '0.8125rem', color: '#64748B', margin: '0 0 1.5rem' }}>
                 Update your login email, master password, contact number, and business address.
               </p>
 
@@ -1424,27 +1730,27 @@ export default function AdminPortalPage() {
 
               <form onSubmit={handleAdminSettingsSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Full Name</label>
-                  <input type="text" required value={settingName} onChange={(e) => setSettingName(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Full Name</label>
+                  <input type="text" required value={settingName} onChange={(e) => setSettingName(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Email Address</label>
-                  <input type="email" required value={settingEmail} onChange={(e) => setSettingEmail(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Email Address</label>
+                  <input type="email" required value={settingEmail} onChange={(e) => setSettingEmail(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Contact Phone</label>
-                  <input type="tel" value={settingPhone} onChange={(e) => setSettingPhone(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Contact Phone</label>
+                  <input type="tel" value={settingPhone} onChange={(e) => setSettingPhone(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Printing Studio Address</label>
-                  <textarea rows={2} value={settingAddress} onChange={(e) => setSettingAddress(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontFamily: 'inherit' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Printing Studio Address</label>
+                  <textarea rows={2} value={settingAddress} onChange={(e) => setSettingAddress(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1', fontFamily: 'inherit' }} />
                 </div>
 
-                <div style={{ borderTop: '1px solid #E5E7EB', paddingTop: '1rem', marginTop: '0.5rem' }}>
-                  <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.5rem' }}>Change Master Password (Optional)</div>
+                <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1rem', marginTop: '0.5rem' }}>
+                  <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.5rem' }}>Change Master Password (Optional)</div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                    <input type="password" placeholder="New Password" value={settingNewPassword} onChange={(e) => setSettingNewPassword(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
-                    <input type="password" placeholder="Confirm Password" value={settingConfirmPassword} onChange={(e) => setSettingConfirmPassword(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                    <input type="password" placeholder="New Password" value={settingNewPassword} onChange={(e) => setSettingNewPassword(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                    <input type="password" placeholder="Confirm Password" value={settingConfirmPassword} onChange={(e) => setSettingConfirmPassword(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                   </div>
                 </div>
 
@@ -1460,47 +1766,47 @@ export default function AdminPortalPage() {
         {showProductModal && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', overflowY: 'auto' }} onClick={() => setShowProductModal(false)}>
             <div style={{ background: '#FFF', borderRadius: '14px', padding: '2rem', maxWidth: '580px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0B2545', marginBottom: '1.25rem' }}>
                 {editingProduct ? '✏️ Edit Product' : '➕ Add New Product'}
               </h3>
               <form onSubmit={handleSaveProductSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Product Title *</label>
-                  <input type="text" required value={productForm.title} onChange={(e) => setProductForm({ ...productForm, title: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Product Title *</label>
+                  <input type="text" required value={productForm.title} onChange={(e) => setProductForm({ ...productForm, title: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Category</label>
-                    <select value={productForm.category} onChange={(e) => setProductForm({ ...productForm, category: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB', background: '#FFF' }}>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Category</label>
+                    <select value={productForm.category} onChange={(e) => setProductForm({ ...productForm, category: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }}>
                       {categoriesList.map((cat) => (
                         <option key={cat.id} value={cat.id}>{cat.label}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Price (INR) *</label>
-                    <input type="number" required value={productForm.numericPrice} onChange={(e) => setProductForm({ ...productForm, numericPrice: parseInt(e.target.value) || 0, price: `₹${e.target.value}` })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Price (INR) *</label>
+                    <input type="number" required value={productForm.numericPrice} onChange={(e) => setProductForm({ ...productForm, numericPrice: parseInt(e.target.value) || 0, price: `₹${e.target.value}` })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                   </div>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Image *</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Image *</label>
                   <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                     <label style={{ padding: '0.55rem 1rem', background: '#0B2545', color: '#FFF', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, cursor: isUploadingImage ? 'wait' : 'pointer' }}>
                       📁 {isUploadingImage ? 'Uploading...' : 'Upload Image'}
                       <input type="file" accept="image/*" onChange={handleProductImageUpload} disabled={isUploadingImage} style={{ display: 'none' }} />
                     </label>
-                    <input type="text" value={productForm.image} onChange={(e) => setProductForm({ ...productForm, image: e.target.value })} style={{ flex: 1, padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                    <input type="text" value={productForm.image} onChange={(e) => setProductForm({ ...productForm, image: e.target.value })} style={{ flex: 1, padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                   </div>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Description</label>
-                  <textarea rows={2} value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontFamily: 'inherit' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Description</label>
+                  <textarea rows={2} value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1', fontFamily: 'inherit' }} />
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                  <button type="submit" style={{ flex: 1, padding: '0.75rem', borderRadius: '999px', background: '#10B981', color: '#FFF', border: 'none', fontWeight: 700, cursor: 'pointer' }}>
+                  <button type="submit" style={{ flex: 1, padding: '0.75rem', borderRadius: '999px', background: '#059669', color: '#FFF', border: 'none', fontWeight: 700, cursor: 'pointer' }}>
                     {editingProduct ? '💾 Update Product' : '✓ Create Product'}
                   </button>
-                  <button type="button" onClick={() => setShowProductModal(false)} style={{ padding: '0.75rem 1.25rem', borderRadius: '999px', border: '1px solid #D1D5DB', background: '#FFF', cursor: 'pointer' }}>
+                  <button type="button" onClick={() => setShowProductModal(false)} style={{ padding: '0.75rem 1.25rem', borderRadius: '999px', border: '1px solid #CBD5E1', background: '#FFF', cursor: 'pointer' }}>
                     Cancel
                   </button>
                 </div>
@@ -1512,27 +1818,27 @@ export default function AdminPortalPage() {
         {showCategoryModal && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={() => setShowCategoryModal(false)}>
             <div style={{ background: '#FFF', borderRadius: '14px', padding: '2rem', maxWidth: '440px', width: '100%' }} onClick={(e) => e.stopPropagation()}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '1rem' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0B2545', marginBottom: '1rem' }}>
                 {editingCategory ? '✏️ Edit Category' : '➕ Add New Category'}
               </h3>
               <form onSubmit={handleSaveCategorySubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Category ID *</label>
-                  <input type="text" required disabled={!!editingCategory} value={categoryForm.id} onChange={(e) => setCategoryForm({ ...categoryForm, id: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB', background: editingCategory ? '#F3F4F6' : '#FFF' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Category ID *</label>
+                  <input type="text" required disabled={!!editingCategory} value={categoryForm.id} onChange={(e) => setCategoryForm({ ...categoryForm, id: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: editingCategory ? '#F1F5F9' : '#FFF' }} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Label *</label>
-                  <input type="text" required value={categoryForm.label} onChange={(e) => setCategoryForm({ ...categoryForm, label: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Label *</label>
+                  <input type="text" required value={categoryForm.label} onChange={(e) => setCategoryForm({ ...categoryForm, label: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Icon Emoji</label>
-                  <input type="text" value={categoryForm.icon} onChange={(e) => setCategoryForm({ ...categoryForm, icon: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Icon Emoji</label>
+                  <input type="text" value={categoryForm.icon} onChange={(e) => setCategoryForm({ ...categoryForm, icon: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
-                  <button type="submit" style={{ flex: 1, padding: '0.75rem', borderRadius: '999px', background: '#10B981', color: '#FFF', border: 'none', fontWeight: 700, cursor: 'pointer' }}>
+                  <button type="submit" style={{ flex: 1, padding: '0.75rem', borderRadius: '999px', background: '#059669', color: '#FFF', border: 'none', fontWeight: 700, cursor: 'pointer' }}>
                     {editingCategory ? '💾 Update' : '✓ Save Category'}
                   </button>
-                  <button type="button" onClick={() => setShowCategoryModal(false)} style={{ padding: '0.75rem 1.25rem', borderRadius: '999px', border: '1px solid #D1D5DB', background: '#FFF', cursor: 'pointer' }}>
+                  <button type="button" onClick={() => setShowCategoryModal(false)} style={{ padding: '0.75rem 1.25rem', borderRadius: '999px', border: '1px solid #CBD5E1', background: '#FFF', cursor: 'pointer' }}>
                     Cancel
                   </button>
                 </div>
@@ -1549,42 +1855,83 @@ export default function AdminPortalPage() {
               </h3>
               <form onSubmit={handleSaveBannerSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.35rem' }}>Banner Image * (1920x600 px recommended)</label>
+                  <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.35rem' }}>Banner Image * (1920x600 px recommended)</label>
                   <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                     <label style={{ padding: '0.55rem 1rem', background: '#0B2545', color: '#FFF', borderRadius: '6px', fontSize: '0.8125rem', fontWeight: 700, cursor: isUploadingBannerImg ? 'wait' : 'pointer' }}>
                       📁 {isUploadingBannerImg ? 'Uploading...' : 'Upload Image'}
                       <input type="file" accept="image/*" onChange={handleBannerImageUpload} disabled={isUploadingBannerImg} style={{ display: 'none' }} />
                     </label>
-                    <input type="text" required value={bannerForm.image} onChange={(e) => setBannerForm({ ...bannerForm, image: e.target.value })} style={{ flex: 1, padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                    <input type="text" required value={bannerForm.image} onChange={(e) => setBannerForm({ ...bannerForm, image: e.target.value })} style={{ flex: 1, padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.25rem' }}>Headline Title</label>
-                  <input type="text" value={bannerForm.title} onChange={(e) => setBannerForm({ ...bannerForm, title: e.target.value })} placeholder="e.g. Royal Velvet Box Wedding Invitations" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                  <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Headline Title</label>
+                  <input type="text" value={bannerForm.title} onChange={(e) => setBannerForm({ ...bannerForm, title: e.target.value })} placeholder="e.g. Royal Velvet Box Wedding Invitations" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.25rem' }}>Subtitle</label>
-                  <textarea rows={2} value={bannerForm.subtitle} onChange={(e) => setBannerForm({ ...bannerForm, subtitle: e.target.value })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #D1D5DB', fontFamily: 'inherit' }} />
+                  <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Subtitle</label>
+                  <textarea rows={2} value={bannerForm.subtitle} onChange={(e) => setBannerForm({ ...bannerForm, subtitle: e.target.value })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', fontFamily: 'inherit' }} />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.75rem' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.25rem' }}>Target Destination Link *</label>
-                    <input type="text" required value={bannerForm.link} onChange={(e) => setBannerForm({ ...bannerForm, link: e.target.value })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                    <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Target Destination Link *</label>
+                    <input type="text" required value={bannerForm.link} onChange={(e) => setBannerForm({ ...bannerForm, link: e.target.value })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.25rem' }}>Order</label>
-                    <input type="number" min={1} value={bannerForm.displayOrder} onChange={(e) => setBannerForm({ ...bannerForm, displayOrder: parseInt(e.target.value) || 1 })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                    <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Order</label>
+                    <input type="number" min={1} value={bannerForm.displayOrder} onChange={(e) => setBannerForm({ ...bannerForm, displayOrder: parseInt(e.target.value) || 1 })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
-                  <button type="submit" style={{ flex: 1, padding: '0.75rem', borderRadius: '999px', background: '#10B981', color: '#FFF', border: 'none', fontWeight: 700, cursor: 'pointer' }}>
+                  <button type="submit" style={{ flex: 1, padding: '0.75rem', borderRadius: '999px', background: '#059669', color: '#FFF', border: 'none', fontWeight: 700, cursor: 'pointer' }}>
                     {editingBanner ? '💾 Save Changes' : '✓ Publish Hero Banner'}
                   </button>
-                  <button type="button" onClick={() => setShowBannerModal(false)} style={{ padding: '0.75rem 1.25rem', borderRadius: '999px', border: '1px solid #D1D5DB', background: '#FFF', cursor: 'pointer' }}>
+                  <button type="button" onClick={() => setShowBannerModal(false)} style={{ padding: '0.75rem 1.25rem', borderRadius: '999px', border: '1px solid #CBD5E1', background: '#FFF', cursor: 'pointer' }}>
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {showCouponModal && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={() => setShowCouponModal(false)}>
+            <div style={{ background: '#FFF', borderRadius: '14px', padding: '2rem', maxWidth: '440px', width: '100%' }} onClick={(e) => e.stopPropagation()}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0B2545', marginBottom: '1.25rem' }}>
+                🏷️ Create Discount Coupon
+              </h3>
+              <form onSubmit={handleSaveCouponSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Coupon Code *</label>
+                  <input type="text" required placeholder="e.g. SAVE10" value={couponForm.code} onChange={(e) => setCouponForm({ ...couponForm, code: e.target.value })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', textTransform: 'uppercase', fontWeight: 700 }} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Type</label>
+                    <select value={couponForm.discountType} onChange={(e) => setCouponForm({ ...couponForm, discountType: e.target.value as any })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }}>
+                      <option value="PERCENT">% Percentage</option>
+                      <option value="FLAT">₹ Flat Amount</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Value</label>
+                    <input type="number" required min={1} value={couponForm.discountValue} onChange={(e) => setCouponForm({ ...couponForm, discountValue: parseInt(e.target.value) || 0 })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                  </div>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Min Order Amount (INR)</label>
+                  <input type="number" min={0} value={couponForm.minOrderAmount} onChange={(e) => setCouponForm({ ...couponForm, minOrderAmount: parseInt(e.target.value) || 0 })} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                  <button type="submit" style={{ flex: 1, padding: '0.75rem', borderRadius: '999px', background: '#0B2545', color: '#FFF', border: 'none', fontWeight: 700, cursor: 'pointer' }}>
+                    Create Coupon
+                  </button>
+                  <button type="button" onClick={() => setShowCouponModal(false)} style={{ padding: '0.75rem 1.25rem', borderRadius: '999px', border: '1px solid #CBD5E1', background: '#FFF', cursor: 'pointer' }}>
                     Cancel
                   </button>
                 </div>
@@ -1596,30 +1943,30 @@ export default function AdminPortalPage() {
         {showAddUserModal && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={() => setShowAddUserModal(false)}>
             <div style={{ background: '#FFF', borderRadius: '12px', padding: '1.75rem', maxWidth: '420px', width: '100%' }} onClick={(e) => e.stopPropagation()}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '1rem' }}>Create Account</h3>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0B2545', marginBottom: '1rem' }}>Create Account</h3>
               <form onSubmit={handleCreateUserSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Full Name *</label>
-                  <input type="text" required value={newUser.name} onChange={(e) => setNewUser({ ...newUser, name: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Full Name *</label>
+                  <input type="text" required value={newUser.name} onChange={(e) => setNewUser({ ...newUser, name: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Email Address *</label>
-                  <input type="email" required value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Email Address *</label>
+                  <input type="email" required value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Password *</label>
-                  <input type="password" required value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Password *</label>
+                  <input type="password" required value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.2rem' }}>Role</label>
-                  <select value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #D1D5DB' }}>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Role</label>
+                  <select value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }}>
                     <option value="CLIENT">CLIENT</option>
                     <option value="ADMIN">ADMIN</option>
                   </select>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
                   <button type="submit" style={{ flex: 1, padding: '0.7rem', borderRadius: '999px', background: '#0B2545', color: '#FFF', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Create Account</button>
-                  <button type="button" onClick={() => setShowAddUserModal(false)} style={{ padding: '0.7rem 1rem', borderRadius: '999px', border: '1px solid #D1D5DB', background: '#FFF', cursor: 'pointer' }}>Cancel</button>
+                  <button type="button" onClick={() => setShowAddUserModal(false)} style={{ padding: '0.7rem 1rem', borderRadius: '999px', border: '1px solid #CBD5E1', background: '#FFF', cursor: 'pointer' }}>Cancel</button>
                 </div>
               </form>
             </div>
@@ -1629,11 +1976,11 @@ export default function AdminPortalPage() {
         {selectedInvoiceOrder && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', overflowY: 'auto' }} onClick={() => setSelectedInvoiceOrder(null)}>
             <div style={{ background: '#FFFFFF', borderRadius: '12px', padding: '2.5rem', maxWidth: '680px', width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 48px rgba(0,0,0,0.25)' }} onClick={(e) => e.stopPropagation()}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '1rem' }}>
-                <div style={{ fontSize: '0.8125rem', color: '#6B7280', fontWeight: 600 }}>STUDIO TAX INVOICE / CASH RECEIPT</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '1rem' }}>
+                <div style={{ fontSize: '0.8125rem', color: '#64748B', fontWeight: 600 }}>STUDIO TAX INVOICE / CASH RECEIPT</div>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <button onClick={() => window.print()} style={{ padding: '0.5rem 1rem', borderRadius: '999px', background: '#0B2545', color: '#FFFFFF', border: 'none', fontSize: '0.8125rem', fontWeight: 700, cursor: 'pointer' }}>🖨️ Print</button>
-                  <button onClick={() => setSelectedInvoiceOrder(null)} style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#F3F4F6', border: 'none', cursor: 'pointer' }}>✕</button>
+                  <button onClick={() => setSelectedInvoiceOrder(null)} style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#F1F5F9', border: 'none', cursor: 'pointer' }}>✕</button>
                 </div>
               </div>
 
@@ -1641,29 +1988,29 @@ export default function AdminPortalPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', borderBottom: '2px solid #0B2545', paddingBottom: '1rem' }}>
                   <div>
                     <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0B2545', margin: '0 0 0.25rem' }}>AYUSHMAN CARDS N GRAPHICS</h2>
-                    <div style={{ fontSize: '0.78125rem', color: '#6B7280' }}>Freeganj Main Road, Ujjain, MP • GSTIN: 23AABCU9603R1Z2</div>
+                    <div style={{ fontSize: '0.78125rem', color: '#64748B' }}>Freeganj Main Road, Ujjain, MP • GSTIN: 23AABCU9603R1Z2</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '0.84375rem', fontWeight: 700 }}>Invoice #{selectedInvoiceOrder.id.slice(-6).toUpperCase()}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>{new Date(selectedInvoiceOrder.createdAt).toLocaleDateString()}</div>
+                    <div style={{ fontSize: '0.84375rem', fontWeight: 700 }}>Invoice #{selectedInvoiceOrder.id.slice(-8).toUpperCase()}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748B' }}>{new Date(selectedInvoiceOrder.createdAt).toLocaleDateString()}</div>
                   </div>
                 </div>
 
-                <div style={{ background: '#F9FAFB', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
-                  <div style={{ fontWeight: 700, color: '#1E1E1E' }}>Billed To: {selectedInvoiceOrder.customerName}</div>
-                  <div style={{ fontSize: '0.8125rem', color: '#4B5563' }}>Phone: {selectedInvoiceOrder.customerPhone}</div>
-                  <div style={{ fontSize: '0.8125rem', color: '#10B981', fontWeight: 700, marginTop: '0.25rem' }}>Payment Status: {selectedInvoiceOrder.paymentStatus}</div>
+                <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+                  <div style={{ fontWeight: 700, color: '#0B2545' }}>Billed To: {selectedInvoiceOrder.customerName}</div>
+                  <div style={{ fontSize: '0.8125rem', color: '#64748B' }}>Phone: {selectedInvoiceOrder.customerPhone}</div>
+                  <div style={{ fontSize: '0.8125rem', color: '#059669', fontWeight: 700, marginTop: '0.25rem' }}>Payment Status: {selectedInvoiceOrder.paymentStatus}</div>
                 </div>
 
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84375rem', marginBottom: '1.5rem' }}>
                   <thead>
-                    <tr style={{ borderBottom: '2px solid #E5E7EB', background: '#F3F4F6' }}>
+                    <tr style={{ borderBottom: '2px solid #E2E8F0', background: '#F1F5F9' }}>
                       <th style={{ padding: '0.65rem', textAlign: 'left' }}>Item Description</th>
                       <th style={{ padding: '0.65rem', textAlign: 'right' }}>Total (INR)</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+                    <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
                       <td style={{ padding: '0.75rem 0.65rem' }}>{selectedInvoiceOrder.eventType} - {selectedInvoiceOrder.packageType || 'Custom Print'}</td>
                       <td style={{ padding: '0.75rem 0.65rem', textAlign: 'right', fontWeight: 700 }}>₹{selectedInvoiceOrder.totalAmount?.toLocaleString()}</td>
                     </tr>
@@ -1680,6 +2027,7 @@ export default function AdminPortalPage() {
           </div>
         )}
       </main>
+
       <Footer />
     </>
   );

@@ -25,7 +25,7 @@ export interface ProductCatalogItem {
   features?: string[];
 }
 
-export const CATALOG_ITEMS: ProductCatalogItem[] = [
+const CATALOG_ITEMS: ProductCatalogItem[] = [
   // ════════════════════════════════════════════════════════════════════
   // 1. WEDDING INVITATION CARDS (9 Unique Real Designs)
   // ════════════════════════════════════════════════════════════════════
@@ -554,7 +554,7 @@ export const CATALOG_ITEMS: ProductCatalogItem[] = [
   },
 ];
 
-export const CATEGORY_DEFINITIONS = [
+const CATEGORY_DEFINITIONS = [
   { id: 'All Products', label: '🌟 All Products', icon: '🌟', count: CATALOG_ITEMS.length },
   { id: 'Wedding Cards', label: '💍 Wedding Invitation Cards', icon: '💍', count: 9 },
   { id: 'Business Cards', label: '💳 Visiting & Business Cards', icon: '💳', count: 5 },

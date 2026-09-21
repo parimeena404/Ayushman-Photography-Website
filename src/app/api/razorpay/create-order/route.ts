@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import Razorpay from 'razorpay';
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
 
@@ -38,33 +37,39 @@ export async function POST(req: Request) {
 
     const amountInPaisa = Math.round(Number(depositAmount) * 100);
 
-    let razorpayOrderId: string;
+    let razorpayOrderId: string = `order_test_${Date.now()}`;
 
     try {
-      const razorpay = new Razorpay({
-        key_id: keyId,
-        key_secret: keySecret,
+      const basicAuth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
+      const rzpRes = await fetch('https://api.razorpay.com/v1/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${basicAuth}`,
+        },
+        body: JSON.stringify({
+          amount: amountInPaisa,
+          currency: 'INR',
+          receipt: `rcpt_${Date.now()}`,
+          notes: {
+            customerName,
+            customerPhone,
+            eventType,
+            packageType,
+            uploadedFilesCount: uploadedFiles ? `${uploadedFiles.length} file(s)` : 'None',
+            driveLink: driveLink || 'None',
+          },
+        }),
       });
 
-      const options = {
-        amount: amountInPaisa,
-        currency: 'INR',
-        receipt: `rcpt_${Date.now()}`,
-        notes: {
-          customerName,
-          customerPhone,
-          eventType,
-          packageType,
-          uploadedFilesCount: uploadedFiles ? `${uploadedFiles.length} file(s)` : 'None',
-          driveLink: driveLink || 'None',
-        },
-      };
-
-      const razorpayOrder = await razorpay.orders.create(options);
-      razorpayOrderId = razorpayOrder.id;
+      if (rzpRes.ok) {
+        const orderData = await rzpRes.json();
+        if (orderData?.id) {
+          razorpayOrderId = orderData.id;
+        }
+      }
     } catch (rzpErr: any) {
-      console.warn('Razorpay API Sandbox Fallback Order ID generated:', rzpErr?.error || rzpErr?.message);
-      razorpayOrderId = `order_test_${Date.now()}`;
+      console.warn('Razorpay REST fallback order generated:', rzpErr?.message);
     }
 
     let bookingId = `bk_${Date.now()}`;

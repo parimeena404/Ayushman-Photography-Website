@@ -666,3 +666,67 @@ input, textarea, select {
     --nav-height: 64px;
   }
 }
+
+.vp-why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .vp-why-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .vp-why-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.vp-trust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .vp-trust-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem;
+  }
+}
+
+/* ════ Continuous Loop Reviews Marquee ════ */
+@keyframes marqueeReviewsLoop {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.reviews-marquee-container {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  padding: 0.5rem 0;
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.reviews-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 1.25rem;
+  animation: marqueeReviewsLoop 45s linear infinite;
+  will-change: transform;
+}
+
+.reviews-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+

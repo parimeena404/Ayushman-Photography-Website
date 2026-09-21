@@ -58,7 +58,7 @@ export default function Preloader() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo.png"
-              alt="Ayushman Cards n Graphics Logo"
+              alt="Ayushman Cards & Graphics Logo"
               style={{
                 height: '75px',
                 width: 'auto',
@@ -80,7 +80,7 @@ export default function Preloader() {
               textTransform: 'uppercase',
             }}
           >
-            Premier Printing Press & Custom Card Studio · Freeganj Ujjain
+            Premier Printing Press & Custom Card Studio · 63, Varruchi Marg, Freeganj Ujjain
           </motion.p>
 
           {/* Progress line */}

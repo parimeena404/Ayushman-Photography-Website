@@ -38,7 +38,7 @@ export const films: Film[] = [
     id: 'film-1',
     title: '✨ Hot Gold Foil Stamping & Velvet Card Crafting Showcase',
     couple: 'Ayushman Crafts Studio',
-    location: 'Freeganj Press, Ujjain MP',
+    location: '63, Varruchi Marg, Freeganj Ujjain',
     category: 'Card Printing Craft',
     thumbnail: '/images/wedding/scroll_royal_blue_velvet.png',
     duration: '2:15',

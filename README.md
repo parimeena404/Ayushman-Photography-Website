@@ -1,6 +1,6 @@
 <div align="center">
 
-# 💎 Ayushman Cards n Graphics
+# 💎 Ayushman Cards & Graphics
 
 ### *Luxury Event Photography, Invitation Design & Fine Art Studio Platform*
 
@@ -13,7 +13,7 @@
 
 ---
 
-**Ayushman Cards n Graphics** is a web platform built for a premier printing and fine art photography studio in Ujjain, Madhya Pradesh (*Since 2001*). 
+**Ayushman Cards & Graphics** is a web platform built for a premier printing and fine art photography studio in Ujjain, Madhya Pradesh (*Since 2001*). 
 
 Designed with an editorial aesthetic, fluid micro-animations, dynamic theme switching, 4K media showcases, and integrated Razorpay payment verification.
 
@@ -150,11 +150,13 @@ npm run start
 
 ## 🏢 Studio Information
 
-**Ayushman Cards n Graphics**  
-*Complete Printing Solutions & Fine Art Photography — Since 2001*  
-📍 **Address**: 63, Varruchi Marg, Freeganj, Madhav Nagar, Ujjain, Madhya Pradesh  
+**Ayushman Cards & Graphics**  
+*Complete Printing Solutions & Fine Art Studio — Since 2001*  
+👤 **Proprietor**: Rajesh Saatoliya  
+📍 **Address**: 63, Varruchi Marg, Freeganj Ujjain  
 📞 **Direct Contacts**: `+91 94797 84979` | `+91 98930 22451`  
 💬 **WhatsApp**: [Chat on WhatsApp](https://wa.me/919479784979)  
+📸 **Instagram**: [Follow on Instagram](https://instagram.com/ayushmancards_ujjain)  
 
 ---
 
@@ -163,5 +165,5 @@ npm run start
 Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more information.
 
 <div align="center">
-Crafted with ❤️ for <b>Ayushman Cards n Graphics</b>
+Crafted with ❤️ for <b>Ayushman Cards & Graphics</b>
 </div>

@@ -5,7 +5,7 @@ import { useRef } from 'react';
 import { staggerContainer, fadeInUp, fadeInLeft, fadeInRight, lineGrow } from '@/lib/animations';
 
 const milestones = [
-  { year: '2001', text: 'Established Ayushman Cards n Graphics in Ujjain as complete commercial printing press pioneers' },
+  { year: '2001', text: 'Established Ayushman Cards & Graphics in Ujjain as complete commercial printing press pioneers' },
   { year: '2008', text: 'Expanded into luxury royal Indian wedding cards, gold foil stamping & custom typography design' },
   { year: '2015', text: 'Pioneered laser-cut box invitations, acrylic wedding cards & high-speed offset printing' },
   { year: '2020', text: 'Added state-of-the-art Star Flex outdoor banners, roll-up standees & HD photobook production' },

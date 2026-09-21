@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   description:
     'Ayushman Cards & Graphics (Ayushman Printing Press) — Ujjain\'s premier offset and digital printing press. Royal wedding cards, visiting cards, flex banners, photobooks, corporate stationery & graphic design since 2001.',
   keywords: [
-    'Ayushman Cards n Graphics',
+    'Ayushman Cards & Graphics',
     'Ayushman Printing Press Ujjain',
     'Ayushman Printers Ujjain',
     'Best Wedding Cards Printing Ujjain',

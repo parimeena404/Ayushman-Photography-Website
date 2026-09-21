@@ -1,9 +1,10 @@
 'use client';
 
+import React from 'react';
+
 const trustItems = [
   { icon: '🚚', title: 'Fast Pan-India Delivery', desc: 'Free shipping on orders above ₹999' },
   { icon: '✨', title: '100% Satisfaction Guarantee', desc: 'Quality you can trust, every time' },
-  { icon: '🎨', title: 'Free Design Templates', desc: 'Thousands of ready-to-use templates' },
   { icon: '💰', title: 'Wholesale Savings', desc: 'Buy more, save more on bulk orders' },
 ];
 
@@ -20,9 +21,6 @@ export default function TrustBar() {
         style={{
           maxWidth: '1440px',
           margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '1rem',
         }}
         className="vp-trust-grid"
       >
@@ -63,19 +61,6 @@ export default function TrustBar() {
           </div>
         ))}
       </div>
-
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .vp-trust-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-        }
-        @media (max-width: 480px) {
-          .vp-trust-grid {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }

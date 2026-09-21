@@ -19,14 +19,14 @@ export default function ShippingPage() {
 
           <div style={{ fontFamily: "'Inter', sans-serif", color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: '0.95rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <p>
-              <strong>Ayushman Cards n Graphics</strong> delivers physical photo albums, custom invitation card boxes, framed canvas prints, and keepsake newspapers across India and internationally.
+              <strong>Ayushman Cards & Graphics</strong> delivers physical photo albums, custom invitation card boxes, framed canvas prints, and keepsake newspapers across India and internationally.
             </p>
 
             <h2 style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 600, marginTop: '1rem' }}>
               1. Studio Pickup (Ujjain)
             </h2>
             <p>
-              Clients residing in or visiting Ujjain can collect completed card sets, printed albums, and frames directly from our studio at 63 Varuchi Marg, Freeganj, Ujjain MP.
+              Clients residing in or visiting Ujjain can collect completed card sets, printed albums, and frames directly from our studio at 63, Varruchi Marg, Freeganj Ujjain.
             </p>
 
             <h2 style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 600, marginTop: '1rem' }}>

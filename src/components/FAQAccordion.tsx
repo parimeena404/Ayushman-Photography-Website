@@ -11,7 +11,7 @@ const faqs = [
   },
   {
     q: 'Can I see a physical proof sample before bulk card printing?',
-    a: 'Yes! For wedding cards and corporate orders, we share digital PDF proofs via WhatsApp/Email. You can also visit our Freeganj studio in Ujjain to view physical card samples, paper board textures, and gold foil finishes.',
+    a: 'Yes! For wedding cards and corporate orders, we share digital PDF proofs via WhatsApp/Email. You can also visit our studio at 63, Varruchi Marg, Freeganj Ujjain to view physical card samples, paper board textures, and gold foil finishes.',
   },
   {
     q: 'What paper GSM and finish options do you offer for visiting cards?',

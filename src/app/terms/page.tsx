@@ -33,21 +33,21 @@ export default function TermsPage() {
               2. Custom Invitation & Graphic Design Orders
             </h2>
             <p>
-              For custom wedding cards, printed albums, and corporate graphics, final approval of proof designs is required prior to bulk printing. Ayushman Cards n Graphics is not responsible for text or design errors approved by the client.
+              For custom wedding cards, printed albums, and corporate graphics, final approval of proof designs is required prior to bulk printing. Ayushman Cards & Graphics is not responsible for text or design errors approved by the client.
             </p>
 
             <h2 style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 600, marginTop: '1rem' }}>
               3. Copyright & Usage Rights
             </h2>
             <p>
-              Ayushman Cards n Graphics retains artistic copyright over all created media and photographs. Clients receive personal usage rights for print, social media, and distribution to family. Commercial resale requires prior written agreement.
+              Ayushman Cards & Graphics retains artistic copyright over all created media and photographs. Clients receive personal usage rights for print, social media, and distribution to family. Commercial resale requires prior written agreement.
             </p>
 
             <h2 style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 600, marginTop: '1rem' }}>
               4. Studio Location & Contact
             </h2>
             <p>
-              Ayushman Studio, 63 Varuchi Marg, Freeganj, Ujjain, Madhya Pradesh 456001. <br />
+              Ayushman Studio, 63, Varruchi Marg, Freeganj Ujjain. <br />
               Helpline: 9479784979 | 9893022451
             </p>
           </div>

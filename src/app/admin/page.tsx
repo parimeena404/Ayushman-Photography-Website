@@ -113,14 +113,23 @@ export default function AdminPortalPage() {
     isActive: true,
   });
 
-  // Admin Settings State
+  // Admin & Store Settings State
+  const [settingProprietor, setSettingProprietor] = useState('Rajesh Saatoliya');
+  const [settingShopName, setSettingShopName] = useState('Ayushman Cards & Graphics');
   const [settingName, setSettingName] = useState('');
   const [settingEmail, setSettingEmail] = useState('');
-  const [settingPhone, setSettingPhone] = useState('');
-  const [settingAddress, setSettingAddress] = useState('');
-  const [settingCity, setSettingCity] = useState('');
-  const [settingState, setSettingState] = useState('');
-  const [settingPincode, setSettingPincode] = useState('');
+  const [settingPhone, setSettingPhone] = useState('9479784979');
+  const [settingPhoneSecondary, setSettingPhoneSecondary] = useState('9893022451');
+  const [settingAddress, setSettingAddress] = useState('63, Varruchi Marg, Freeganj Ujjain');
+  const [settingCity, setSettingCity] = useState('Ujjain');
+  const [settingState, setSettingState] = useState('Madhya Pradesh');
+  const [settingPincode, setSettingPincode] = useState('456001');
+  const [settingWhatsAppNumber, setSettingWhatsAppNumber] = useState('+919479784979');
+  const [settingWhatsAppMsg, setSettingWhatsAppMsg] = useState('Hello Ayushman Cards & Graphics Press, I would like to inquire about wedding cards, visiting cards, flex banners & printing services.');
+  const [settingInstagramUrl, setSettingInstagramUrl] = useState('https://instagram.com/ayushmancards_ujjain');
+  const [settingInstagramHandle, setSettingInstagramHandle] = useState('@ayushmancards_ujjain');
+  const [settingFacebookUrl, setSettingFacebookUrl] = useState('https://facebook.com/ayushmancards');
+  const [settingYouTubeUrl, setSettingYouTubeUrl] = useState('https://youtube.com/@ayushmancards');
   const [settingNewPassword, setSettingNewPassword] = useState('');
   const [settingConfirmPassword, setSettingConfirmPassword] = useState('');
   const [settingSaving, setSettingSaving] = useState(false);
@@ -129,13 +138,14 @@ export default function AdminPortalPage() {
   const fetchAdminData = async () => {
     setLoadingData(true);
     try {
-      const [ordersRes, usersRes, inquiriesRes, productsRes, categoriesRes, bannersRes] = await Promise.all([
+      const [ordersRes, usersRes, inquiriesRes, productsRes, categoriesRes, bannersRes, settingsRes] = await Promise.all([
         fetch('/api/admin/orders'),
         fetch('/api/admin/users'),
-        fetch('/api/inquiries'),
+        fetch('/api/admin/inquiries').catch(() => fetch('/api/inquiries')),
         fetch('/api/admin/products'),
         fetch('/api/admin/categories'),
         fetch('/api/admin/banners'),
+        fetch('/api/admin/settings'),
       ]);
 
       if (ordersRes.ok) {
@@ -153,7 +163,7 @@ export default function AdminPortalPage() {
         }
       }
 
-      if (inquiriesRes.ok) {
+      if (inquiriesRes && inquiriesRes.ok) {
         const inquiriesData = await inquiriesRes.json();
         if (inquiriesData.success) {
           setInquiries(inquiriesData.inquiries || []);
@@ -180,6 +190,27 @@ export default function AdminPortalPage() {
           setBannersList(bannersData.banners || []);
         }
       }
+
+      if (settingsRes && settingsRes.ok) {
+        const settingsData = await settingsRes.json();
+        if (settingsData.success && settingsData.settings) {
+          const s = settingsData.settings;
+          setSettingProprietor(s.proprietor || 'Rajesh Saatoliya');
+          setSettingShopName(s.shopName || 'Ayushman Cards & Graphics');
+          setSettingAddress(s.address || '63, Varruchi Marg, Freeganj Ujjain');
+          setSettingCity(s.city || 'Ujjain');
+          setSettingState(s.state || 'Madhya Pradesh');
+          setSettingPincode(s.pincode || '456001');
+          setSettingPhone(s.phonePrimary || '9479784979');
+          setSettingPhoneSecondary(s.phoneSecondary || '9893022451');
+          setSettingWhatsAppNumber(s.whatsappNumber || '+919479784979');
+          setSettingWhatsAppMsg(s.whatsappMessage || '');
+          setSettingInstagramUrl(s.instagramUrl || 'https://instagram.com/ayushmancards_ujjain');
+          setSettingInstagramHandle(s.instagramHandle || '@ayushmancards_ujjain');
+          setSettingFacebookUrl(s.facebookUrl || 'https://facebook.com/ayushmancards');
+          setSettingYouTubeUrl(s.youtubeUrl || 'https://youtube.com/@ayushmancards');
+        }
+      }
     } catch (err) {
       console.error('Error fetching admin data:', err);
     } finally {
@@ -192,11 +223,6 @@ export default function AdminPortalPage() {
       fetchAdminData();
       setSettingName(user.name || '');
       setSettingEmail(user.email || '');
-      setSettingPhone((user as any).phone || '');
-      setSettingAddress((user as any).address || '');
-      setSettingCity((user as any).city || '');
-      setSettingState((user as any).state || '');
-      setSettingPincode((user as any).pincode || '');
     }
   }, [user]);
 
@@ -708,28 +734,54 @@ export default function AdminPortalPage() {
 
     setSettingSaving(true);
     try {
-      const res = await fetch('/api/user/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: settingName,
-          email: settingEmail,
-          phone: settingPhone,
-          address: settingAddress,
-          city: settingCity,
-          state: settingState,
-          pincode: settingPincode,
-          newPassword: settingNewPassword ? settingNewPassword : undefined,
+      const [profileRes, settingsRes] = await Promise.all([
+        fetch('/api/user/profile', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: settingName,
+            email: settingEmail,
+            phone: settingPhone,
+            address: settingAddress,
+            city: settingCity,
+            state: settingState,
+            pincode: settingPincode,
+            newPassword: settingNewPassword ? settingNewPassword : undefined,
+          }),
         }),
-      });
+        fetch('/api/admin/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            proprietor: settingProprietor,
+            shopName: settingShopName,
+            address: settingAddress,
+            city: settingCity,
+            state: settingState,
+            pincode: settingPincode,
+            phonePrimary: settingPhone,
+            phoneSecondary: settingPhoneSecondary,
+            whatsappNumber: settingWhatsAppNumber,
+            whatsappMessage: settingWhatsAppMsg,
+            instagramUrl: settingInstagramUrl,
+            instagramHandle: settingInstagramHandle,
+            facebookUrl: settingFacebookUrl,
+            youtubeUrl: settingYouTubeUrl,
+          }),
+        }),
+      ]);
 
-      const data = await res.json();
+      const data = await profileRes.json();
       setSettingSaving(false);
 
-      if (res.ok && data.success) {
-        setSettingMessage({ text: 'Admin credentials & studio settings updated successfully!', type: 'success' });
+      if (profileRes.ok && settingsRes.ok) {
+        setSettingMessage({ text: '✓ Studio settings, WhatsApp, Instagram & credentials saved successfully!', type: 'success' });
         setSettingNewPassword('');
         setSettingConfirmPassword('');
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('settingsUpdated'));
+          localStorage.setItem('ayushman_settings_updated_at', Date.now().toString());
+        }
         refreshUser();
       } else {
         setSettingMessage({ text: data.error || 'Failed to update settings', type: 'error' });
@@ -777,7 +829,7 @@ export default function AdminPortalPage() {
               🛡️ Admin Portal Login
             </h2>
             <p style={{ fontSize: '0.8125rem', color: '#6B7280', margin: '0 0 1.5rem' }}>
-              Restricted management area for Ayushman Cards n Graphics.
+              Restricted management area for Ayushman Cards & Graphics.
             </p>
 
             {loginError && (
@@ -1640,7 +1692,7 @@ export default function AdminPortalPage() {
                         "{inq.message}"
                       </div>
                       <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', justifyContent: 'flex-end' }}>
-                        <a href={`https://wa.me/91${inq.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${inq.name}! Thank you for contacting Ayushman Cards regarding "${inq.eventType}". How can we help you?`)}`} target="_blank" rel="noreferrer" style={{ padding: '0.35rem 0.85rem', borderRadius: '6px', background: '#25D366', color: '#FFF', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 700 }}>
+                        <a href={`https://wa.me/91${inq.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${inq.name}! Thank you for contacting Ayushman Cards & Graphics regarding "${inq.eventType}". How can we help you?`)}`} target="_blank" rel="noreferrer" style={{ padding: '0.35rem 0.85rem', borderRadius: '6px', background: '#25D366', color: '#FFF', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 700 }}>
                           💬 Reply on WhatsApp
                         </a>
                         <a href={`tel:${inq.phone}`} style={{ padding: '0.35rem 0.85rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF', color: '#0B2545', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 600 }}>
@@ -1714,48 +1766,129 @@ export default function AdminPortalPage() {
 
           {/* ═══ TAB: STORE SETTINGS & CREDENTIALS ═══ */}
           {activeTab === 'settings' && (
-            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.75rem', maxWidth: '640px' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0B2545', margin: '0 0 0.3rem' }}>
-                Admin Master Credentials & Studio Info
-              </h2>
-              <p style={{ fontSize: '0.8125rem', color: '#64748B', margin: '0 0 1.5rem' }}>
-                Update your login email, master password, contact number, and business address.
-              </p>
+            <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.75rem', maxWidth: '780px' }}>
+              <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+                <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0B2545', margin: '0 0 0.3rem' }}>
+                  ⚙️ Store Settings & Social Connections
+                </h2>
+                <p style={{ fontSize: '0.8125rem', color: '#64748B', margin: 0 }}>
+                  Manage your studio name, proprietor, address, phone numbers, WhatsApp, Instagram links, and admin login credentials. All changes reflect across the main website instantly.
+                </p>
+              </div>
 
               {settingMessage && (
-                <div style={{ padding: '0.75rem 1rem', borderRadius: '8px', marginBottom: '1.25rem', fontSize: '0.8125rem', fontWeight: 600, background: settingMessage.type === 'success' ? '#D1FAE5' : '#FFEBEE', color: settingMessage.type === 'success' ? '#065F46' : '#C62828' }}>
+                <div style={{ padding: '0.85rem 1.2rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.84375rem', fontWeight: 600, background: settingMessage.type === 'success' ? '#D1FAE5' : '#FFEBEE', color: settingMessage.type === 'success' ? '#065F46' : '#C62828' }}>
                   {settingMessage.text}
                 </div>
               )}
 
-              <form onSubmit={handleAdminSettingsSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Full Name</label>
-                  <input type="text" required value={settingName} onChange={(e) => setSettingName(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Email Address</label>
-                  <input type="email" required value={settingEmail} onChange={(e) => setSettingEmail(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Contact Phone</label>
-                  <input type="tel" value={settingPhone} onChange={(e) => setSettingPhone(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.2rem' }}>Printing Studio Address</label>
-                  <textarea rows={2} value={settingAddress} onChange={(e) => setSettingAddress(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1', fontFamily: 'inherit' }} />
-                </div>
+              <form onSubmit={handleAdminSettingsSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {/* 1. STUDIO & PROPRIETOR INFO */}
+                <div style={{ background: '#F8FAFC', padding: '1.25rem', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0B2545', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    🏢 Printing Studio & Proprietorship
+                  </h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Proprietor Name *</label>
+                      <input type="text" required value={settingProprietor} onChange={(e) => setSettingProprietor(e.target.value)} placeholder="Rajesh Saatoliya" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Studio / Shop Name *</label>
+                      <input type="text" required value={settingShopName} onChange={(e) => setSettingShopName(e.target.value)} placeholder="Ayushman Cards & Graphics" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                    </div>
+                  </div>
 
-                <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1rem', marginTop: '0.5rem' }}>
-                  <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.5rem' }}>Change Master Password (Optional)</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                    <input type="password" placeholder="New Password" value={settingNewPassword} onChange={(e) => setSettingNewPassword(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
-                    <input type="password" placeholder="Confirm Password" value={settingConfirmPassword} onChange={(e) => setSettingConfirmPassword(e.target.value)} style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Full Business Address * (Shown across site & footer)</label>
+                    <input type="text" required value={settingAddress} onChange={(e) => setSettingAddress(e.target.value)} placeholder="63, Varruchi Marg, Freeganj Ujjain" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>City</label>
+                      <input type="text" value={settingCity} onChange={(e) => setSettingCity(e.target.value)} placeholder="Ujjain" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>State</label>
+                      <input type="text" value={settingState} onChange={(e) => setSettingState(e.target.value)} placeholder="Madhya Pradesh" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Pincode</label>
+                      <input type="text" value={settingPincode} onChange={(e) => setSettingPincode(e.target.value)} placeholder="456001" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                    </div>
                   </div>
                 </div>
 
-                <button type="submit" disabled={settingSaving} style={{ marginTop: '0.5rem', padding: '0.75rem', borderRadius: '999px', background: '#0B2545', color: '#FFF', border: 'none', fontWeight: 700, cursor: settingSaving ? 'wait' : 'pointer' }}>
-                  {settingSaving ? 'Saving Changes...' : 'Save Admin Settings'}
+                {/* 2. WHATSAPP & INSTAGRAM SOCIAL CONNECTIONS */}
+                <div style={{ background: '#F8FAFC', padding: '1.25rem', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0B2545', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    💬 WhatsApp & Instagram Integration (Floating Buttons & Socials)
+                  </h3>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>
+                        WhatsApp Number * (e.g. +919479784979)
+                      </label>
+                      <input type="tel" required value={settingWhatsAppNumber} onChange={(e) => setSettingWhatsAppNumber(e.target.value)} placeholder="+919479784979" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>
+                        Instagram URL or Username *
+                      </label>
+                      <input type="text" required value={settingInstagramUrl} onChange={(e) => setSettingInstagramUrl(e.target.value)} placeholder="https://instagram.com/ayushmancards_ujjain" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Default WhatsApp Inquiry Message</label>
+                    <textarea rows={2} value={settingWhatsAppMsg} onChange={(e) => setSettingWhatsAppMsg(e.target.value)} placeholder="Pre-filled message when customer clicks floating WhatsApp button" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF', fontFamily: 'inherit' }} />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Instagram Handle</label>
+                      <input type="text" value={settingInstagramHandle} onChange={(e) => setSettingInstagramHandle(e.target.value)} placeholder="@ayushmancards_ujjain" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Primary Phone (Call)</label>
+                      <input type="tel" value={settingPhone} onChange={(e) => setSettingPhone(e.target.value)} placeholder="9479784979" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Secondary Phone</label>
+                      <input type="tel" value={settingPhoneSecondary} onChange={(e) => setSettingPhoneSecondary(e.target.value)} placeholder="9893022451" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. MASTER ADMIN CREDENTIALS */}
+                <div style={{ background: '#F8FAFC', padding: '1.25rem', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0B2545', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    🛡️ Master Admin Credentials
+                  </h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Admin Name</label>
+                      <input type="text" required value={settingName} onChange={(e) => setSettingName(e.target.value)} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Admin Login Email</label>
+                      <input type="email" required value={settingEmail} onChange={(e) => setSettingEmail(e.target.value)} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Change Master Password (Optional)</label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <input type="password" placeholder="New Password" value={settingNewPassword} onChange={(e) => setSettingNewPassword(e.target.value)} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                      <input type="password" placeholder="Confirm Password" value={settingConfirmPassword} onChange={(e) => setSettingConfirmPassword(e.target.value)} style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF' }} />
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" disabled={settingSaving} style={{ padding: '0.85rem 1.5rem', borderRadius: '999px', background: 'linear-gradient(135deg, #0B2545 0%, #134074 100%)', color: '#FFF', border: 'none', fontWeight: 800, fontSize: '0.95rem', cursor: settingSaving ? 'wait' : 'pointer', boxShadow: '0 4px 14px rgba(11,37,69,0.25)' }}>
+                  {settingSaving ? '💾 Saving Store Settings...' : '💾 Save All Store Settings & Socials'}
                 </button>
               </form>
             </div>
@@ -1987,8 +2120,8 @@ export default function AdminPortalPage() {
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', borderBottom: '2px solid #0B2545', paddingBottom: '1rem' }}>
                   <div>
-                    <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0B2545', margin: '0 0 0.25rem' }}>AYUSHMAN CARDS N GRAPHICS</h2>
-                    <div style={{ fontSize: '0.78125rem', color: '#64748B' }}>Freeganj Main Road, Ujjain, MP • GSTIN: 23AABCU9603R1Z2</div>
+                    <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0B2545', margin: '0 0 0.25rem' }}>AYUSHMAN CARDS & GRAPHICS</h2>
+                    <div style={{ fontSize: '0.78125rem', color: '#64748B' }}>63, Varruchi Marg, Freeganj Ujjain • Properiter - Rajesh Saatoliya</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: '0.84375rem', fontWeight: 700 }}>Invoice #{selectedInvoiceOrder.id.slice(-8).toUpperCase()}</div>
@@ -2022,6 +2155,66 @@ export default function AdminPortalPage() {
                     </tr>
                   </tfoot>
                 </table>
+
+                {/* Attached Print Artwork & Drive Links */}
+                {(selectedInvoiceOrder.uploadedFiles?.length > 0 || selectedInvoiceOrder.driveLink || selectedInvoiceOrder.printInstructions) && (
+                  <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px', padding: '1rem', marginTop: '1rem' }}>
+                    <div style={{ fontWeight: 800, color: '#166534', fontSize: '0.8125rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <span>🎨 Attached Artwork & Printing Specifications</span>
+                    </div>
+
+                    {selectedInvoiceOrder.uploadedFiles && selectedInvoiceOrder.uploadedFiles.length > 0 && (
+                      <div style={{ marginBottom: '0.6rem' }}>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#15803D', marginBottom: '0.35rem' }}>
+                          Uploaded Files ({selectedInvoiceOrder.uploadedFiles.length}):
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          {selectedInvoiceOrder.uploadedFiles.map((file: any, fIdx: number) => (
+                            <a
+                              key={fIdx}
+                              href={file.previewUrl || '#'}
+                              target="_blank"
+                              rel="noreferrer"
+                              download={file.name}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.35rem',
+                                padding: '0.3rem 0.6rem',
+                                borderRadius: '6px',
+                                background: '#FFFFFF',
+                                border: '1px solid #86EFAC',
+                                color: '#166534',
+                                fontSize: '0.725rem',
+                                fontWeight: 700,
+                                textDecoration: 'none',
+                              }}
+                            >
+                              <span>📥 {file.name}</span>
+                              <span style={{ fontSize: '0.65rem', color: '#6B7280' }}>({file.size})</span>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedInvoiceOrder.driveLink && (
+                      <div style={{ fontSize: '0.78125rem', marginBottom: '0.4rem' }}>
+                        <strong style={{ color: '#166534' }}>Drive/Cloud Link: </strong>
+                        <a href={selectedInvoiceOrder.driveLink} target="_blank" rel="noreferrer" style={{ color: '#2563EB', fontWeight: 700, textDecoration: 'underline', wordBreak: 'break-all' }}>
+                          {selectedInvoiceOrder.driveLink}
+                        </a>
+                      </div>
+                    )}
+
+                    {selectedInvoiceOrder.printInstructions && (
+                      <div style={{ fontSize: '0.78125rem', color: '#374151', background: '#FFFFFF', padding: '0.5rem 0.75rem', borderRadius: '6px', border: '1px solid #DCFCE7' }}>
+                        <strong style={{ color: '#166534' }}>Customer Instructions: </strong>
+                        {selectedInvoiceOrder.printInstructions}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

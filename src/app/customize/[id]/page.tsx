@@ -109,14 +109,14 @@ export default function CustomizerPage({ params }: { params: Promise<{ id: strin
   const [activeSide, setActiveSide] = useState<'front' | 'back'>('front');
 
   // Custom Design Inputs State
-  const [companyName, setCompanyName] = useState('AYUSHMAN CARDS N GRAPHICS');
+  const [companyName, setCompanyName] = useState('AYUSHMAN CARDS & GRAPHICS');
   const [tagline, setTagline] = useState('Premium Offset & Digital Printing Press');
   const [fullName, setFullName] = useState('Ayushman Sharma');
   const [designation, setDesignation] = useState('Founder & Managing Director');
   const [phone, setPhone] = useState('+91 94797 84979');
   const [email, setEmail] = useState('info@ayushmancards.com');
   const [website, setWebsite] = useState('www.ayushmancards.com');
-  const [address, setAddress] = useState('14/2 Freeganj Main Road, Ujjain (M.P.)');
+  const [address, setAddress] = useState('63, Varruchi Marg, Freeganj Ujjain');
   const [themeColor, setThemeColor] = useState('#D40000');
   const [fontStyle, setFontStyle] = useState("'Manrope', sans-serif");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -173,7 +173,7 @@ export default function CustomizerPage({ params }: { params: Promise<{ id: strin
   };
 
   const handleWhatsAppQuote = () => {
-    const message = `Hello Ayushman Cards! I want to order:\n- Product: ${product.name}\n- Quantity: ${selectedTier.qty}\n- Paper Stock: ${paperStock}\n- Finish: ${finishOption}\n- Corner: ${cornerStyle}\n- Total Estimated Price: ₹${totalPrice.toLocaleString()}\n- Custom Text: ${companyName} (${fullName})`;
+    const message = `Hello Ayushman Cards & Graphics! I want to order:\n- Product: ${product.name}\n- Quantity: ${selectedTier.qty}\n- Paper Stock: ${paperStock}\n- Finish: ${finishOption}\n- Corner: ${cornerStyle}\n- Total Estimated Price: ₹${totalPrice.toLocaleString()}\n- Custom Text: ${companyName} (${fullName})`;
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/919479784979?text=${encoded}`, '_blank');
   };

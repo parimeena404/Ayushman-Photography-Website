@@ -202,7 +202,7 @@ export default function BookingWizard() {
             key: orderData.keyId,
             amount: orderData.amount,
             currency: orderData.currency,
-            name: 'Ayushman Cards n Graphics',
+            name: 'Ayushman Cards & Graphics',
             description: `Booking Deposit — ${selectedPackage.name}`,
             image: '/logo.png',
             order_id: orderData.orderId,
@@ -706,7 +706,7 @@ export default function BookingWizard() {
                   <span style={{ fontSize: '0.65rem', backgroundColor: '#3b82f6', color: '#fff', padding: '0.15rem 0.45rem', borderRadius: '4px', textTransform: 'uppercase', fontWeight: 700 }}>PHONE UPI GATEWAY</span>
                 </div>
                 <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.2rem' }}>
-                  Ayushman Cards n Graphics • Studio Pay: 9479784979
+                  Ayushman Cards & Graphics • Studio Pay: 9479784979
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>

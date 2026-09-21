@@ -1,12 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { loadRazorpayScript } from '@/lib/razorpay';
 import Link from 'next/link';
+
+interface UploadedFile {
+  id: string;
+  name: string;
+  size: string;
+  type: string;
+  previewUrl?: string;
+}
 
 export default function CheckoutPage() {
   const { cart, grandTotal, subtotal, discountAmount, gstAmount, shippingFee, clearCart } = useCart();
@@ -22,6 +30,72 @@ export default function CheckoutPage() {
   const [gstin, setGstin] = useState('');
   const [deliverySpeed, setDeliverySpeed] = useState<'standard' | 'express'>('standard');
   const [notes, setNotes] = useState('');
+
+  // Artwork & Print Upload State
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [driveLink, setDriveLink] = useState('');
+  const [printInstructions, setPrintInstructions] = useState('');
+  const [whatsappFollowup, setWhatsappFollowup] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const processFiles = (files: FileList | File[]) => {
+    Array.from(files).forEach((file) => {
+      const id = `file_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+      const isImg = file.type.startsWith('image/');
+      
+      if (isImg) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setUploadedFiles((prev) => [
+            ...prev,
+            {
+              id,
+              name: file.name,
+              size: formatFileSize(file.size),
+              type: file.type || 'image',
+              previewUrl: e.target?.result as string,
+            },
+          ]);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setUploadedFiles((prev) => [
+          ...prev,
+          {
+            id,
+            name: file.name,
+            size: formatFileSize(file.size),
+            type: file.name.split('.').pop()?.toUpperCase() || 'DOCUMENT',
+          },
+        ]);
+      }
+    });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      processFiles(e.target.files);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      processFiles(e.dataTransfer.files);
+    }
+  };
+
+  const handleRemoveFile = (id: string) => {
+    setUploadedFiles((prev) => prev.filter((f) => f.id !== id));
+  };
 
   useEffect(() => {
     if (user) {
@@ -45,9 +119,9 @@ export default function CheckoutPage() {
 
   const finalTotal = grandTotal + (deliverySpeed === 'express' ? 250 : 0);
 
-  // Dynamic QR Code URL for Ayushman Cards n Graphics
+  // Dynamic QR Code URL for Ayushman Cards & Graphics
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
-    `upi://pay?pa=9479784979@paytm&pn=AyushmanCardsnGraphics&am=${finalTotal}&cu=INR&tn=Order_Payment`
+    `upi://pay?pa=9479784979@paytm&pn=AyushmanCardsAndGraphics&am=${finalTotal}&cu=INR&tn=Order_Payment`
   )}`;
 
   const handleInitiateOrder = async (e: React.FormEvent) => {
@@ -77,6 +151,10 @@ export default function CheckoutPage() {
           packageType: cart[0]?.category || 'Custom Print Job',
           totalAmount: finalTotal,
           depositAmount: finalTotal,
+          uploadedFiles: uploadedFiles.map((f) => ({ name: f.name, size: f.size, type: f.type, previewUrl: f.previewUrl })),
+          driveLink: driveLink.trim() || null,
+          printInstructions: printInstructions.trim() || null,
+          whatsappFollowup,
         }),
       });
 
@@ -100,7 +178,7 @@ export default function CheckoutPage() {
           key: orderPayload.keyId || 'rzp_test_TMSAlhSBWAt4fa',
           amount: orderPayload.amount,
           currency: 'INR',
-          name: 'Ayushman Cards n Graphics',
+          name: 'Ayushman Cards & Graphics',
           description: `Print Order (${cart.length} item(s))`,
           handler: async function (response: any) {
             await handleConfirmPayment(response.razorpay_payment_id || `pay_${Date.now()}`);
@@ -170,7 +248,17 @@ export default function CheckoutPage() {
 
   const handleWhatsAppOrder = () => {
     const itemsSummary = cart.map((i) => `• ${i.title} (${i.quantity} units) = ₹${i.totalPrice}`).join('\n');
-    const msg = `Hi Ayushman Cards!\nI want to place an order:\n\n*Name:* ${fullName}\n*Phone:* ${phone}\n*Address:* ${address}, ${city} - ${pincode}\n\n*Order Items:*\n${itemsSummary}\n\n*Total Amount:* ₹${finalTotal.toLocaleString()}`;
+    let artworkDetails = '';
+    if (uploadedFiles.length > 0) {
+      artworkDetails += `\n*Uploaded Files (${uploadedFiles.length}):* ${uploadedFiles.map((f) => f.name).join(', ')}`;
+    }
+    if (driveLink.trim()) {
+      artworkDetails += `\n*Drive/Cloud Link:* ${driveLink.trim()}`;
+    }
+    if (printInstructions.trim()) {
+      artworkDetails += `\n*Print Instructions:* ${printInstructions.trim()}`;
+    }
+    const msg = `Hi Ayushman Cards & Graphics!\nI want to place an order:\n\n*Name:* ${fullName}\n*Phone:* ${phone}\n*Address:* ${address}, ${city} - ${pincode}\n\n*Order Items:*\n${itemsSummary}${artworkDetails}\n\n*Total Amount:* ₹${finalTotal.toLocaleString()}`;
     window.open(`https://wa.me/919479784979?text=${encodeURIComponent(msg)}`, '_blank');
     handleConfirmPayment(`WA_${Date.now()}`);
   };
@@ -369,9 +457,181 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* Delivery Options */}
+                {/* ════ SECTION 2: ARTWORK & PHOTO UPLOAD ════ */}
+                <h2 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.1rem', fontWeight: 700, color: '#1E1E1E', marginTop: '1.75rem', marginBottom: '0.4rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>2. 🎨 Upload Artwork & Photos for Printing</span>
+                  <span style={{ fontSize: '0.725rem', fontWeight: 600, color: '#059669', background: '#D1FAE5', padding: '0.2rem 0.55rem', borderRadius: '999px' }}>
+                    Optional / Easy
+                  </span>
+                </h2>
+                <p style={{ fontSize: '0.78125rem', color: '#6B7280', margin: '0 0 1rem' }}>
+                  Upload your wedding photos, logos, card layouts, banner creatives or documents. You can also send them later on WhatsApp.
+                </p>
+
+                {/* Drag & Drop / File Selector Zone */}
+                <div
+                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{
+                    border: isDragging ? '2px dashed #0B2545' : '2px dashed #CBD5E1',
+                    background: isDragging ? 'rgba(11,37,69,0.06)' : '#FAFCFF',
+                    borderRadius: '12px',
+                    padding: '1.75rem 1.25rem',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    multiple
+                    accept="image/*,.pdf,.ai,.psd,.cdr,.eps,.zip,.doc,.docx"
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                  />
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#EFF6FF', color: '#2563EB', fontSize: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem' }}>
+                    📤
+                  </div>
+                  <div style={{ fontWeight: 700, color: '#0B2545', fontSize: '0.9rem', marginBottom: '0.25rem' }}>
+                    Click to Browse or Drag & Drop Photos / Files
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                    Supports: PNG, JPG, WEBP, PDF, CDR, AI, PSD, SVG, ZIP (Multi-file upload)
+                  </div>
+                </div>
+
+                {/* Uploaded Files Gallery */}
+                {uploadedFiles.length > 0 && (
+                  <div style={{ marginBottom: '1.25rem' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Attached Print Files ({uploadedFiles.length})</span>
+                      <span style={{ color: '#059669' }}>✓ Ready for press</span>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.65rem' }}>
+                      {uploadedFiles.map((file) => (
+                        <div
+                          key={file.id}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.65rem',
+                            padding: '0.6rem 0.75rem',
+                            borderRadius: '8px',
+                            border: '1px solid #E2E8F0',
+                            background: '#FFFFFF',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                          }}
+                        >
+                          {file.previewUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={file.previewUrl}
+                              alt={file.name}
+                              style={{ width: '38px', height: '38px', borderRadius: '6px', objectFit: 'cover', background: '#F1F5F9', flexShrink: 0 }}
+                            />
+                          ) : (
+                            <div style={{ width: '38px', height: '38px', borderRadius: '6px', background: '#EFF6FF', color: '#1D4ED8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.7rem', flexShrink: 0 }}>
+                              {file.type.substring(0, 4)}
+                            </div>
+                          )}
+
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '0.78125rem', fontWeight: 700, color: '#1E1E1E', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {file.name}
+                            </div>
+                            <div style={{ fontSize: '0.6875rem', color: '#64748B' }}>
+                              {file.size}
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveFile(file.id)}
+                            style={{
+                              background: '#FEE2E2',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '24px',
+                              height: '24px',
+                              color: '#991B1B',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              flexShrink: 0,
+                            }}
+                            title="Remove file"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Google Drive / WeTransfer Cloud Link */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.3rem' }}>
+                    🔗 Google Drive / WeTransfer / Dropbox Link (Optional for large raw files)
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://drive.google.com/drive/folders/... or wetransfer link"
+                    value={driveLink}
+                    onChange={(e) => setDriveLink(e.target.value)}
+                    style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#1E1E1E', fontSize: '0.8125rem' }}
+                  />
+                </div>
+
+                {/* Custom Print Instructions */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#1E1E1E', marginBottom: '0.3rem' }}>
+                    ✍️ Specific Printing Instructions / Custom Text / Dimensions
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="e.g. Card size: 5x7 inches, single-sided, matte lamination, add Groom & Bride names, urgent delivery requested..."
+                    value={printInstructions}
+                    onChange={(e) => setPrintInstructions(e.target.value)}
+                    style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#1E1E1E', fontSize: '0.8125rem', fontFamily: 'inherit' }}
+                  />
+                </div>
+
+                {/* Reassuring Prepress Proof Guarantee Banner */}
+                <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
+                  <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>🛡️</span>
+                  <div>
+                    <div style={{ fontSize: '0.78125rem', fontWeight: 700, color: '#166534', marginBottom: '0.15rem' }}>
+                      100% Free Prepress Proof & Quality Inspection
+                    </div>
+                    <div style={{ fontSize: '0.725rem', color: '#15803D', lineHeight: 1.4 }}>
+                      Our senior designers verify sharpness, margins, and CMYK colors. We will WhatsApp you a digital proof for your final approval before printing starts.
+                    </div>
+                  </div>
+                </div>
+
+                {/* WhatsApp Follow-up Checkbox */}
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem', color: '#1E1E1E', cursor: 'pointer', marginBottom: '1.5rem', fontWeight: 500 }}>
+                  <input
+                    type="checkbox"
+                    checked={whatsappFollowup}
+                    onChange={(e) => setWhatsappFollowup(e.target.checked)}
+                    style={{ width: '16px', height: '16px', accentColor: '#25D366' }}
+                  />
+                  <span>💬 Connect with printing specialist on WhatsApp (+91 9479784979) for design guidance</span>
+                </label>
+
+                {/* ════ SECTION 3: DELIVERY SPEED ════ */}
                 <h2 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.1rem', fontWeight: 700, color: '#1E1E1E', marginTop: '1.5rem', marginBottom: '1rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem' }}>
-                  2. Select Delivery Speed
+                  3. Select Delivery Speed
                 </h2>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
@@ -559,7 +819,7 @@ export default function CheckoutPage() {
               {/* Modal Header */}
               <div style={{ textAlign: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '1rem' }}>
                 <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#0B2545', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  AYUSHMAN CARDS N GRAPHICS
+                  AYUSHMAN CARDS & GRAPHICS
                 </span>
                 <h2 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.35rem', fontWeight: 700, color: '#1E1E1E', margin: '0.2rem 0' }}>
                   Select Payment Method
@@ -601,11 +861,11 @@ export default function CheckoutPage() {
               {activePaymentTab === 'upi' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   <p style={{ fontSize: '0.8125rem', color: '#6B7280', margin: 0 }}>
-                    Tap any UPI app below to pay directly to <strong>9479784979</strong> (Ayushman Cards n Graphics):
+                    Tap any UPI app below to pay directly to <strong>9479784979</strong> (Ayushman Cards & Graphics):
                   </p>
 
                   <a
-                    href={`upi://pay?pa=9479784979@paytm&pn=AyushmanCardsnGraphics&am=${finalTotal}&cu=INR`}
+                    href={`upi://pay?pa=9479784979@paytm&pn=AyushmanCardsAndGraphics&am=${finalTotal}&cu=INR`}
                     style={{
                       padding: '0.75rem 1rem',
                       borderRadius: '8px',
@@ -624,7 +884,7 @@ export default function CheckoutPage() {
                   </a>
 
                   <a
-                    href={`upi://pay?pa=9479784979@ybl&pn=AyushmanCardsnGraphics&am=${finalTotal}&cu=INR`}
+                    href={`upi://pay?pa=9479784979@ybl&pn=AyushmanCardsAndGraphics&am=${finalTotal}&cu=INR`}
                     style={{
                       padding: '0.75rem 1rem',
                       borderRadius: '8px',
@@ -643,7 +903,7 @@ export default function CheckoutPage() {
                   </a>
 
                   <a
-                    href={`upi://pay?pa=9479784979@okaxis&pn=AyushmanCardsnGraphics&am=${finalTotal}&cu=INR`}
+                    href={`upi://pay?pa=9479784979@okaxis&pn=AyushmanCardsAndGraphics&am=${finalTotal}&cu=INR`}
                     style={{
                       padding: '0.75rem 1rem',
                       borderRadius: '8px',
@@ -674,7 +934,7 @@ export default function CheckoutPage() {
                     <img src={qrCodeUrl} alt="UPI Payment QR Code" style={{ width: '180px', height: '180px', display: 'block', margin: '0 auto' }} />
                   </div>
                   <div style={{ fontSize: '0.78125rem', color: '#1E1E1E', fontWeight: 700, marginTop: '0.5rem' }}>
-                    Ayushman Cards n Graphics • 9479784979
+                    Ayushman Cards & Graphics • 9479784979
                   </div>
                 </div>
               )}
@@ -712,7 +972,7 @@ export default function CheckoutPage() {
                     Studio Collection & Pay on Delivery
                   </p>
                   <p style={{ fontSize: '0.78125rem', color: '#6B7280', marginBottom: '1rem' }}>
-                    Visit our studio at Freeganj, Ujjain to inspect sample proof and pay cash/UPI on order pickup.
+                    Visit our studio at 63, Varruchi Marg, Freeganj Ujjain to inspect sample proof and pay cash/UPI on order pickup.
                   </p>
                 </div>
               )}

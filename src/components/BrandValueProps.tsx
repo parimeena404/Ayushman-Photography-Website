@@ -13,7 +13,7 @@ export default function BrandValueProps() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo.png"
-              alt="Ayushman Cards n Graphics Logo"
+              alt="Ayushman Cards & Graphics Logo"
               style={{ height: '60px', width: 'auto' }}
             />
           </div>
@@ -37,7 +37,7 @@ export default function BrandValueProps() {
               lineHeight: 1.8,
             }}
           >
-            Located at 63 Varuchi Marg, Freeganj, Ujjain, Ayushman Cards & Graphics is Central India&apos;s premier commercial printing press. We specialize in luxury wedding invitation cards, offset printing, visiting cards, flex banners, corporate stationery, photobooks, and custom graphic design.
+            Located at 63, Varruchi Marg, Freeganj Ujjain, Ayushman Cards & Graphics is Central India&apos;s premier commercial printing press. We specialize in luxury wedding invitation cards, offset printing, visiting cards, flex banners, corporate stationery, photobooks, and custom graphic design.
           </p>
         </div>
 
@@ -68,7 +68,7 @@ export default function BrandValueProps() {
               Complete Offset & Digital Printing Press
             </h3>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-              High-volume offset press for visiting cards, letterheads, pamphlets, bill books, and flex banners in Freeganj, Ujjain.
+              High-volume offset press for visiting cards, letterheads, pamphlets, bill books, and flex banners at 63, Varruchi Marg, Freeganj Ujjain.
             </p>
           </motion.div>
 

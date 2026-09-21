@@ -1,46 +1,98 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import SectionHeader from './SectionHeader';
 import Link from 'next/link';
 
-const products = [
+interface ProductItem {
+  id?: string;
+  name: string;
+  desc: string;
+  price: string;
+  image: string;
+  link?: string;
+}
+
+const FALLBACK_PRODUCTS: ProductItem[] = [
   {
     name: 'Luxury Wedding Albums',
     desc: 'Handcrafted with Italian leatherette and museum-quality pages.',
     price: 'From ₹4,500',
     image: '/images/keepsakes/film1.jpg',
+    link: '/products?category=Wedding Cards',
   },
   {
-    name: 'Canvas & Board Prints',
-    desc: 'Gallery-wrapped canvas prints on premium cotton fabric.',
-    price: 'From ₹1,250',
-    image: '/images/keepsakes/card1.png',
+    name: 'Royal Farman Scroll Cards',
+    desc: 'Maharaja style white & gold royal carriage scroll invitation.',
+    price: 'From ₹3,800',
+    image: '/images/wedding/scroll_white_gold.png',
+    link: '/products?category=Wedding Cards',
   },
   {
-    name: 'Framed Card Keepsakes',
-    desc: 'Custom-framed prints with acid-free matting and UV glass.',
-    price: 'From ₹1,850',
-    image: '/images/keepsakes/card2.png',
+    name: '500 GSM Velvet Business Cards',
+    desc: 'Heavyweight velvet touch cards with hot gold foil stamping.',
+    price: 'From ₹480',
+    image: '/images/visiting_cards/card_500gsm_velvet.jpg',
+    link: '/products?category=Business Cards',
   },
   {
-    name: 'Custom Photo Books',
-    desc: 'Lay-flat coffee table books with custom cover designs.',
-    price: 'From ₹1,850',
-    image: '/images/keepsakes/card3.png',
+    name: 'Star Flex Outdoor Banners',
+    desc: 'Weatherproof 340 GSM heavy duty flex banners with eyelets.',
+    price: 'From ₹350',
+    image: '/images/banners/outdoor_flex_banner.jpg',
+    link: '/products?category=Flex Banners',
   },
   {
-    name: 'Fine Art Stationery',
-    desc: 'Archival-quality prints on metallic shimmer and bond paper.',
-    price: 'From ₹950',
+    name: 'Executive Bond Letterheads',
+    desc: '100 GSM super white executive letterheads for corporate offices.',
+    price: 'From ₹1,450',
     image: '/images/stationery/letterhead_bond.jpg',
+    link: '/products?category=Office Stationery',
   },
 ];
 
 export default function Products() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-60px' });
+  const [productList, setProductList] = useState<ProductItem[]>(FALLBACK_PRODUCTS);
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const res = await fetch('/api/products');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.products) && data.products.length > 0) {
+            const mapped: ProductItem[] = data.products.slice(0, 5).map((p: any) => ({
+              id: p.id,
+              name: p.title,
+              desc: p.description || p.badge || 'Premium Custom Print',
+              price: p.price || `₹${p.numericPrice}`,
+              image: p.image || '/images/wedding/scroll_royal_blue_velvet.png',
+              link: `/products?search=${encodeURIComponent(p.title)}`,
+            }));
+            setProductList(mapped);
+          }
+        }
+      } catch (err) {
+        console.warn('Using default featured products:', err);
+      }
+    }
+
+    loadProducts();
+
+    const handleUpdate = () => {
+      loadProducts();
+    };
+
+    window.addEventListener('catalogUpdated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('catalogUpdated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
 
   return (
     <section id="products" className="section-padding" style={{ background: 'var(--bg-primary)' }}>
@@ -59,83 +111,88 @@ export default function Products() {
             gap: 'clamp(1rem, 2vw, 1.5rem)',
           }}
         >
-          {products.map((product, i) => (
+          {productList.map((product, i) => (
             <motion.div
-              key={product.name}
+              key={product.name + i}
               initial={{ opacity: 0, y: 24 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: i * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="card"
               style={{ cursor: 'pointer' }}
             >
-              <div style={{ overflow: 'hidden', aspectRatio: '1/1' }}>
-                <div
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    backgroundImage: `url(${product.image})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    transition: 'transform 0.6s ease',
-                  }}
-                  className="product-img"
-                />
-              </div>
-              <div style={{ padding: 'clamp(0.875rem, 1.5vw, 1.25rem)' }}>
-                <h3
-                  style={{
-                    fontFamily: "'Playfair Display', serif",
-                    fontSize: '0.9375rem',
-                    fontWeight: 600,
-                    color: 'var(--text-primary)',
-                    marginBottom: '0.375rem',
-                  }}
-                >
-                  {product.name}
-                </h3>
-                <p
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: '0.75rem',
-                    color: 'var(--text-tertiary)',
-                    lineHeight: 1.5,
-                    marginBottom: '0.75rem',
-                  }}
-                >
-                  {product.desc}
-                </p>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <span
+              <Link href={product.link || '/products'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <div style={{ overflow: 'hidden', aspectRatio: '1/1' }}>
+                  <div
                     style={{
-                      fontFamily: "'Manrope', sans-serif",
-                      fontSize: '0.8125rem',
-                      fontWeight: 700,
-                      color: 'var(--gold)',
+                      width: '100%',
+                      height: '100%',
+                      backgroundImage: `url(${product.image})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      transition: 'transform 0.6s ease',
                     }}
-                  >
-                    {product.price}
-                  </span>
-                  <Link
-                    href="/booking"
-                    style={{
-                      fontFamily: "'Manrope', sans-serif",
-                      fontSize: '0.7rem',
-                      fontWeight: 600,
-                      color: 'var(--text-secondary)',
-                      textDecoration: 'underline',
-                      textUnderlineOffset: '3px',
-                    }}
-                  >
-                    Order Now
-                  </Link>
+                    className="product-img"
+                  />
                 </div>
-              </div>
+                <div style={{ padding: 'clamp(0.875rem, 1.5vw, 1.25rem)' }}>
+                  <h3
+                    style={{
+                      fontFamily: "'Playfair Display', serif",
+                      fontSize: '0.9375rem',
+                      fontWeight: 600,
+                      color: 'var(--text-primary)',
+                      marginBottom: '0.375rem',
+                    }}
+                  >
+                    {product.name}
+                  </h3>
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: '0.75rem',
+                      color: 'var(--text-tertiary)',
+                      lineHeight: 1.5,
+                      marginBottom: '0.75rem',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    {product.desc}
+                  </p>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: "'Manrope', sans-serif",
+                        fontSize: '0.8125rem',
+                        fontWeight: 700,
+                        color: 'var(--gold)',
+                      }}
+                    >
+                      {product.price}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "'Manrope', sans-serif",
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                        color: 'var(--text-secondary)',
+                        textDecoration: 'underline',
+                        textUnderlineOffset: '3px',
+                      }}
+                    >
+                      Order Now
+                    </span>
+                  </div>
+                </div>
+              </Link>
             </motion.div>
           ))}
         </div>

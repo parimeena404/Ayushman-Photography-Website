@@ -1,52 +1,188 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+
+interface StoreSettings {
+  whatsappNumber: string;
+  whatsappMessage: string;
+  instagramUrl: string;
+}
+
+const DEFAULT_SETTINGS: StoreSettings = {
+  whatsappNumber: '+919479784979',
+  whatsappMessage: 'Hello Ayushman Cards & Graphics Press, I would like to inquire about wedding cards, visiting cards, flex banners & printing services.',
+  instagramUrl: 'https://instagram.com/ayushmancards_ujjain',
+};
+
 export default function FloatingWhatsApp() {
-  const phoneNumber = '+919479784979';
-  const defaultMessage = encodeURIComponent(
-    'Hello Ayushman Cards & Graphics Press, I would like to inquire about wedding cards, visiting cards, flex banners & printing services.'
-  );
+  const [settings, setSettings] = useState<StoreSettings>(DEFAULT_SETTINGS);
+  const [hoveredBtn, setHoveredBtn] = useState<'whatsapp' | 'instagram' | null>(null);
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/settings');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.settings) {
+            setSettings({
+              whatsappNumber: data.settings.whatsappNumber || DEFAULT_SETTINGS.whatsappNumber,
+              whatsappMessage: data.settings.whatsappMessage || DEFAULT_SETTINGS.whatsappMessage,
+              instagramUrl: data.settings.instagramUrl || DEFAULT_SETTINGS.instagramUrl,
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Using default floating buttons config:', err);
+      }
+    }
+
+    loadSettings();
+
+    const handleSettingsUpdate = () => {
+      loadSettings();
+    };
+
+    window.addEventListener('settingsUpdated', handleSettingsUpdate);
+    window.addEventListener('storage', handleSettingsUpdate);
+
+    return () => {
+      window.removeEventListener('settingsUpdated', handleSettingsUpdate);
+      window.removeEventListener('storage', handleSettingsUpdate);
+    };
+  }, []);
+
+  const cleanPhone = settings.whatsappNumber.replace(/[^0-9]/g, '');
+  const encodedMsg = encodeURIComponent(settings.whatsappMessage || DEFAULT_SETTINGS.whatsappMessage);
+  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
+  const instagramUrl = settings.instagramUrl.startsWith('http')
+    ? settings.instagramUrl
+    : `https://instagram.com/${settings.instagramUrl.replace('@', '')}`;
 
   return (
-    <a
-      href={`https://wa.me/${phoneNumber}?text=${defaultMessage}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Chat on WhatsApp"
+    <aside
+      aria-label="Quick Contact & Socials"
       style={{
         position: 'fixed',
-        bottom: '2.5rem',
-        right: '2rem',
-        zIndex: 90,
-        width: '52px',
-        height: '52px',
-        borderRadius: '50%',
-        backgroundColor: 'var(--bg-dark)',
-        border: '1px solid var(--accent)',
+        bottom: '2rem',
+        right: '1.5rem',
+        zIndex: 9999,
         display: 'flex',
+        flexDirection: 'column',
+        gap: '0.75rem',
         alignItems: 'center',
-        justifyContent: 'center',
-        color: 'var(--accent-hero)',
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
-        transition: 'transform 0.3s ease, border-color 0.3s ease, color 0.3s ease',
-        textDecoration: 'none',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'scale(1.08)';
-        e.currentTarget.style.borderColor = 'var(--accent-secondary)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'scale(1)';
-        e.currentTarget.style.borderColor = 'var(--accent)';
       }}
     >
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-      </svg>
-    </a>
+      {/* ─── INSTAGRAM FLOATING BUTTON ─── */}
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        {hoveredBtn === 'instagram' && (
+          <div
+            style={{
+              position: 'absolute',
+              right: '100%',
+              marginRight: '0.75rem',
+              backgroundColor: '#1E1E1E',
+              color: '#FFFFFF',
+              padding: '0.35rem 0.75rem',
+              borderRadius: '6px',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              fontFamily: "'Inter', sans-serif",
+              whiteSpace: 'nowrap',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+              pointerEvents: 'none',
+              animation: 'fadeIn 0.2s ease',
+            }}
+          >
+            Follow on Instagram 📸
+          </div>
+        )}
+        <a
+          href={instagramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Follow us on Instagram"
+          onMouseEnter={() => setHoveredBtn('instagram')}
+          onMouseLeave={() => setHoveredBtn(null)}
+          style={{
+            width: '48px',
+            height: '48px',
+            borderRadius: '50%',
+            background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#FFFFFF',
+            boxShadow: '0 4px 16px rgba(220, 39, 67, 0.4)',
+            transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease',
+            transform: hoveredBtn === 'instagram' ? 'scale(1.12) translateY(-2px)' : 'scale(1)',
+            textDecoration: 'none',
+          }}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+          </svg>
+        </a>
+      </div>
+
+      {/* ─── WHATSAPP FLOATING BUTTON (100% VISIBLE VIBRANT GREEN & WHITE) ─── */}
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        {hoveredBtn === 'whatsapp' && (
+          <div
+            style={{
+              position: 'absolute',
+              right: '100%',
+              marginRight: '0.75rem',
+              backgroundColor: '#1E1E1E',
+              color: '#FFFFFF',
+              padding: '0.35rem 0.75rem',
+              borderRadius: '6px',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              fontFamily: "'Inter', sans-serif",
+              whiteSpace: 'nowrap',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+              pointerEvents: 'none',
+              animation: 'fadeIn 0.2s ease',
+            }}
+          >
+            Chat on WhatsApp 💬
+          </div>
+        )}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Chat with Ayushman Cards on WhatsApp"
+          onMouseEnter={() => setHoveredBtn('whatsapp')}
+          onMouseLeave={() => setHoveredBtn(null)}
+          style={{
+            width: '52px',
+            height: '52px',
+            borderRadius: '50%',
+            backgroundColor: '#25D366',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#FFFFFF',
+            boxShadow: '0 6px 20px rgba(37, 211, 102, 0.45)',
+            transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease',
+            transform: hoveredBtn === 'whatsapp' ? 'scale(1.12) translateY(-2px)' : 'scale(1)',
+            textDecoration: 'none',
+          }}
+        >
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="#FFFFFF"
+          >
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+          </svg>
+        </a>
+      </div>
+    </aside>
   );
 }

@@ -56,7 +56,6 @@ export default function Navbar() {
   const [products, setProducts] = useState<NavProduct[]>([]);
   const [hoveredTab, setHoveredTab] = useState<string | null>(null); // 'VIEW_ALL' or category ID
   const [searchQuery, setSearchQuery] = useState('');
-  const [copiedCode, setCopiedCode] = useState(false);
 
   // Mobile 3-line Category Drawer State
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
@@ -201,12 +200,6 @@ export default function Navbar() {
     return cols;
   }, [hoveredTab, categories, productsByCategory]);
 
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText('SAVE5');
-    setCopiedCode(true);
-    setTimeout(() => setCopiedCode(false), 2000);
-  };
-
   // Close drawer on escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -224,43 +217,6 @@ export default function Navbar() {
       style={{ position: 'sticky', top: 0, zIndex: 1000 }}
       onMouseLeave={() => setHoveredTab(null)}
     >
-      {/* ═══ 1. Top Promo Announcement Bar ═══ */}
-      <div
-        style={{
-          background: '#0B2545',
-          color: '#FFFFFF',
-          padding: '0.5rem 1rem',
-          fontSize: '0.8125rem',
-          fontFamily: "'Inter', sans-serif",
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '0.5rem',
-          textAlign: 'center',
-        }}
-      >
-        <span>
-          Buy More, Save More! <strong>Flat 5% OFF</strong> on Orders ₹10,000+ | Code:{' '}
-          <strong style={{ color: '#60B5FF' }}>SAVE5</strong>
-        </span>
-        <button
-          onClick={handleCopyCode}
-          style={{
-            background: 'transparent',
-            border: '1px solid rgba(255,255,255,0.3)',
-            borderRadius: '4px',
-            padding: '0.1rem 0.5rem',
-            fontSize: '0.7rem',
-            fontWeight: 600,
-            color: '#FFFFFF',
-            cursor: 'pointer',
-            fontFamily: "'Inter', sans-serif",
-          }}
-          title="Click to copy code"
-        >
-          {copiedCode ? '✓ Copied' : '📋'}
-        </button>
-      </div>
 
       {/* ═══ 2. Main Header Bar (Logo, Search, Actions) ═══ */}
       <div
@@ -319,7 +275,7 @@ export default function Navbar() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo.png"
-              alt="Ayushman Cards n Graphics"
+              alt="Ayushman Cards & Graphics"
               style={{ height: '48px', width: 'auto', objectFit: 'contain' }}
             />
           </Link>

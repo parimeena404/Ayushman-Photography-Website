@@ -8,7 +8,7 @@ const stories = [
   {
     title: '🪔 Diwali Deepotsav Family Shoot',
     type: 'Festive Celebration',
-    location: 'Freeganj, Ujjain',
+    location: '63, Varruchi Marg, Freeganj Ujjain',
     image: '/images/festivals/diwali-deepotsav.jpg',
     quote: 'Ayushman Studio captured our family Diwali puja with such warmth and divine radiance.',
   },

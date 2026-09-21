@@ -19,7 +19,7 @@ export default function PrivacyPage() {
 
           <div style={{ fontFamily: "'Inter', sans-serif", color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: '0.95rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <p>
-              At <strong>Ayushman Cards n Graphics</strong>, we prioritize the privacy and security of our clients&apos; personal information and event media.
+              At <strong>Ayushman Cards & Graphics</strong>, we prioritize the privacy and security of our clients&apos; personal information and event media.
             </p>
 
             <h2 style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 600, marginTop: '1rem' }}>

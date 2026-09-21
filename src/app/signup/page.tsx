@@ -69,7 +69,7 @@ export default function SignupPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo.png"
-              alt="Ayushman Cards n Graphics Logo"
+              alt="Ayushman Cards & Graphics Logo"
               style={{
                 height: '52px',
                 width: 'auto',

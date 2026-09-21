@@ -20,6 +20,10 @@ export async function POST(req: Request) {
       packageType,
       totalAmount,
       depositAmount,
+      uploadedFiles,
+      driveLink,
+      printInstructions,
+      whatsappFollowup,
     } = body;
 
     if (!customerName || !customerPhone || !depositAmount) {
@@ -51,6 +55,8 @@ export async function POST(req: Request) {
           customerPhone,
           eventType,
           packageType,
+          uploadedFilesCount: uploadedFiles ? `${uploadedFiles.length} file(s)` : 'None',
+          driveLink: driveLink || 'None',
         },
       };
 
@@ -89,6 +95,10 @@ export async function POST(req: Request) {
           paymentStatus: 'PENDING',
           razorpayOrderId: razorpayOrderId,
           status: 'NEW',
+          uploadedFiles: uploadedFiles || [],
+          driveLink: driveLink || null,
+          printInstructions: printInstructions || null,
+          whatsappFollowup: !!whatsappFollowup,
         },
       });
       if (booking?.id) {

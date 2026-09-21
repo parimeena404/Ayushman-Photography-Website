@@ -36,6 +36,10 @@ export interface BookingRecord {
   razorpayPaymentId?: string | null;
   razorpaySignature?: string | null;
   status: string; // 'NEW' | 'PROCESSING' | 'PRINTING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
+  uploadedFiles?: { name: string; size: string; previewUrl?: string; type?: string }[] | null;
+  driveLink?: string | null;
+  printInstructions?: string | null;
+  whatsappFollowup?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -80,6 +84,26 @@ export interface ProductRecord {
   updatedAt: string;
 }
 
+export interface SettingsRecord {
+  id: string;
+  shopName: string;
+  proprietor: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  phonePrimary: string;
+  phoneSecondary: string;
+  whatsappNumber: string;
+  whatsappMessage: string;
+  instagramUrl: string;
+  instagramHandle: string;
+  facebookUrl: string;
+  youtubeUrl: string;
+  email: string;
+  updatedAt: string;
+}
+
 export interface BannerRecord {
   id: string;
   title: string;
@@ -101,7 +125,28 @@ interface DBStore {
   categories: CategoryRecord[];
   products: ProductRecord[];
   banners: BannerRecord[];
+  settings?: SettingsRecord;
 }
+
+export const DEFAULT_SETTINGS: SettingsRecord = {
+  id: 'site-settings',
+  shopName: 'Ayushman Cards & Graphics',
+  proprietor: 'Rajesh Saatoliya',
+  address: '63, Varruchi Marg, Freeganj Ujjain',
+  city: 'Ujjain',
+  state: 'Madhya Pradesh',
+  pincode: '456001',
+  phonePrimary: '9479784979',
+  phoneSecondary: '9893022451',
+  whatsappNumber: '+919479784979',
+  whatsappMessage: 'Hello Ayushman Cards & Graphics Press, I would like to inquire about wedding cards, visiting cards, flex banners & printing services.',
+  instagramUrl: 'https://instagram.com/ayushmancards_ujjain',
+  instagramHandle: '@ayushmancards_ujjain',
+  facebookUrl: 'https://facebook.com/ayushmancards',
+  youtubeUrl: 'https://youtube.com/@ayushmancards',
+  email: 'ayushmancardspress@gmail.com',
+  updatedAt: '2025-01-01T00:00:00.000Z',
+};
 
 const DB_FILE_PATH = path.join(os.tmpdir(), 'ayushman_print_db.json');
 
@@ -909,10 +954,10 @@ const DEFAULT_STORE: DBStore = {
       email: 'admin@ayushmancards.com',
       password: 'admin123',
       phone: '9479784979',
-      address: 'Freeganj Main Road',
+      address: '63, Varruchi Marg, Freeganj Ujjain',
       city: 'Ujjain',
       state: 'Madhya Pradesh',
-      pincode: '456010',
+      pincode: '456001',
       role: 'ADMIN',
       createdAt: '2025-01-01T00:00:00.000Z',
       updatedAt: '2025-01-01T00:00:00.000Z',
@@ -923,6 +968,7 @@ const DEFAULT_STORE: DBStore = {
   categories: INITIAL_CATEGORIES,
   products: INITIAL_PRODUCTS,
   banners: INITIAL_BANNERS,
+  settings: DEFAULT_SETTINGS,
 };
 
 function readStore(): DBStore {
@@ -944,6 +990,7 @@ function readStore(): DBStore {
           categories: (parsed.categories && parsed.categories.length > 0) ? parsed.categories : DEFAULT_STORE.categories,
           products: (parsed.products && parsed.products.length > 0) ? parsed.products : DEFAULT_STORE.products,
           banners: (parsed.banners && parsed.banners.length > 0) ? parsed.banners : DEFAULT_STORE.banners,
+          settings: parsed.settings ? { ...DEFAULT_SETTINGS, ...parsed.settings } : DEFAULT_SETTINGS,
         };
       }
     }
@@ -956,7 +1003,7 @@ function readStore(): DBStore {
     store.users.push(DEFAULT_STORE.users[0]);
   }
 
-  // Ensure categories, products, and banners are populated
+  // Ensure categories, products, banners, and settings are populated
   if (!store.categories || store.categories.length === 0) {
     store.categories = DEFAULT_STORE.categories;
   }
@@ -965,6 +1012,9 @@ function readStore(): DBStore {
   }
   if (!store.banners || store.banners.length === 0) {
     store.banners = DEFAULT_STORE.banners;
+  }
+  if (!store.settings) {
+    store.settings = DEFAULT_SETTINGS;
   }
 
   globalThis.__ayushmanInMemoryDB = store;
@@ -1350,6 +1400,26 @@ class BannerClient {
   }
 }
 
+class SettingsClient {
+  async get(): Promise<SettingsRecord> {
+    const store = readStore();
+    return store.settings || DEFAULT_SETTINGS;
+  }
+
+  async update(data: Partial<SettingsRecord>): Promise<SettingsRecord> {
+    const store = readStore();
+    const current = store.settings || DEFAULT_SETTINGS;
+    const updated: SettingsRecord = {
+      ...current,
+      ...data,
+      updatedAt: new Date().toISOString(),
+    };
+    store.settings = updated;
+    writeStore(store);
+    return updated;
+  }
+}
+
 export const db: any = {
   user: new UserClient(),
   booking: new BookingClient(),
@@ -1357,5 +1427,6 @@ export const db: any = {
   category: new CategoryClient(),
   product: new ProductClient(),
   banner: new BannerClient(),
+  settings: new SettingsClient(),
 };
 

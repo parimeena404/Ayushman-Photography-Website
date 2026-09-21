@@ -600,6 +600,17 @@ function CatalogContent() {
       }
     }
     loadLiveProducts();
+
+    const handleUpdate = () => {
+      loadLiveProducts();
+    };
+
+    window.addEventListener('catalogUpdated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('catalogUpdated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
   }, []);
 
   // Normalize incoming URL category queries

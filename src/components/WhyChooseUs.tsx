@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 const reasons = [
   {
     icon: '🎨',
@@ -18,8 +20,8 @@ const reasons = [
   },
   {
     icon: '💎',
-    title: 'Premium Paper & Finishes',
-    desc: 'From 350 GSM velvet touch to metallic gold foil, spot UV, and acrylic — only the finest materials.',
+    title: 'Wide Range of Papers & Special Finishes',
+    desc: 'We provide a wide range of papers with specialized in-house expertise in Velvet Touch, Metallic Gold Foil, Spot UV, and Acrylic finishes.',
   },
   {
     icon: '⚡',
@@ -53,7 +55,7 @@ export default function WhyChooseUs() {
               marginBottom: '0.5rem',
             }}
           >
-            Why choose Ayushman Cards?
+            Why choose Ayushman Cards & Graphics?
           </h2>
           <p
             style={{
@@ -64,18 +66,11 @@ export default function WhyChooseUs() {
               margin: '0 auto',
             }}
           >
-            Trusted by 5,000+ customers across India for premium printing & card-making since 2015.
+            Trusted by 5,000+ customers across India for premium printing & card-making since 2001.
           </p>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '1.5rem',
-          }}
-          className="vp-why-grid"
-        >
+        <div className="vp-why-grid">
           {reasons.map((r) => (
             <div
               key={r.title}
@@ -121,14 +116,6 @@ export default function WhyChooseUs() {
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .vp-why-grid {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }

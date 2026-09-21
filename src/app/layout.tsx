@@ -1,40 +1,9 @@
 import type { Metadata } from 'next';
-import { Playfair_Display, Cormorant_Garamond, Inter, Manrope } from 'next/font/google';
 import ClientBody from '@/components/ClientBody';
 import CursorGlow from '@/components/CursorGlow';
 import Preloader from '@/components/Preloader';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import './globals.css';
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-display',
-  display: 'swap',
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-editorial',
-  display: 'swap',
-});
-
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-body',
-  display: 'swap',
-});
-
-const manrope = Manrope({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-ui',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: 'Ayushman Cards & Graphics — Premium Printing Press, Wedding Cards & Signage | Ujjain',
@@ -106,11 +75,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${playfair.variable} ${cormorant.variable} ${inter.variable} ${manrope.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body suppressHydrationWarning>
         <ClientBody>
           <Preloader />

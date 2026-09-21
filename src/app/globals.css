@@ -7,6 +7,12 @@
 
 /* ── Vistaprint Color Palette ── */
 :root {
+  /* Typography */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-editorial: 'Cormorant Garamond', Garamond, serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-ui: 'Manrope', 'Inter', system-ui, sans-serif;
+
   /* Backgrounds */
   --bg-primary: #FFFFFF;
   --bg-secondary: #F8F9FA;

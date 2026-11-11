@@ -17,12 +17,6 @@ interface CouponItem {
   usageCount: number;
 }
 
-const DEFAULT_COUPONS: CouponItem[] = [
-  { id: 'c-1', code: 'SAVE5', discountType: 'PERCENT', discountValue: 5, minOrderAmount: 10000, isActive: true, usageCount: 42 },
-  { id: 'c-2', code: 'FESTIVE10', discountType: 'PERCENT', discountValue: 10, minOrderAmount: 15000, isActive: true, usageCount: 19 },
-  { id: 'c-3', code: 'ROYAL500', discountType: 'FLAT', discountValue: 500, minOrderAmount: 5000, isActive: true, usageCount: 28 },
-];
-
 export default function AdminPortalPage() {
   const { user, login, logout, refreshUser } = useAuth();
 
@@ -39,8 +33,10 @@ export default function AdminPortalPage() {
   const [productsList, setProductsList] = useState<any[]>([]);
   const [categoriesList, setCategoriesList] = useState<any[]>([]);
   const [bannersList, setBannersList] = useState<any[]>([]);
-  const [couponsList, setCouponsList] = useState<CouponItem[]>(DEFAULT_COUPONS);
+  const [couponsList, setCouponsList] = useState<CouponItem[]>([]);
   const [stats, setStats] = useState<any>({ totalOrders: 0, totalRevenue: 0, pendingOrders: 0, paidOrders: 0 });
+  const [dbStatus, setDbStatus] = useState<{ tursoConfigured?: boolean; storageMode?: string; message?: string; counts?: any } | null>(null);
+  const [dbSyncing, setDbSyncing] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
 
   // Tabs
@@ -51,7 +47,15 @@ export default function AdminPortalPage() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [productCatFilter, setProductCatFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
-  const [actionNotice, setActionNotice] = useState<string | null>(null);
+  const [actionNotice, setActionNotice] = useState<{ text: string; type?: 'success' | 'error' } | null>(null);
+
+  // In-page Delete Confirmation Modal (avoids unreliable browser confirm dialogs)
+  const [pendingDelete, setPendingDelete] = useState<{
+    type: 'product' | 'category' | 'banner' | 'order' | 'coupon' | 'inquiry' | 'user';
+    id: string;
+    label: string;
+  } | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Modals
   const [showAddUserModal, setShowAddUserModal] = useState(false);
@@ -63,20 +67,21 @@ export default function AdminPortalPage() {
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [productSaving, setProductSaving] = useState(false);
   const [productForm, setProductForm] = useState<{
     title: string;
     category: string;
     badge: string;
     price: string;
-    numericPrice: number;
+    numericPrice: number | string;
     unit: string;
     image: string;
     description: string;
     features: string;
     customizerId: string;
     isActive: boolean;
-    paperOptions: { label: string; extraPrice: number }[];
-    quantityOptions: { qty: number; multiplier: number }[];
+    paperOptions: { label: string; extraPrice: number | string }[];
+    quantityOptions: { qty: number | string; multiplier: number | string }[];
     cornerOptions: string;
   }>({
     title: '',
@@ -145,6 +150,7 @@ export default function AdminPortalPage() {
   // Admin & Store Settings State
   const [settingProprietor, setSettingProprietor] = useState('Rajesh Saatoliya');
   const [settingShopName, setSettingShopName] = useState('Ayushman Cards & Graphics');
+  const [settingStudioEmail, setSettingStudioEmail] = useState('ayushmancardspress@gmail.com');
   const [settingName, setSettingName] = useState('');
   const [settingEmail, setSettingEmail] = useState('');
   const [settingPhone, setSettingPhone] = useState('9479784979');
@@ -164,17 +170,25 @@ export default function AdminPortalPage() {
   const [settingSaving, setSettingSaving] = useState(false);
   const [settingMessage, setSettingMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
+  const showNotice = (text: string, type: 'success' | 'error' = 'success') => {
+    setActionNotice({ text, type });
+    setTimeout(() => setActionNotice(null), 4000);
+  };
+
   const fetchAdminData = async () => {
     setLoadingData(true);
     try {
-      const [ordersRes, usersRes, inquiriesRes, productsRes, categoriesRes, bannersRes, settingsRes] = await Promise.all([
-        fetch('/api/admin/orders'),
-        fetch('/api/admin/users'),
-        fetch('/api/admin/inquiries').catch(() => fetch('/api/inquiries')),
-        fetch('/api/admin/products'),
-        fetch('/api/admin/categories'),
-        fetch('/api/admin/banners'),
-        fetch('/api/admin/settings'),
+      const noCache = { cache: 'no-store' as RequestCache };
+      const [ordersRes, usersRes, inquiriesRes, productsRes, categoriesRes, bannersRes, settingsRes, couponsRes, migrateRes] = await Promise.all([
+        fetch('/api/admin/orders', noCache),
+        fetch('/api/admin/users', noCache),
+        fetch('/api/admin/inquiries', noCache),
+        fetch('/api/admin/products', noCache),
+        fetch('/api/admin/categories', noCache),
+        fetch('/api/admin/banners', noCache),
+        fetch('/api/admin/settings', noCache),
+        fetch('/api/admin/coupons', noCache),
+        fetch('/api/admin/migrate', noCache).catch(() => null),
       ]);
 
       if (ordersRes.ok) {
@@ -192,7 +206,7 @@ export default function AdminPortalPage() {
         }
       }
 
-      if (inquiriesRes && inquiriesRes.ok) {
+      if (inquiriesRes.ok) {
         const inquiriesData = await inquiriesRes.json();
         if (inquiriesData.success) {
           setInquiries(inquiriesData.inquiries || []);
@@ -213,19 +227,32 @@ export default function AdminPortalPage() {
         }
       }
 
-      if (bannersRes && bannersRes.ok) {
+      if (bannersRes.ok) {
         const bannersData = await bannersRes.json();
         if (bannersData.success) {
           setBannersList(bannersData.banners || []);
         }
       }
 
-      if (settingsRes && settingsRes.ok) {
+      if (couponsRes.ok) {
+        const couponsData = await couponsRes.json();
+        if (couponsData.success) {
+          setCouponsList(couponsData.coupons || []);
+        }
+      }
+
+      if (migrateRes && migrateRes.ok) {
+        const migrateData = await migrateRes.json();
+        setDbStatus(migrateData);
+      }
+
+      if (settingsRes.ok) {
         const settingsData = await settingsRes.json();
         if (settingsData.success && settingsData.settings) {
           const s = settingsData.settings;
           setSettingProprietor(s.proprietor || 'Rajesh Saatoliya');
           setSettingShopName(s.shopName || 'Ayushman Cards & Graphics');
+          setSettingStudioEmail(s.email || 'ayushmancardspress@gmail.com');
           setSettingAddress(s.address || '63, Varruchi Marg, Freeganj Ujjain');
           setSettingCity(s.city || 'Ujjain');
           setSettingState(s.state || 'Madhya Pradesh');
@@ -321,13 +348,15 @@ export default function AdminPortalPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: orderId, status: newStatus }),
       });
-      if (res.ok) {
-        setActionNotice(`✓ Order #${orderId.slice(-6)} status set to ${newStatus}`);
-        setTimeout(() => setActionNotice(null), 3000);
-        fetchAdminData();
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        showNotice(`✓ Order #${orderId.slice(-6).toUpperCase()} status set to ${newStatus}`);
+        await fetchAdminData();
+      } else {
+        showNotice(data.error || `Failed to update status (HTTP ${res.status})`, 'error');
       }
     } catch {
-      alert('Error updating order status');
+      showNotice('Network error updating order status', 'error');
     }
   };
 
@@ -338,13 +367,77 @@ export default function AdminPortalPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: orderId, paymentStatus }),
       });
-      if (res.ok) {
-        setActionNotice(`✓ Payment status updated to ${paymentStatus}`);
-        setTimeout(() => setActionNotice(null), 3000);
-        fetchAdminData();
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        showNotice(`✓ Payment status updated to ${paymentStatus}`);
+        await fetchAdminData();
+      } else {
+        showNotice(data.error || `Failed to update payment status (HTTP ${res.status})`, 'error');
       }
     } catch {
-      alert('Error updating payment status');
+      showNotice('Network error updating payment status', 'error');
+    }
+  };
+
+  const executeConfirmedDelete = async () => {
+    if (!pendingDelete) return;
+    setDeleteLoading(true);
+    const { type, id, label } = pendingDelete;
+    try {
+      let endpoint = '';
+      if (type === 'product') endpoint = `/api/admin/products?id=${encodeURIComponent(id)}`;
+      else if (type === 'category') endpoint = `/api/admin/categories?id=${encodeURIComponent(id)}`;
+      else if (type === 'banner') endpoint = `/api/admin/banners?id=${encodeURIComponent(id)}`;
+      else if (type === 'order') endpoint = `/api/admin/orders?id=${encodeURIComponent(id)}`;
+      else if (type === 'coupon') endpoint = `/api/admin/coupons?id=${encodeURIComponent(id)}`;
+      else if (type === 'inquiry') endpoint = `/api/admin/inquiries?id=${encodeURIComponent(id)}`;
+      else if (type === 'user') endpoint = `/api/admin/users?id=${encodeURIComponent(id)}`;
+
+      const res = await fetch(endpoint, { method: 'DELETE', cache: 'no-store' });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.success) {
+        showNotice(data.error || `Delete failed (HTTP ${res.status}). Make sure you are signed in as Admin.`, 'error');
+        setPendingDelete(null);
+        return;
+      }
+
+      if (type === 'product') {
+        setProductsList((prev) => prev.filter((p) => p.id !== id));
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('catalogUpdated'));
+          localStorage.setItem('ayushman_catalog_updated_at', Date.now().toString());
+        }
+      } else if (type === 'category') {
+        setCategoriesList((prev) => prev.filter((c) => c.id !== id));
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('catalogUpdated'));
+          localStorage.setItem('ayushman_catalog_updated_at', Date.now().toString());
+        }
+      } else if (type === 'banner') {
+        setBannersList((prev) => prev.filter((b) => b.id !== id));
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('bannersUpdated'));
+          localStorage.setItem('ayushman_banners_updated_at', Date.now().toString());
+        }
+      } else if (type === 'order') {
+        setOrders((prev) => prev.filter((o) => o.id !== id));
+      } else if (type === 'coupon') {
+        setCouponsList((prev) => prev.filter((c) => c.id !== id));
+      } else if (type === 'inquiry') {
+        setInquiries((prev) => prev.filter((i) => i.id !== id));
+      } else if (type === 'user') {
+        setUsersList((prev) => prev.filter((u) => u.id !== id));
+      }
+
+      setPendingDelete(null);
+      showNotice(`✓ Deleted "${label}" permanently from database.`);
+      await fetchAdminData();
+    } catch (err: any) {
+      showNotice(`Error deleting item: ${err?.message || 'Network error'}`, 'error');
+      setPendingDelete(null);
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -389,15 +482,15 @@ export default function AdminPortalPage() {
       category: prod.category || 'Business Cards',
       badge: prod.badge || '',
       price: prod.price || `₹${prod.numericPrice || 0}`,
-      numericPrice: prod.numericPrice || 0,
+      numericPrice: prod.numericPrice ?? 0,
       unit: prod.unit || '100 Cards',
       image: prod.image || '',
       description: prod.description || '',
       features: Array.isArray(prod.features) ? prod.features.join('\n') : (prod.features || ''),
       customizerId: prod.customizerId || 'visiting-card',
       isActive: prod.isActive !== false,
-      paperOptions: Array.isArray(prod.paperOptions) && prod.paperOptions.length > 0
-        ? prod.paperOptions.map((p: any) => ({ label: p.label || '', extraPrice: Number(p.extraPrice) || 0 }))
+      paperOptions: Array.isArray(prod.paperOptions)
+        ? prod.paperOptions.map((p: any) => ({ label: p.label || '', extraPrice: p.extraPrice ?? 0 }))
         : [
             { label: '350 GSM Premium Matte', extraPrice: 0 },
             { label: 'Glossy Laminated (350 GSM)', extraPrice: 30 },
@@ -405,15 +498,15 @@ export default function AdminPortalPage() {
             { label: 'Spot UV Selective Coating', extraPrice: 150 },
             { label: 'Royal Gold Foil Embossed', extraPrice: 250 },
           ],
-      quantityOptions: Array.isArray(prod.quantityOptions) && prod.quantityOptions.length > 0
-        ? prod.quantityOptions.map((q: any) => ({ qty: Number(q.qty) || 100, multiplier: Number(q.multiplier) || 1 }))
+      quantityOptions: Array.isArray(prod.quantityOptions)
+        ? prod.quantityOptions.map((q: any) => ({ qty: q.qty ?? 100, multiplier: q.multiplier ?? 1 }))
         : [
             { qty: 100, multiplier: 1 },
             { qty: 250, multiplier: 2.2 },
             { qty: 500, multiplier: 3.8 },
             { qty: 1000, multiplier: 6.5 },
           ],
-      cornerOptions: Array.isArray(prod.cornerOptions) && prod.cornerOptions.length > 0
+      cornerOptions: Array.isArray(prod.cornerOptions)
         ? prod.cornerOptions.join(', ')
         : 'Standard Cut, Rounded Corners',
     });
@@ -442,8 +535,7 @@ export default function AdminPortalPage() {
           const data = await res.json();
           if (res.ok && data.url) {
             setProductForm((prev) => ({ ...prev, image: data.url }));
-            setActionNotice('✓ Image uploaded to Cloud CDN successfully!');
-            setTimeout(() => setActionNotice(null), 3000);
+            showNotice('✓ Image uploaded to Cloud CDN successfully!');
           }
         } catch {
           // fallback
@@ -460,6 +552,8 @@ export default function AdminPortalPage() {
 
   const handleSaveProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (productSaving) return;
+    setProductSaving(true);
     try {
       const featuresArray = productForm.features
         ? (Array.isArray(productForm.features)
@@ -467,14 +561,28 @@ export default function AdminPortalPage() {
             : productForm.features.split('\n').map((s: string) => s.trim()).filter(Boolean))
         : [];
 
-      const cornersArray = productForm.cornerOptions
+      const cornersArray = productForm.cornerOptions !== undefined
         ? (Array.isArray(productForm.cornerOptions)
             ? productForm.cornerOptions
             : productForm.cornerOptions.split(',').map((s: string) => s.trim()).filter(Boolean))
-        : ['Standard Cut', 'Rounded Corners'];
+        : [];
 
-      const numPrice = Number(productForm.numericPrice) || 0;
-      const formattedPrice = `₹${numPrice.toLocaleString()}`;
+      const numPrice = Math.max(0, Number(productForm.numericPrice) || 0);
+      const formattedPrice = `₹${numPrice.toLocaleString('en-IN')}`;
+
+      const cleanPaperOptions = (productForm.paperOptions || [])
+        .map((p) => ({
+          label: String(p.label || '').trim(),
+          extraPrice: Number(p.extraPrice) || 0,
+        }))
+        .filter((p) => p.label !== '');
+
+      const cleanQuantityOptions = (productForm.quantityOptions || [])
+        .map((q) => ({
+          qty: Number(q.qty) || 0,
+          multiplier: Number(q.multiplier) || 1,
+        }))
+        .filter((q) => q.qty > 0 && q.multiplier > 0);
 
       const payload = {
         ...productForm,
@@ -484,8 +592,8 @@ export default function AdminPortalPage() {
         badge: productForm.badge || `100 PCS @ ${formattedPrice}`,
         unit: productForm.unit || '100 Cards',
         features: featuresArray,
-        paperOptions: (productForm.paperOptions || []).filter((p) => p.label.trim() !== ''),
-        quantityOptions: (productForm.quantityOptions || []).filter((q) => Number(q.qty) > 0),
+        paperOptions: cleanPaperOptions,
+        quantityOptions: cleanQuantityOptions,
         cornerOptions: cornersArray,
         isActive: productForm.isActive !== false,
       };
@@ -496,44 +604,27 @@ export default function AdminPortalPage() {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.success) {
         setShowProductModal(false);
-        setActionNotice(`✓ Product "${productForm.title}" saved successfully!`);
-        setTimeout(() => setActionNotice(null), 3500);
+        showNotice(`✓ Product "${productForm.title}" saved to database!`);
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('catalogUpdated'));
           localStorage.setItem('ayushman_catalog_updated_at', Date.now().toString());
         }
         await fetchAdminData();
       } else {
-        alert(data.error || 'Failed to save product');
+        showNotice(data.error || `Failed to save product (HTTP ${res.status})`, 'error');
       }
     } catch {
-      alert('Error saving product.');
+      showNotice('Network error saving product.', 'error');
+    } finally {
+      setProductSaving(false);
     }
   };
 
-  const handleDeleteProduct = async (productId: string) => {
-    if (!confirm('Are you sure you want to delete this product? This will remove it from the database and website.')) return;
-    try {
-      const res = await fetch(`/api/admin/products?id=${encodeURIComponent(productId)}`, { method: 'DELETE' });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok && data.success) {
-        setProductsList((prev) => prev.filter((p) => p.id !== productId));
-        setActionNotice('✓ Product permanently removed from store & database.');
-        setTimeout(() => setActionNotice(null), 3500);
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('catalogUpdated'));
-          localStorage.setItem('ayushman_catalog_updated_at', Date.now().toString());
-        }
-        await fetchAdminData();
-      } else {
-        alert(data.error || `Failed to delete product (Status: ${res.status}). Please check admin login.`);
-      }
-    } catch (err: any) {
-      alert(`Error deleting product: ${err?.message || err}`);
-    }
+  const handleDeleteProduct = (prod: any) => {
+    setPendingDelete({ type: 'product', id: prod.id, label: prod.title || prod.id });
   };
 
   const handleOpenAddCategory = () => {
@@ -556,7 +647,7 @@ export default function AdminPortalPage() {
   const handleSaveCategorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!categoryForm.label.trim()) {
-      alert('Category label is required.');
+      showNotice('Category label is required.', 'error');
       return;
     }
 
@@ -577,41 +668,22 @@ export default function AdminPortalPage() {
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.success) {
         setShowCategoryModal(false);
-        setActionNotice(`✓ Category "${payload.label}" saved to database!`);
-        setTimeout(() => setActionNotice(null), 3500);
+        showNotice(`✓ Category "${payload.label}" saved to database!`);
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('catalogUpdated'));
           localStorage.setItem('ayushman_catalog_updated_at', Date.now().toString());
         }
         await fetchAdminData();
       } else {
-        alert(data.error || `Failed to save category (Status: ${res.status}). Please check admin login.`);
+        showNotice(data.error || `Failed to save category (HTTP ${res.status})`, 'error');
       }
     } catch (err: any) {
-      alert(`Error saving category: ${err?.message || err}`);
+      showNotice(`Error saving category: ${err?.message || err}`, 'error');
     }
   };
 
-  const handleDeleteCategory = async (categoryId: string) => {
-    if (!confirm(`Are you sure you want to delete category "${categoryId}"? Products in this category will remain but the category tag will be removed.`)) return;
-    try {
-      const res = await fetch(`/api/admin/categories?id=${encodeURIComponent(categoryId)}`, { method: 'DELETE' });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok && data.success) {
-        setCategoriesList((prev) => prev.filter((c) => c.id !== categoryId));
-        setActionNotice('✓ Category removed from store & database.');
-        setTimeout(() => setActionNotice(null), 3500);
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('catalogUpdated'));
-          localStorage.setItem('ayushman_catalog_updated_at', Date.now().toString());
-        }
-        await fetchAdminData();
-      } else {
-        alert(data.error || `Failed to delete category (Status: ${res.status}). Please check admin login.`);
-      }
-    } catch (err: any) {
-      alert(`Error deleting category: ${err?.message || err}`);
-    }
+  const handleDeleteCategory = (cat: any) => {
+    setPendingDelete({ type: 'category', id: cat.id, label: cat.label || cat.id });
   };
 
   const handleOpenAddBanner = () => {
@@ -668,8 +740,7 @@ export default function AdminPortalPage() {
           const data = await res.json();
           if (res.ok && data.url) {
             setBannerForm((prev) => ({ ...prev, image: data.url }));
-            setActionNotice('✓ Banner image uploaded to CDN successfully!');
-            setTimeout(() => setActionNotice(null), 3000);
+            showNotice('✓ Banner image uploaded to CDN successfully!');
           }
         } catch {
           // fallback
@@ -698,21 +769,20 @@ export default function AdminPortalPage() {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.success) {
         setShowBannerModal(false);
-        setActionNotice(`✓ Hero Banner "${bannerForm.title || 'Slide'}" saved successfully!`);
-        setTimeout(() => setActionNotice(null), 3500);
+        showNotice(`✓ Hero Banner "${bannerForm.title || 'Slide'}" saved successfully!`);
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('bannersUpdated'));
           localStorage.setItem('ayushman_banners_updated_at', Date.now().toString());
         }
-        fetchAdminData();
+        await fetchAdminData();
       } else {
-        alert(data.error || 'Failed to save hero banner');
+        showNotice(data.error || `Failed to save hero banner (HTTP ${res.status})`, 'error');
       }
     } catch {
-      alert('Error saving hero banner.');
+      showNotice('Error saving hero banner.', 'error');
     }
   };
 
@@ -728,54 +798,72 @@ export default function AdminPortalPage() {
           window.dispatchEvent(new CustomEvent('bannersUpdated'));
           localStorage.setItem('ayushman_banners_updated_at', Date.now().toString());
         }
-        fetchAdminData();
+        await fetchAdminData();
+      } else {
+        showNotice('Failed to update banner visibility.', 'error');
       }
     } catch {
-      alert('Error updating banner status');
+      showNotice('Error updating banner status.', 'error');
     }
   };
 
-  const handleDeleteBanner = async (bannerId: string) => {
-    if (!confirm('Are you sure you want to delete this hero banner?')) return;
-    try {
-      const res = await fetch(`/api/admin/banners?id=${bannerId}`, { method: 'DELETE' });
-      if (res.ok) {
-        setActionNotice('✓ Hero Banner removed.');
-        setTimeout(() => setActionNotice(null), 3500);
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('bannersUpdated'));
-          localStorage.setItem('ayushman_banners_updated_at', Date.now().toString());
-        }
-        fetchAdminData();
-      }
-    } catch {
-      alert('Error deleting banner');
-    }
+  const handleDeleteBanner = (bnr: any) => {
+    setPendingDelete({ type: 'banner', id: bnr.id, label: bnr.title || 'Untitled Banner' });
   };
 
-  // Coupons / Discounts
-  const handleSaveCouponSubmit = (e: React.FormEvent) => {
+  const handleDeleteOrder = (ord: any) => {
+    setPendingDelete({ type: 'order', id: ord.id, label: `Order #${ord.id.slice(-8).toUpperCase()} (${ord.customerName})` });
+  };
+
+  // Coupons / Discounts (persisted in DB via /api/admin/coupons)
+  const handleSaveCouponSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!couponForm.code) return;
-    const newCoupon: CouponItem = {
-      id: `c-${Date.now()}`,
-      code: couponForm.code.toUpperCase().trim(),
-      discountType: couponForm.discountType || 'PERCENT',
-      discountValue: couponForm.discountValue || 10,
-      minOrderAmount: couponForm.minOrderAmount || 0,
-      isActive: couponForm.isActive !== false,
-      usageCount: 0,
-    };
-    setCouponsList([newCoupon, ...couponsList]);
-    setShowCouponModal(false);
-    setActionNotice(`✓ Coupon code "${newCoupon.code}" created!`);
-    setTimeout(() => setActionNotice(null), 3500);
+    try {
+      const res = await fetch('/api/admin/coupons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: couponForm.code.toUpperCase().trim(),
+          discountType: couponForm.discountType || 'PERCENT',
+          discountValue: couponForm.discountValue || 10,
+          minOrderAmount: couponForm.minOrderAmount || 0,
+          isActive: couponForm.isActive !== false,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        setShowCouponModal(false);
+        showNotice(`✓ Coupon "${data.coupon.code}" saved to database!`);
+        await fetchAdminData();
+      } else {
+        showNotice(data.error || `Failed to create coupon (HTTP ${res.status})`, 'error');
+      }
+    } catch {
+      showNotice('Error saving coupon to database.', 'error');
+    }
   };
 
-  const handleDeleteCoupon = (id: string) => {
-    setCouponsList(couponsList.filter((c) => c.id !== id));
-    setActionNotice('✓ Coupon deleted.');
-    setTimeout(() => setActionNotice(null), 3000);
+  const handleToggleCouponActive = async (cpn: CouponItem) => {
+    try {
+      const res = await fetch('/api/admin/coupons', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: cpn.id, isActive: !cpn.isActive }),
+      });
+      if (res.ok) {
+        showNotice(`✓ Coupon "${cpn.code}" is now ${!cpn.isActive ? 'Active' : 'Disabled'}.`);
+        await fetchAdminData();
+      } else {
+        showNotice('Failed to toggle coupon status.', 'error');
+      }
+    } catch {
+      showNotice('Network error updating coupon.', 'error');
+    }
+  };
+
+  const handleDeleteCoupon = (cpn: CouponItem) => {
+    setPendingDelete({ type: 'coupon', id: cpn.id, label: `Coupon "${cpn.code}"` });
   };
 
   const handleCreateUserSubmit = async (e: React.FormEvent) => {
@@ -786,42 +874,47 @@ export default function AdminPortalPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUser),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.success) {
         setShowAddUserModal(false);
         setNewUser({ name: '', email: '', password: '', role: 'CLIENT', phone: '' });
-        setActionNotice(`✓ Account for ${newUser.name} created!`);
-        setTimeout(() => setActionNotice(null), 3000);
-        fetchAdminData();
+        showNotice(`✓ Account for ${newUser.name} created!`);
+        await fetchAdminData();
       } else {
-        alert(data.error || 'Failed to create user');
+        showNotice(data.error || 'Failed to create user', 'error');
       }
     } catch {
-      alert('Error creating user.');
+      showNotice('Error creating user.', 'error');
     }
   };
 
-  const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to delete this user?')) return;
-    try {
-      const res = await fetch(`/api/admin/users?id=${userId}`, { method: 'DELETE' });
-      if (res.ok) {
-        fetchAdminData();
-      }
-    } catch {
-      alert('Error deleting user');
-    }
+  const handleDeleteUser = (u: any) => {
+    setPendingDelete({ type: 'user', id: u.id, label: `${u.name} (${u.email})` });
   };
 
-  const handleDeleteInquiry = async (inquiryId: string) => {
-    if (!confirm('Delete this customer inquiry?')) return;
+  const handleDeleteInquiry = (inq: any) => {
+    setPendingDelete({ type: 'inquiry', id: inq.id, label: `Inquiry from ${inq.name}` });
+  };
+
+  const handleSyncDatabase = async (mode: 'syncQuantities' | 'seed') => {
+    setDbSyncing(true);
     try {
-      const res = await fetch(`/api/inquiries?id=${inquiryId}`, { method: 'DELETE' });
-      if (res.ok) {
-        fetchAdminData();
+      const res = await fetch('/api/admin/migrate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        showNotice(`✓ ${data.message}`);
+        await fetchAdminData();
+      } else {
+        showNotice(data.error || `Sync failed (HTTP ${res.status})`, 'error');
       }
     } catch {
-      alert('Error deleting inquiry');
+      showNotice('Error connecting to sync endpoint.', 'error');
+    } finally {
+      setDbSyncing(false);
     }
   };
 
@@ -857,6 +950,7 @@ export default function AdminPortalPage() {
           body: JSON.stringify({
             proprietor: settingProprietor,
             shopName: settingShopName,
+            email: settingStudioEmail,
             address: settingAddress,
             city: settingCity,
             state: settingState,
@@ -873,11 +967,12 @@ export default function AdminPortalPage() {
         }),
       ]);
 
-      const data = await profileRes.json();
+      const data = await profileRes.json().catch(() => ({}));
+      const settingsData = await settingsRes.json().catch(() => ({}));
       setSettingSaving(false);
 
       if (profileRes.ok && settingsRes.ok) {
-        setSettingMessage({ text: '✓ Studio settings, WhatsApp, Instagram & credentials saved successfully!', type: 'success' });
+        setSettingMessage({ text: '✓ Studio settings, WhatsApp, Instagram, Socials & credentials saved successfully!', type: 'success' });
         setSettingNewPassword('');
         setSettingConfirmPassword('');
         if (typeof window !== 'undefined') {
@@ -886,7 +981,7 @@ export default function AdminPortalPage() {
         }
         refreshUser();
       } else {
-        setSettingMessage({ text: data.error || 'Failed to update settings', type: 'error' });
+        setSettingMessage({ text: data.error || settingsData.error || 'Failed to update settings', type: 'error' });
       }
     } catch {
       setSettingSaving(false);
@@ -895,7 +990,12 @@ export default function AdminPortalPage() {
   };
 
   const filteredOrders = orders.filter((o) => {
-    const matchesStatus = statusFilter === 'ALL' || o.status === statusFilter || o.paymentStatus === statusFilter;
+    const matchesStatus =
+      statusFilter === 'ALL' ||
+      o.status === statusFilter ||
+      o.paymentStatus === statusFilter ||
+      (statusFilter === 'PENDING' && (!o.status || o.status === 'NEW') && o.paymentStatus !== 'PAID') ||
+      (statusFilter === 'CONFIRMED' && o.paymentStatus === 'PAID' && (!o.status || o.status === 'NEW' || o.status === 'PENDING'));
     const matchesSearch =
       o.customerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       o.customerPhone?.includes(searchQuery) ||
@@ -906,10 +1006,13 @@ export default function AdminPortalPage() {
   });
 
   const filteredProducts = productsList.filter((p) => {
-    const matchesCategory = productCatFilter === 'ALL' || p.category === productCatFilter;
+    const matchesCategory =
+      productCatFilter === 'ALL' ||
+      (p.category || '').trim().toLowerCase() === productCatFilter.trim().toLowerCase();
     const matchesSearch =
       p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.badge?.toLowerCase().includes(searchQuery.toLowerCase());
+      p.badge?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.category?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -1038,8 +1141,19 @@ export default function AdminPortalPage() {
           </div>
 
           {actionNotice && (
-            <div style={{ padding: '0.75rem 1rem', borderRadius: '8px', background: '#0B2545', color: '#FFF', fontSize: '0.84375rem', fontWeight: 600, marginBottom: '1.25rem' }}>
-              {actionNotice}
+            <div
+              style={{
+                padding: '0.75rem 1rem',
+                borderRadius: '8px',
+                background: actionNotice.type === 'error' ? '#FEE2E2' : '#0B2545',
+                color: actionNotice.type === 'error' ? '#991B1B' : '#FFFFFF',
+                border: actionNotice.type === 'error' ? '1px solid #FCA5A5' : 'none',
+                fontSize: '0.84375rem',
+                fontWeight: 700,
+                marginBottom: '1.25rem',
+              }}
+            >
+              {actionNotice.text}
             </div>
           )}
 
@@ -1338,6 +1452,8 @@ export default function AdminPortalPage() {
                   >
                     <option value="ALL">All Order Statuses ({orders.length})</option>
                     <option value="NEW">NEW</option>
+                    <option value="PENDING">PENDING</option>
+                    <option value="CONFIRMED">CONFIRMED</option>
                     <option value="PROCESSING">PROCESSING</option>
                     <option value="PRINTING">PRINTING</option>
                     <option value="SHIPPED">SHIPPED</option>
@@ -1350,16 +1466,16 @@ export default function AdminPortalPage() {
 
               {/* Desktop View Table */}
               <div className="admin-desktop-table" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                <table style={{ width: '100%', minWidth: '820px', borderCollapse: 'collapse', fontSize: '0.8125rem', textAlign: 'left' }}>
+                <table style={{ width: '100%', minWidth: '880px', borderCollapse: 'collapse', fontSize: '0.8125rem', textAlign: 'left' }}>
                   <thead>
                     <tr style={{ borderBottom: '2px solid #E2E8F0', color: '#64748B', textTransform: 'uppercase', fontSize: '0.725rem' }}>
                       <th style={{ padding: '0.75rem' }}>Order ID</th>
-                      <th style={{ padding: '0.75rem' }}>Customer</th>
+                      <th style={{ padding: '0.75rem' }}>Customer & Delivery</th>
                       <th style={{ padding: '0.75rem' }}>Product / Specs</th>
                       <th style={{ padding: '0.75rem' }}>Total Amount</th>
                       <th style={{ padding: '0.75rem' }}>Payment</th>
                       <th style={{ padding: '0.75rem' }}>Fulfillment</th>
-                      <th style={{ padding: '0.75rem', textAlign: 'right' }}>Tax Invoice</th>
+                      <th style={{ padding: '0.75rem', textAlign: 'right' }}>Invoice & Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1371,10 +1487,23 @@ export default function AdminPortalPage() {
                         <td style={{ padding: '0.75rem' }}>
                           <div style={{ fontWeight: 700, color: '#0B2545' }}>{o.customerName}</div>
                           <div style={{ fontSize: '0.75rem', color: '#64748B' }}>📱 {o.customerPhone}</div>
+                          {o.customerEmail && (
+                            <div style={{ fontSize: '0.725rem', color: '#64748B' }}>✉️ {o.customerEmail}</div>
+                          )}
+                          {(o.address || o.city) && (
+                            <div style={{ fontSize: '0.7rem', color: '#475569', maxWidth: '220px' }}>
+                              📍 {[o.address, o.city].filter(Boolean).join(', ')}
+                            </div>
+                          )}
                         </td>
                         <td style={{ padding: '0.75rem' }}>
                           <div style={{ fontWeight: 600, color: '#0F172A' }}>{o.eventType}</div>
                           <div style={{ fontSize: '0.725rem', color: '#64748B' }}>{o.packageType || 'Custom Print Job'}</div>
+                          {o.notes && (
+                            <div style={{ fontSize: '0.7rem', color: '#475569', marginTop: '0.2rem', maxWidth: '240px', whiteSpace: 'pre-wrap' }}>
+                              📝 {o.notes}
+                            </div>
+                          )}
                         </td>
                         <td style={{ padding: '0.75rem', fontWeight: 800, color: '#0B2545' }}>
                           ₹{o.totalAmount?.toLocaleString()}
@@ -1413,6 +1542,8 @@ export default function AdminPortalPage() {
                             }}
                           >
                             <option value="NEW">NEW</option>
+                            <option value="PENDING">PENDING</option>
+                            <option value="CONFIRMED">CONFIRMED</option>
                             <option value="PROCESSING">PROCESSING</option>
                             <option value="PRINTING">PRINTING</option>
                             <option value="SHIPPED">SHIPPED</option>
@@ -1421,12 +1552,23 @@ export default function AdminPortalPage() {
                           </select>
                         </td>
                         <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          <button
-                            onClick={() => setSelectedInvoiceOrder(o)}
-                            style={{ padding: '0.35rem 0.8rem', borderRadius: '6px', background: '#0B2545', color: '#FFFFFF', border: 'none', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
-                          >
-                            🧾 Invoice
-                          </button>
+                          <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedInvoiceOrder(o)}
+                              style={{ padding: '0.35rem 0.8rem', borderRadius: '6px', background: '#0B2545', color: '#FFFFFF', border: 'none', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                            >
+                              🧾 Invoice
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteOrder(o)}
+                              title="Delete order permanently"
+                              style={{ padding: '0.35rem 0.6rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}
+                            >
+                              🗑️
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -1464,11 +1606,22 @@ export default function AdminPortalPage() {
                       <a href={`tel:${o.customerPhone}`} style={{ fontSize: '0.78125rem', color: '#2563EB', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.15rem' }}>
                         📱 {o.customerPhone}
                       </a>
+                      {o.customerEmail && (
+                        <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.15rem' }}>✉️ {o.customerEmail}</div>
+                      )}
+                      {(o.address || o.city) && (
+                        <div style={{ fontSize: '0.75rem', color: '#475569', marginTop: '0.15rem' }}>
+                          📍 {[o.address, o.city].filter(Boolean).join(', ')}
+                        </div>
+                      )}
                     </div>
 
                     <div style={{ fontSize: '0.78125rem', color: '#475569', background: '#F8FAFC', padding: '0.5rem', borderRadius: '6px' }}>
                       <div style={{ fontWeight: 600, color: '#0F172A' }}>{o.eventType}</div>
                       <div style={{ color: '#64748B' }}>{o.packageType || 'Custom Print Job'}</div>
+                      {o.notes && (
+                        <div style={{ color: '#475569', marginTop: '0.25rem', whiteSpace: 'pre-wrap' }}>📝 {o.notes}</div>
+                      )}
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
@@ -1510,6 +1663,8 @@ export default function AdminPortalPage() {
                           }}
                         >
                           <option value="NEW">NEW</option>
+                          <option value="PENDING">PENDING</option>
+                          <option value="CONFIRMED">CONFIRMED</option>
                           <option value="PROCESSING">PROCESSING</option>
                           <option value="PRINTING">PRINTING</option>
                           <option value="SHIPPED">SHIPPED</option>
@@ -1519,27 +1674,46 @@ export default function AdminPortalPage() {
                       </div>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => setSelectedInvoiceOrder(o)}
-                      style={{
-                        width: '100%',
-                        padding: '0.55rem',
-                        borderRadius: '8px',
-                        background: '#0B2545',
-                        color: '#FFFFFF',
-                        border: 'none',
-                        fontSize: '0.78125rem',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.35rem',
-                      }}
-                    >
-                      🧾 View Tax Invoice
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedInvoiceOrder(o)}
+                        style={{
+                          flex: 1,
+                          padding: '0.55rem',
+                          borderRadius: '8px',
+                          background: '#0B2545',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          fontSize: '0.78125rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.35rem',
+                        }}
+                      >
+                        🧾 View Tax Invoice
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteOrder(o)}
+                        style={{
+                          padding: '0.55rem 0.85rem',
+                          borderRadius: '8px',
+                          border: '1px solid #FCA5A5',
+                          background: '#FEE2E2',
+                          color: '#991B1B',
+                          cursor: 'pointer',
+                          fontWeight: 700,
+                          fontSize: '0.78125rem',
+                        }}
+                        aria-label="Delete order"
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1643,7 +1817,8 @@ export default function AdminPortalPage() {
                               ✏️ Edit
                             </button>
                             <button
-                              onClick={() => handleDeleteProduct(p.id)}
+                              type="button"
+                              onClick={() => handleDeleteProduct(p)}
                               style={{ padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontWeight: 600, fontSize: '0.75rem' }}
                             >
                               🗑️
@@ -1743,7 +1918,7 @@ export default function AdminPortalPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleDeleteProduct(p.id)}
+                        onClick={() => handleDeleteProduct(p)}
                         style={{
                           padding: '0.55rem 0.85rem',
                           borderRadius: '8px',
@@ -1796,19 +1971,21 @@ export default function AdminPortalPage() {
                         {cat.description || 'No description'}
                       </div>
                       <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#059669', marginBottom: '0.75rem' }}>
-                        📦 {productsList.filter((p) => p.category === cat.id).length} Active Products
+                        📦 {productsList.filter((p) => (p.category || '').trim().toLowerCase() === (cat.id || '').trim().toLowerCase()).length} Active Products
                       </div>
                     </div>
 
                     <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid #E2E8F0', paddingTop: '0.75rem' }}>
                       <button
+                        type="button"
                         onClick={() => handleOpenEditCategory(cat)}
                         style={{ flex: 1, padding: '0.4rem', borderRadius: '6px', border: '1px solid #0B2545', background: 'rgba(11,37,69,0.06)', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', color: '#0B2545' }}
                       >
                         ✏️ Edit
                       </button>
                       <button
-                        onClick={() => handleDeleteCategory(cat.id)}
+                        type="button"
+                        onClick={() => handleDeleteCategory(cat)}
                         style={{ padding: '0.4rem 0.75rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', color: '#991B1B' }}
                       >
                         🗑️
@@ -1875,13 +2052,15 @@ export default function AdminPortalPage() {
 
                       <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid #F1F5F9', paddingTop: '0.75rem' }}>
                         <button
+                          type="button"
                           onClick={() => handleOpenEditBanner(bnr)}
                           style={{ flex: 1, padding: '0.4rem', borderRadius: '6px', border: '1px solid #0B2545', background: 'rgba(11,37,69,0.06)', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', color: '#0B2545' }}
                         >
                           ✏️ Edit
                         </button>
                         <button
-                          onClick={() => handleDeleteBanner(bnr.id)}
+                          type="button"
+                          onClick={() => handleDeleteBanner(bnr)}
                           style={{ padding: '0.4rem 0.75rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', color: '#991B1B' }}
                         >
                           🗑️
@@ -1932,7 +2111,7 @@ export default function AdminPortalPage() {
                           {orders.filter((o) => o.customerEmail === u.email || o.userId === u.id).length} Orders
                         </td>
                         <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                          <button onClick={() => handleDeleteUser(u.id)} style={{ padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontWeight: 600, fontSize: '0.75rem' }}>
+                          <button type="button" onClick={() => handleDeleteUser(u)} style={{ padding: '0.35rem 0.65rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontWeight: 600, fontSize: '0.75rem' }}>
                             🗑️ Delete
                           </button>
                         </td>
@@ -1977,7 +2156,7 @@ export default function AdminPortalPage() {
                     <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid #F1F5F9', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
                       <button
                         type="button"
-                        onClick={() => handleDeleteUser(u.id)}
+                        onClick={() => handleDeleteUser(u)}
                         style={{
                           padding: '0.4rem 0.85rem',
                           borderRadius: '6px',
@@ -2042,8 +2221,24 @@ export default function AdminPortalPage() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid #E2E8F0', paddingTop: '0.75rem' }}>
-                      <button onClick={() => handleDeleteCoupon(cpn.id)} style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', borderTop: '1px solid #E2E8F0', paddingTop: '0.75rem' }}>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleCouponActive(cpn)}
+                        style={{
+                          padding: '0.35rem 0.75rem',
+                          borderRadius: '6px',
+                          border: '1px solid #CBD5E1',
+                          background: cpn.isActive ? '#FEF3C7' : '#D1FAE5',
+                          color: cpn.isActive ? '#92400E' : '#065F46',
+                          cursor: 'pointer',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                        }}
+                      >
+                        {cpn.isActive ? '⏸ Disable' : '▶ Activate'}
+                      </button>
+                      <button type="button" onClick={() => handleDeleteCoupon(cpn)} style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}>
                         🗑️ Delete
                       </button>
                     </div>
@@ -2085,7 +2280,7 @@ export default function AdminPortalPage() {
                         <a href={`tel:${inq.phone}`} style={{ padding: '0.4rem 0.85rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF', color: '#0B2545', textDecoration: 'none', fontSize: '0.75rem', fontWeight: 600 }}>
                           📞 Call Customer
                         </a>
-                        <button type="button" onClick={() => handleDeleteInquiry(inq.id)} style={{ padding: '0.4rem 0.65rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontSize: '0.75rem' }}>
+                        <button type="button" onClick={() => handleDeleteInquiry(inq)} style={{ padding: '0.4rem 0.65rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontSize: '0.75rem' }}>
                           🗑️
                         </button>
                       </div>
@@ -2140,7 +2335,7 @@ export default function AdminPortalPage() {
                         </td>
                         <td style={{ padding: '0.75rem', textAlign: 'right' }}>
                           {u.email !== 'admin@ayushmancards.com' && (
-                            <button onClick={() => handleDeleteUser(u.id)} style={{ padding: '0.3rem 0.6rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontSize: '0.75rem' }}>
+                            <button type="button" onClick={() => handleDeleteUser(u)} style={{ padding: '0.3rem 0.6rem', borderRadius: '6px', border: '1px solid #FCA5A5', background: '#FEE2E2', color: '#991B1B', cursor: 'pointer', fontSize: '0.75rem' }}>
                               🗑️ Delete
                             </button>
                           )}
@@ -2187,7 +2382,7 @@ export default function AdminPortalPage() {
                       <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid #F1F5F9', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
                         <button
                           type="button"
-                          onClick={() => handleDeleteUser(u.id)}
+                          onClick={() => handleDeleteUser(u)}
                           style={{
                             padding: '0.4rem 0.85rem',
                             borderRadius: '6px',
@@ -2291,7 +2486,7 @@ export default function AdminPortalPage() {
                     <textarea rows={2} value={settingWhatsAppMsg} onChange={(e) => setSettingWhatsAppMsg(e.target.value)} placeholder="Pre-filled message when customer clicks floating WhatsApp button" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#0F172A', fontFamily: 'inherit' }} />
                   </div>
 
-                  <div className="admin-grid-3col" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.75rem' }}>
+                  <div className="admin-grid-3col" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.75rem', marginBottom: '1rem' }}>
                     <div>
                       <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Instagram Handle</label>
                       <input type="text" value={settingInstagramHandle} onChange={(e) => setSettingInstagramHandle(e.target.value)} placeholder="@ayushmancards_ujjain" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#0F172A' }} />
@@ -2303,6 +2498,21 @@ export default function AdminPortalPage() {
                     <div>
                       <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Secondary Phone</label>
                       <input type="tel" value={settingPhoneSecondary} onChange={(e) => setSettingPhoneSecondary(e.target.value)} placeholder="9893022451" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#0F172A' }} />
+                    </div>
+                  </div>
+
+                  <div className="admin-grid-3col" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Studio Public Email</label>
+                      <input type="email" value={settingStudioEmail} onChange={(e) => setSettingStudioEmail(e.target.value)} placeholder="ayushmancardspress@gmail.com" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#0F172A' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Facebook Page URL</label>
+                      <input type="text" value={settingFacebookUrl} onChange={(e) => setSettingFacebookUrl(e.target.value)} placeholder="https://facebook.com/ayushmancards" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#0F172A' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>YouTube Channel URL</label>
+                      <input type="text" value={settingYouTubeUrl} onChange={(e) => setSettingYouTubeUrl(e.target.value)} placeholder="https://youtube.com/@ayushmancards" style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#0F172A' }} />
                     </div>
                   </div>
                 </div>
@@ -2336,6 +2546,61 @@ export default function AdminPortalPage() {
                   {settingSaving ? '💾 Saving Store Settings...' : '💾 Save All Store Settings & Socials'}
                 </button>
               </form>
+
+              {/* 4. CLOUD DATABASE HEALTH & SYNC PANEL */}
+              <div style={{ marginTop: '1.75rem', background: '#F8FAFC', padding: '1.25rem', borderRadius: '10px', border: '1px solid #CBD5E1' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  <div>
+                    <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0B2545', margin: '0 0 0.2rem' }}>
+                      ☁️ Database Engine & Cloud Sync
+                    </h3>
+                    <div style={{ fontSize: '0.78125rem', color: '#475569' }}>
+                      Active Storage: <strong>{dbStatus?.storageMode || (dbStatus?.tursoConfigured ? 'Turso LibSQL Cloud' : 'Checking...')}</strong>
+                    </div>
+                  </div>
+                  <span
+                    style={{
+                      padding: '0.25rem 0.65rem',
+                      borderRadius: '999px',
+                      fontSize: '0.725rem',
+                      fontWeight: 800,
+                      background: dbStatus?.tursoConfigured ? '#D1FAE5' : '#FEF3C7',
+                      color: dbStatus?.tursoConfigured ? '#065F46' : '#92400E',
+                    }}
+                  >
+                    {dbStatus?.tursoConfigured ? '✓ Persistent Cloud Connected' : 'Local / Ephemeral JSON'}
+                  </span>
+                </div>
+
+                {dbStatus?.counts && (
+                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', fontSize: '0.75rem', color: '#334155', marginBottom: '1rem' }}>
+                    <span>Products: <strong>{dbStatus.counts.products}</strong></span>
+                    <span>• Categories: <strong>{dbStatus.counts.categories}</strong></span>
+                    <span>• Banners: <strong>{dbStatus.counts.banners}</strong></span>
+                    <span>• Coupons: <strong>{dbStatus.counts.coupons}</strong></span>
+                    <span>• Orders: <strong>{dbStatus.counts.bookings}</strong></span>
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    disabled={dbSyncing}
+                    onClick={() => handleSyncDatabase('syncQuantities')}
+                    style={{ padding: '0.55rem 1rem', borderRadius: '8px', background: '#0B2545', color: '#FFFFFF', border: 'none', fontSize: '0.78125rem', fontWeight: 700, cursor: dbSyncing ? 'wait' : 'pointer' }}
+                  >
+                    {dbSyncing ? 'Syncing...' : '🔄 Sync Catalog Qty Tiers'}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={dbSyncing}
+                    onClick={() => handleSyncDatabase('seed')}
+                    style={{ padding: '0.55rem 1rem', borderRadius: '8px', background: '#FFFFFF', color: '#0B2545', border: '1px solid #CBD5E1', fontSize: '0.78125rem', fontWeight: 700, cursor: dbSyncing ? 'wait' : 'pointer' }}
+                  >
+                    ☁️ Seed Missing Cloud Collections
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -2392,20 +2657,29 @@ export default function AdminPortalPage() {
 
                 <div className="admin-grid-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Price in INR (₹) *</label>
+                    <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Base Price in INR (₹) *</label>
                     <input
                       type="number"
                       required
-                      min={1}
+                      min={0}
+                      step="any"
                       value={productForm.numericPrice}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 0;
-                        setProductForm((prev) => ({
-                          ...prev,
-                          numericPrice: val,
-                          price: `₹${val}`,
-                          badge: prev.badge && prev.badge.includes('@') ? prev.badge.replace(/@\s*₹?[0-9,]+/, `@ ₹${val}`) : prev.badge,
-                        }));
+                        const raw = e.target.value;
+                        if (raw === '') {
+                          setProductForm((prev) => ({ ...prev, numericPrice: '' }));
+                          return;
+                        }
+                        const val = parseFloat(raw);
+                        if (!isNaN(val) && val >= 0) {
+                          const formatted = `₹${val.toLocaleString('en-IN')}`;
+                          setProductForm((prev) => ({
+                            ...prev,
+                            numericPrice: raw,
+                            price: formatted,
+                            badge: prev.badge && prev.badge.includes('@') ? prev.badge.replace(/@\s*₹?[0-9,.]+/, `@ ${formatted}`) : prev.badge,
+                          }));
+                        }
                       }}
                       style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #CBD5E1', color: '#0F172A', backgroundColor: '#FFFFFF', fontSize: '0.875rem' }}
                     />
@@ -2570,12 +2844,13 @@ export default function AdminPortalPage() {
                           <input
                             type="number"
                             min={0}
+                            step="any"
                             value={paper.extraPrice}
                             onChange={(e) => {
-                              const val = Number(e.target.value) || 0;
+                              const raw = e.target.value;
                               setProductForm((prev) => {
                                 const updated = [...(prev.paperOptions || [])];
-                                updated[idx] = { ...updated[idx], extraPrice: val };
+                                updated[idx] = { ...updated[idx], extraPrice: raw === '' ? '' : raw };
                                 return { ...prev, paperOptions: updated };
                               });
                             }}
@@ -2617,25 +2892,30 @@ export default function AdminPortalPage() {
 
                 {/* ═══ QUANTITY TIERS & MULTIPLIERS ═══ */}
                 <div style={{ background: '#F8FAFC', border: '1px solid #CBD5E1', borderRadius: '10px', padding: '1rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.65rem', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.65rem', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <div>
                       <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 800, color: '#0B2545', margin: 0 }}>
                         📦 Print Quantities & Price Multipliers
                       </label>
                       <span style={{ fontSize: '0.725rem', color: '#64748B' }}>
-                        Selectable quantity pills. Base price is multiplied by factor for total cost.
+                        Edit Quantity, Multiplier (e.g. 0.5, 1, 2.2), OR Total ₹ directly — unit rate calculates live.
                       </span>
                     </div>
                     <button
                       type="button"
                       onClick={() => {
-                        setProductForm((prev) => ({
-                          ...prev,
-                          quantityOptions: [
-                            ...(prev.quantityOptions || []),
-                            { qty: 2000, multiplier: 11.5 },
-                          ],
-                        }));
+                        setProductForm((prev) => {
+                          const existing = prev.quantityOptions || [];
+                          const last = existing[existing.length - 1];
+                          const lastQty = last ? Number(last.qty) || 100 : 0;
+                          const lastMult = last ? Number(last.multiplier) || 1 : 0;
+                          const nextQty = lastQty > 0 ? lastQty * 2 : 100;
+                          const nextMult = lastMult > 0 ? Number((lastMult * 1.8).toFixed(2)) : 1;
+                          return {
+                            ...prev,
+                            quantityOptions: [...existing, { qty: nextQty, multiplier: nextMult }],
+                          };
+                        });
                       }}
                       style={{
                         padding: '0.35rem 0.65rem',
@@ -2653,73 +2933,133 @@ export default function AdminPortalPage() {
                     </button>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {(productForm.quantityOptions || []).map((qtyObj, idx) => (
-                      <div key={idx} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <input
-                            type="number"
-                            min={1}
-                            value={qtyObj.qty}
-                            onChange={(e) => {
-                              const val = Number(e.target.value) || 100;
-                              setProductForm((prev) => {
-                                const updated = [...(prev.quantityOptions || [])];
-                                updated[idx] = { ...updated[idx], qty: val };
-                                return { ...prev, quantityOptions: updated };
-                              });
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                    {(productForm.quantityOptions || []).map((qtyObj, idx) => {
+                      const base = Number(productForm.numericPrice) || 0;
+                      const qtyNum = Number(qtyObj.qty) || 0;
+                      const multNum = Number(qtyObj.multiplier) || 0;
+                      const computedTotal =
+                        qtyObj.multiplier === '' || qtyObj.multiplier === undefined
+                          ? ''
+                          : Math.round(base * multNum);
+                      const unitRate =
+                        qtyNum > 0 && typeof computedTotal === 'number' && computedTotal > 0
+                          ? (computedTotal / qtyNum).toFixed(2)
+                          : null;
+
+                      return (
+                        <div key={idx} style={{ display: 'flex', gap: '0.45rem', alignItems: 'center', flexWrap: 'wrap', background: '#FFFFFF', padding: '0.45rem 0.55rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                          <div style={{ flex: '1 1 95px', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <input
+                              type="number"
+                              min={1}
+                              step="1"
+                              value={qtyObj.qty}
+                              onChange={(e) => {
+                                const raw = e.target.value;
+                                setProductForm((prev) => {
+                                  const updated = [...(prev.quantityOptions || [])];
+                                  updated[idx] = { ...updated[idx], qty: raw === '' ? '' : raw };
+                                  return { ...prev, quantityOptions: updated };
+                                });
+                              }}
+                              placeholder="Qty"
+                              style={{ width: '100%', padding: '0.45rem 0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1', color: '#0F172A', backgroundColor: '#FFFFFF', fontSize: '0.8125rem' }}
+                            />
+                            <span style={{ fontSize: '0.725rem', color: '#64748B', fontWeight: 600 }}>Pcs</span>
+                          </div>
+
+                          <div style={{ flex: '1 1 100px', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 700 }}>×</span>
+                            <input
+                              type="number"
+                              step="any"
+                              min={0.01}
+                              value={qtyObj.multiplier}
+                              onChange={(e) => {
+                                const raw = e.target.value;
+                                setProductForm((prev) => {
+                                  const updated = [...(prev.quantityOptions || [])];
+                                  updated[idx] = { ...updated[idx], multiplier: raw === '' ? '' : raw };
+                                  return { ...prev, quantityOptions: updated };
+                                });
+                              }}
+                              placeholder="Mult"
+                              title="Price multiplier relative to Base Price"
+                              style={{ width: '100%', padding: '0.45rem 0.55rem', borderRadius: '6px', border: '1px solid #CBD5E1', color: '#0F172A', backgroundColor: '#FFFFFF', fontSize: '0.8125rem' }}
+                            />
+                          </div>
+
+                          <div style={{ flex: '1 1 115px', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 800 }}>= ₹</span>
+                            <input
+                              type="number"
+                              min={0}
+                              step="1"
+                              disabled={base <= 0}
+                              value={computedTotal}
+                              onChange={(e) => {
+                                const raw = e.target.value;
+                                if (raw === '') {
+                                  setProductForm((prev) => {
+                                    const updated = [...(prev.quantityOptions || [])];
+                                    updated[idx] = { ...updated[idx], multiplier: '' };
+                                    return { ...prev, quantityOptions: updated };
+                                  });
+                                  return;
+                                }
+                                const totalVal = parseFloat(raw);
+                                if (!isNaN(totalVal) && totalVal >= 0 && base > 0) {
+                                  const nextMult = Number((totalVal / base).toFixed(5));
+                                  setProductForm((prev) => {
+                                    const updated = [...(prev.quantityOptions || [])];
+                                    updated[idx] = { ...updated[idx], multiplier: nextMult };
+                                    return { ...prev, quantityOptions: updated };
+                                  });
+                                }
+                              }}
+                              placeholder="Total ₹"
+                              title="Edit Total ₹ directly to auto-calculate multiplier"
+                              style={{ width: '100%', padding: '0.45rem 0.55rem', borderRadius: '6px', border: '1px solid #A7F3D0', color: '#065F46', backgroundColor: '#ECFDF5', fontWeight: 700, fontSize: '0.8125rem' }}
+                            />
+                          </div>
+
+                          {unitRate && (
+                            <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                              (₹{unitRate}/pc)
+                            </span>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setProductForm((prev) => ({
+                                ...prev,
+                                quantityOptions: (prev.quantityOptions || []).filter((_, i) => i !== idx),
+                              }));
                             }}
-                            placeholder="Qty (e.g. 500)"
-                            style={{ width: '100%', padding: '0.5rem 0.65rem', borderRadius: '6px', border: '1px solid #CBD5E1', color: '#0F172A', backgroundColor: '#FFFFFF', fontSize: '0.8125rem' }}
-                          />
-                          <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Pcs</span>
-                        </div>
-                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 700 }}>×</span>
-                          <input
-                            type="number"
-                            step="0.1"
-                            min={0.1}
-                            value={qtyObj.multiplier}
-                            onChange={(e) => {
-                              const val = Number(e.target.value) || 1;
-                              setProductForm((prev) => {
-                                const updated = [...(prev.quantityOptions || [])];
-                                updated[idx] = { ...updated[idx], multiplier: val };
-                                return { ...prev, quantityOptions: updated };
-                              });
+                            style={{
+                              padding: '0.4rem 0.6rem',
+                              borderRadius: '6px',
+                              background: '#FEE2E2',
+                              color: '#DC2626',
+                              border: '1px solid #FCA5A5',
+                              fontSize: '0.8rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
                             }}
-                            placeholder="Multiplier"
-                            style={{ width: '100%', padding: '0.5rem 0.65rem', borderRadius: '6px', border: '1px solid #CBD5E1', color: '#0F172A', backgroundColor: '#FFFFFF', fontSize: '0.8125rem' }}
-                          />
-                          <span style={{ fontSize: '0.725rem', color: '#10B981', fontWeight: 700, whiteSpace: 'nowrap' }}>
-                            = ₹{Math.round((productForm.numericPrice || 0) * (qtyObj.multiplier || 1)).toLocaleString()}
-                          </span>
+                            title="Delete Quantity Tier"
+                          >
+                            ✕
+                          </button>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setProductForm((prev) => ({
-                              ...prev,
-                              quantityOptions: (prev.quantityOptions || []).filter((_, i) => i !== idx),
-                            }));
-                          }}
-                          style={{
-                            padding: '0.45rem 0.65rem',
-                            borderRadius: '6px',
-                            background: '#FEE2E2',
-                            color: '#DC2626',
-                            border: '1px solid #FCA5A5',
-                            fontSize: '0.8rem',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                          }}
-                          title="Delete Quantity Tier"
-                        >
-                          ✕
-                        </button>
+                      );
+                    })}
+                    {(!productForm.quantityOptions || productForm.quantityOptions.length === 0) && (
+                      <div style={{ fontSize: '0.75rem', color: '#94A3B8', textAlign: 'center', padding: '0.5rem' }}>
+                        No quantity tiers configured (uses Base Price &amp; unit). Click &quot;➕ Add Qty Tier&quot; to add.
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
 
@@ -2748,16 +3088,20 @@ export default function AdminPortalPage() {
                     >
                       <option value="visiting-card">Visiting Cards (3D Preview, Paper, Foils)</option>
                       <option value="wedding-card">Wedding Cards (Velvet Box, Shahi Scroll)</option>
+                      <option value="bday-card">Birthday &amp; Party Invitations</option>
+                      <option value="stationery">Business Stationery (Bill Books, Letterheads)</option>
                       <option value="flex-banner">Flex Banners (Grommets, Framing)</option>
+                      <option value="sticker">Stickers &amp; Product Labels</option>
                       <option value="photobook">Photobooks (Silk Sheet, Briefcase)</option>
-                      <option value="custom-mug">Magic Photo Mugs (Color Reveal)</option>
+                      <option value="custom-mug">Magic Photo Mugs &amp; Gift Sets</option>
+                      <option value="custom-tshirt">Custom Printed T-Shirts &amp; Packaging</option>
                     </select>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-                  <button type="submit" style={{ flex: 1, padding: '0.85rem', borderRadius: '999px', background: '#059669', color: '#FFFFFF', border: 'none', fontWeight: 800, fontSize: '0.925rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(5,150,105,0.25)' }}>
-                    {editingProduct ? '💾 Update Product' : '✓ Create Product'}
+                  <button type="submit" disabled={productSaving} style={{ flex: 1, padding: '0.85rem', borderRadius: '999px', background: '#059669', color: '#FFFFFF', border: 'none', fontWeight: 800, fontSize: '0.925rem', cursor: productSaving ? 'wait' : 'pointer', boxShadow: '0 4px 12px rgba(5,150,105,0.25)', opacity: productSaving ? 0.7 : 1 }}>
+                    {productSaving ? '⏳ Saving...' : (editingProduct ? '💾 Update Product' : '✓ Create Product')}
                   </button>
                   <button type="button" onClick={() => setShowProductModal(false)} style={{ padding: '0.85rem 1.5rem', borderRadius: '999px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#475569', fontWeight: 700, cursor: 'pointer' }}>
                     Cancel
@@ -2822,6 +3166,16 @@ export default function AdminPortalPage() {
                     style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #CBD5E1', color: '#0F172A', backgroundColor: '#FFFFFF', fontSize: '0.875rem' }}
                   />
                 </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Short Description</label>
+                  <input
+                    type="text"
+                    value={categoryForm.description}
+                    onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
+                    placeholder="e.g. Royal velvet boxes, acrylic invites & laser-cut cards"
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #CBD5E1', color: '#0F172A', backgroundColor: '#FFFFFF', fontSize: '0.875rem' }}
+                  />
+                </div>
                 <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
                   <button type="submit" style={{ flex: 1, padding: '0.85rem', borderRadius: '999px', background: '#059669', color: '#FFFFFF', border: 'none', fontWeight: 800, fontSize: '0.925rem', cursor: 'pointer' }}>
                     {editingCategory ? '💾 Update' : '✓ Save Category'}
@@ -2882,6 +3236,29 @@ export default function AdminPortalPage() {
 
                 <div className="admin-grid-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
                   <div>
+                    <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Promotional Badge</label>
+                    <input
+                      type="text"
+                      value={bannerForm.badge}
+                      onChange={(e) => setBannerForm({ ...bannerForm, badge: e.target.value })}
+                      placeholder="e.g. ROYAL COLLECTION 2026"
+                      style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #CBD5E1', color: '#0F172A', backgroundColor: '#FFFFFF', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Button Text</label>
+                    <input
+                      type="text"
+                      value={bannerForm.buttonText}
+                      onChange={(e) => setBannerForm({ ...bannerForm, buttonText: e.target.value })}
+                      placeholder="e.g. Explore Collection"
+                      style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #CBD5E1', color: '#0F172A', backgroundColor: '#FFFFFF', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                </div>
+
+                <div className="admin-grid-3col" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem' }}>
+                  <div>
                     <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Target Destination Link *</label>
                     <input
                       type="text"
@@ -2900,6 +3277,17 @@ export default function AdminPortalPage() {
                       onChange={(e) => setBannerForm({ ...bannerForm, displayOrder: parseInt(e.target.value) || 1 })}
                       style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #CBD5E1', color: '#0F172A', backgroundColor: '#FFFFFF', fontSize: '0.875rem' }}
                     />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78125rem', fontWeight: 700, color: '#0B2545', marginBottom: '0.25rem' }}>Status</label>
+                    <select
+                      value={bannerForm.isActive ? 'true' : 'false'}
+                      onChange={(e) => setBannerForm({ ...bannerForm, isActive: e.target.value === 'true' })}
+                      style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #CBD5E1', backgroundColor: '#FFFFFF', color: '#0F172A', fontSize: '0.875rem' }}
+                    >
+                      <option value="true">🟢 Active / Live</option>
+                      <option value="false">🔴 Hidden / Draft</option>
+                    </select>
                   </div>
                 </div>
 
@@ -3050,8 +3438,17 @@ export default function AdminPortalPage() {
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', borderBottom: '2px solid #0B2545', paddingBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
                   <div>
-                    <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0B2545', margin: '0 0 0.25rem' }}>AYUSHMAN CARDS & GRAPHICS</h2>
-                    <div style={{ fontSize: '0.78125rem', color: '#64748B' }}>63, Varruchi Marg, Freeganj Ujjain • Properiter - Rajesh Saatoliya</div>
+                    <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0B2545', margin: '0 0 0.25rem', textTransform: 'uppercase' }}>
+                      {settingShopName || 'AYUSHMAN CARDS & GRAPHICS'}
+                    </h2>
+                    <div style={{ fontSize: '0.78125rem', color: '#64748B' }}>
+                      {[settingAddress, settingCity, settingState, settingPincode].filter(Boolean).join(', ')} • Proprietor: {settingProprietor}
+                    </div>
+                    {settingPhone && (
+                      <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.15rem' }}>
+                        📞 {settingPhone}{settingPhoneSecondary ? ` / ${settingPhoneSecondary}` : ''} • ✉️ {settingStudioEmail}
+                      </div>
+                    )}
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: '0.84375rem', fontWeight: 700 }}>Invoice #{selectedInvoiceOrder.id.slice(-8).toUpperCase()}</div>
@@ -3061,8 +3458,18 @@ export default function AdminPortalPage() {
 
                 <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
                   <div style={{ fontWeight: 700, color: '#0B2545' }}>Billed To: {selectedInvoiceOrder.customerName}</div>
-                  <div style={{ fontSize: '0.8125rem', color: '#64748B' }}>Phone: {selectedInvoiceOrder.customerPhone}</div>
-                  <div style={{ fontSize: '0.8125rem', color: '#059669', fontWeight: 700, marginTop: '0.25rem' }}>Payment Status: {selectedInvoiceOrder.paymentStatus}</div>
+                  <div style={{ fontSize: '0.8125rem', color: '#64748B' }}>
+                    Phone: {selectedInvoiceOrder.customerPhone}
+                    {selectedInvoiceOrder.customerEmail ? ` • Email: ${selectedInvoiceOrder.customerEmail}` : ''}
+                  </div>
+                  {(selectedInvoiceOrder.address || selectedInvoiceOrder.city) && (
+                    <div style={{ fontSize: '0.8125rem', color: '#475569', marginTop: '0.2rem' }}>
+                      Delivery Address: {[selectedInvoiceOrder.address, selectedInvoiceOrder.city].filter(Boolean).join(', ')}
+                    </div>
+                  )}
+                  <div style={{ fontSize: '0.8125rem', color: '#059669', fontWeight: 700, marginTop: '0.25rem' }}>
+                    Payment Status: {selectedInvoiceOrder.paymentStatus} • Fulfillment: {selectedInvoiceOrder.status || 'NEW'}
+                  </div>
                 </div>
 
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84375rem', marginBottom: '1.5rem' }}>
@@ -3074,8 +3481,15 @@ export default function AdminPortalPage() {
                   </thead>
                   <tbody>
                     <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
-                      <td style={{ padding: '0.75rem 0.65rem' }}>{selectedInvoiceOrder.eventType} - {selectedInvoiceOrder.packageType || 'Custom Print'}</td>
-                      <td style={{ padding: '0.75rem 0.65rem', textAlign: 'right', fontWeight: 700 }}>₹{selectedInvoiceOrder.totalAmount?.toLocaleString()}</td>
+                      <td style={{ padding: '0.75rem 0.65rem' }}>
+                        <div style={{ fontWeight: 600 }}>{selectedInvoiceOrder.eventType} - {selectedInvoiceOrder.packageType || 'Custom Print'}</div>
+                        {selectedInvoiceOrder.notes && (
+                          <div style={{ fontSize: '0.75rem', color: '#475569', marginTop: '0.35rem', whiteSpace: 'pre-wrap' }}>
+                            {selectedInvoiceOrder.notes}
+                          </div>
+                        )}
+                      </td>
+                      <td style={{ padding: '0.75rem 0.65rem', textAlign: 'right', fontWeight: 700, verticalAlign: 'top' }}>₹{selectedInvoiceOrder.totalAmount?.toLocaleString()}</td>
                     </tr>
                   </tbody>
                   <tfoot>
@@ -3145,6 +3559,58 @@ export default function AdminPortalPage() {
                     )}
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══ IN-PAGE DELETE CONFIRMATION MODAL ═══ */}
+        {pendingDelete && (
+          <div
+            className="admin-modal"
+            style={{ position: 'fixed', inset: 0, zIndex: 10050, background: 'rgba(15, 23, 42, 0.68)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
+            onClick={() => { if (!deleteLoading) setPendingDelete(null); }}
+          >
+            <div
+              className="admin-modal-card"
+              style={{ background: '#FFFFFF', borderRadius: '16px', padding: '1.75rem', maxWidth: '420px', width: '100%', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.85rem' }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#FEE2E2', color: '#DC2626', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
+                  🗑️
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0B2545' }}>
+                    Confirm Permanent Delete
+                  </h3>
+                  <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                    This removes the record from the live database.
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ background: '#FFF1F2', border: '1px solid #FECDD3', borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1.25rem', fontSize: '0.84375rem', color: '#881337', fontWeight: 600 }}>
+                Delete <strong>{pendingDelete.label}</strong>?
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  disabled={deleteLoading}
+                  onClick={() => setPendingDelete(null)}
+                  style={{ padding: '0.65rem 1.25rem', borderRadius: '999px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#475569', fontWeight: 700, fontSize: '0.84375rem', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={deleteLoading}
+                  onClick={executeConfirmedDelete}
+                  style={{ padding: '0.65rem 1.35rem', borderRadius: '999px', border: 'none', background: '#DC2626', color: '#FFFFFF', fontWeight: 800, fontSize: '0.84375rem', cursor: deleteLoading ? 'wait' : 'pointer', opacity: deleteLoading ? 0.7 : 1 }}
+                >
+                  {deleteLoading ? 'Deleting...' : 'Yes, Delete Permanently'}
+                </button>
               </div>
             </div>
           </div>

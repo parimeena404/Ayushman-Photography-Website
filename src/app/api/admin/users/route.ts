@@ -128,18 +128,22 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('id');
 
-    if (!userId) {
+    if (!userId || !userId.trim()) {
       return NextResponse.json({ error: 'User ID parameter is required.' }, { status: 400 });
     }
 
-    if (userId === admin.id) {
+    if (userId.trim() === admin.id) {
       return NextResponse.json({ error: 'You cannot delete your own admin account.' }, { status: 400 });
     }
 
-    await db.user.delete({ where: { id: userId } });
+    const deleted = await db.user.delete({ where: { id: userId.trim() } });
+    if (!deleted) {
+      return NextResponse.json({ error: 'User not found.' }, { status: 404 });
+    }
 
     return NextResponse.json({
       success: true,
+      deleted,
       message: `User ${userId} deleted successfully.`,
     });
   } catch (error: any) {

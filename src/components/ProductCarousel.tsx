@@ -9,8 +9,14 @@ export interface ProductItem {
   title: string;
   badge?: string;
   price: string;
+  numericPrice?: number;
   unit?: string;
   category?: string;
+  description?: string;
+  features?: string[];
+  paperOptions?: { label: string; extraPrice: number }[];
+  quantityOptions?: { qty: number; multiplier: number }[];
+  cornerOptions?: string[];
   image: string;
   rating?: number;
   reviews?: number;
@@ -134,11 +140,14 @@ export default function ProductCarousel({ id, sectionTitle, sectionSubtitle, ite
                     image: item.image,
                     badge: item.badge,
                     price: item.price,
+                    numericPrice: item.numericPrice,
                     unit: item.unit,
                     category: item.category,
-                    paperOptions: (item as any).paperOptions,
-                    quantityOptions: (item as any).quantityOptions,
-                    cornerOptions: (item as any).cornerOptions,
+                    description: item.description,
+                    features: item.features,
+                    paperOptions: item.paperOptions,
+                    quantityOptions: item.quantityOptions,
+                    cornerOptions: item.cornerOptions,
                   })}
                 >
                   <div

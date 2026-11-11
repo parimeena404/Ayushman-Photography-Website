@@ -1,18 +1,16 @@
 /**
  * Turso Cloud Database Client
- * 
- * This replaces the ephemeral file-based JSON store with a persistent
+ *
+ * Replaces the ephemeral file-based JSON store with a persistent
  * Turso (LibSQL) cloud database. All writes are durable across Vercel
  * serverless function restarts.
- * 
- * Required env vars:
- *   TURSO_DATABASE_URL  - e.g. libsql://your-db-name.turso.io
- *   TURSO_AUTH_TOKEN    - Token from Turso dashboard
- * 
- * If these are not set, falls back to the file-based store.
+ *
+ * Uses @libsql/client/web for clean Vercel serverless & Next.js bundler compatibility.
  */
 
-import { createClient, Client } from '@libsql/client';
+import { createClient, Client } from '@libsql/client/web';
+import fs from 'fs';
+import path from 'path';
 
 // Inline types to avoid circular dependency with db.ts
 export interface UserRecord {
@@ -61,6 +59,11 @@ export interface BannerRecord {
   link?: string; buttonText?: string; displayOrder?: number; isActive: boolean;
   createdAt: string; updatedAt: string;
 }
+export interface CouponRecord {
+  id: string; code: string; discountType: 'PERCENT' | 'FLAT'; discountValue: number;
+  minOrderAmount: number; isActive: boolean; expiryDate?: string;
+  usageCount: number; createdAt: string;
+}
 
 const DEFAULT_PAPER_OPTIONS: PaperOption[] = [
   { label: '350 GSM Premium Matte', extraPrice: 0 },
@@ -73,6 +76,31 @@ const DEFAULT_QUANTITY_OPTIONS: QuantityOption[] = [
   { qty: 100, multiplier: 1 }, { qty: 250, multiplier: 2.2 },
   { qty: 500, multiplier: 3.8 }, { qty: 1000, multiplier: 6.5 },
 ];
+const PRODUCT_QUANTITY_TIERS: Record<string, QuantityOption[]> = {
+  'vc-metal': [{ qty: 10, multiplier: 1 }, { qty: 25, multiplier: 2.2 }, { qty: 50, multiplier: 4 }, { qty: 100, multiplier: 7.2 }],
+  'vc-500-velvet': [{ qty: 500, multiplier: 1 }, { qty: 1000, multiplier: 1.8 }, { qty: 2000, multiplier: 3.2 }, { qty: 5000, multiplier: 7 }],
+  'vc-500-matt': [{ qty: 500, multiplier: 1 }, { qty: 1000, multiplier: 1.8 }, { qty: 2000, multiplier: 3.2 }, { qty: 5000, multiplier: 7 }],
+  'vc-180-nt': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'vc-matt-spotuv': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'vc-matt-texture': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'vc-gloss-lamination': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'vc-uncoated': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'vc-mini-cards': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'st-1': [{ qty: 500, multiplier: 1 }, { qty: 1000, multiplier: 1.8 }, { qty: 2000, multiplier: 3.2 }, { qty: 5000, multiplier: 7 }],
+  'st-2': [{ qty: 10, multiplier: 1 }, { qty: 20, multiplier: 1.85 }, { qty: 50, multiplier: 4 }, { qty: 100, multiplier: 7.2 }],
+  'st-3': [{ qty: 1, multiplier: 1 }, { qty: 2, multiplier: 1.9 }, { qty: 5, multiplier: 4.25 }, { qty: 10, multiplier: 8 }],
+  'st-4': [{ qty: 500, multiplier: 1 }, { qty: 1000, multiplier: 1.8 }, { qty: 2000, multiplier: 3.2 }, { qty: 5000, multiplier: 7 }],
+  'flex-2': [{ qty: 1, multiplier: 1 }, { qty: 2, multiplier: 1.9 }, { qty: 5, multiplier: 4.5 }, { qty: 10, multiplier: 8.5 }],
+  'flex-3': [{ qty: 1, multiplier: 1 }, { qty: 2, multiplier: 1.9 }, { qty: 5, multiplier: 4.5 }, { qty: 10, multiplier: 8.5 }],
+  'stk-1': [{ qty: 500, multiplier: 1 }, { qty: 1000, multiplier: 1.8 }, { qty: 2000, multiplier: 3.2 }, { qty: 5000, multiplier: 7 }],
+  'stk-2': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'stk-3': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'pb-1': [{ qty: 1, multiplier: 1 }, { qty: 2, multiplier: 1.9 }, { qty: 5, multiplier: 4.5 }, { qty: 10, multiplier: 8.5 }],
+  'pb-2': [{ qty: 1, multiplier: 1 }, { qty: 2, multiplier: 1.9 }, { qty: 5, multiplier: 4.5 }, { qty: 10, multiplier: 8.5 }],
+  'gift-1': [{ qty: 10, multiplier: 1 }, { qty: 25, multiplier: 2.25 }, { qty: 50, multiplier: 4.2 }, { qty: 100, multiplier: 7.8 }],
+  'gift-2': [{ qty: 5, multiplier: 1 }, { qty: 10, multiplier: 1.9 }, { qty: 25, multiplier: 4.3 }, { qty: 50, multiplier: 8 }],
+  'gift-3': [{ qty: 1, multiplier: 1 }, { qty: 2, multiplier: 1.9 }, { qty: 5, multiplier: 4.5 }, { qty: 10, multiplier: 8.5 }],
+};
 const DEFAULT_CORNER_OPTIONS: string[] = ['Standard Cut', 'Rounded Corners'];
 const DEFAULT_SETTINGS: SettingsRecord = {
   id: 'site-settings', shopName: 'Ayushman Cards & Graphics',
@@ -88,22 +116,34 @@ const DEFAULT_SETTINGS: SettingsRecord = {
   email: 'ayushmancardspress@gmail.com',
   updatedAt: '2025-01-01T00:00:00.000Z',
 };
-
+const DEFAULT_COUPONS: CouponRecord[] = [
+  { id: 'c-1', code: 'FESTIVE20', discountType: 'PERCENT', discountValue: 20, minOrderAmount: 1000, isActive: true, usageCount: 42, createdAt: '2025-01-01T00:00:00.000Z' },
+  { id: 'c-2', code: 'BULKPRINT15', discountType: 'PERCENT', discountValue: 15, minOrderAmount: 5000, isActive: true, usageCount: 19, createdAt: '2025-01-01T00:00:00.000Z' },
+  { id: 'c-3', code: 'ROYAL500', discountType: 'FLAT', discountValue: 500, minOrderAmount: 3000, isActive: true, usageCount: 28, createdAt: '2025-01-01T00:00:00.000Z' },
+];
 
 // --------------------------------------------------------------------------
-// Client singleton
+// Client singleton & Bundled seed helper
 // --------------------------------------------------------------------------
 
 declare global {
   // eslint-disable-next-line no-var
   var __tursoClient: Client | undefined;
+  // eslint-disable-next-line no-var
+  var __bundledSeedCache: any | null | undefined;
+}
+
+export function isTursoConfigured(): boolean {
+  const url = (process.env.TURSO_DATABASE_URL || '').trim();
+  const token = (process.env.TURSO_AUTH_TOKEN || '').trim();
+  if (!url || url === '[SENSITIVE]' || token === '[SENSITIVE]') return false;
+  return url.startsWith('libsql://') || url.startsWith('https://') || url.startsWith('http://');
 }
 
 function getTursoClient(): Client | null {
-  const url = process.env.TURSO_DATABASE_URL;
-  const token = process.env.TURSO_AUTH_TOKEN;
-
-  if (!url) return null;
+  if (!isTursoConfigured()) return null;
+  const url = process.env.TURSO_DATABASE_URL!.trim();
+  const token = (process.env.TURSO_AUTH_TOKEN || '').trim();
 
   if (!globalThis.__tursoClient) {
     globalThis.__tursoClient = createClient({
@@ -112,6 +152,29 @@ function getTursoClient(): Client | null {
     });
   }
   return globalThis.__tursoClient;
+}
+
+function loadBundledSeed(): any | null {
+  if (globalThis.__bundledSeedCache !== undefined) {
+    return globalThis.__bundledSeedCache;
+  }
+  const candidates = [
+    path.resolve(process.cwd(), 'data_store.json'),
+    '/var/task/data_store.json',
+  ];
+  for (const candidate of candidates) {
+    try {
+      if (fs.existsSync(candidate)) {
+        const parsed = JSON.parse(fs.readFileSync(candidate, 'utf-8'));
+        globalThis.__bundledSeedCache = parsed;
+        return parsed;
+      }
+    } catch {
+      continue;
+    }
+  }
+  globalThis.__bundledSeedCache = null;
+  return null;
 }
 
 // --------------------------------------------------------------------------
@@ -171,32 +234,35 @@ async function kvSet(key: string, value: unknown): Promise<void> {
 // --------------------------------------------------------------------------
 
 const DEFAULT_ADMIN_USER: UserRecord = {
-  id: 'admin-1',
-  name: 'Admin',
+  id: 'usr_admin_default',
+  name: 'Studio Admin',
   email: 'admin@ayushmancards.com',
-  password: 'AyushmanAdmin@2025',
+  password: 'admin123',
   role: 'ADMIN',
   phone: '9479784979',
-  address: null,
-  city: null,
-  state: null,
-  pincode: null,
+  address: '63, Varruchi Marg, Freeganj Ujjain',
+  city: 'Ujjain',
+  state: 'Madhya Pradesh',
+  pincode: '456001',
   createdAt: '2025-01-01T00:00:00.000Z',
   updatedAt: '2025-01-01T00:00:00.000Z',
 };
 
 // --------------------------------------------------------------------------
-// Collection helpers
+// Collection helpers (auto-seed ONLY when key is missing === null, never when [])
 // --------------------------------------------------------------------------
 
 async function getUsers(): Promise<UserRecord[]> {
   const users = await kvGet<UserRecord[]>('users');
-  if (!users || users.length === 0) {
-    const defaults = [DEFAULT_ADMIN_USER];
+  if (users === null || users.length === 0) {
+    const seed = loadBundledSeed();
+    const defaults = Array.isArray(seed?.users) && seed.users.length > 0 ? seed.users : [DEFAULT_ADMIN_USER];
+    if (!defaults.some((u: UserRecord) => u.email.toLowerCase().trim() === 'admin@ayushmancards.com')) {
+      defaults.push(DEFAULT_ADMIN_USER);
+    }
     await kvSet('users', defaults);
     return defaults;
   }
-  // Ensure admin always exists
   const hasAdmin = users.some((u) => u.email.toLowerCase().trim() === 'admin@ayushmancards.com');
   if (!hasAdmin) {
     users.push(DEFAULT_ADMIN_USER);
@@ -208,9 +274,12 @@ async function getUsers(): Promise<UserRecord[]> {
 async function getProducts(): Promise<ProductRecord[]> {
   const products = await kvGet<ProductRecord[]>('products');
   if (products === null) {
-    // Turso DB starts empty — returns empty array on first use.
-    // Admin can add products via the portal, or use /api/admin/migrate to seed from data_store.json
-    return [];
+    const seed = loadBundledSeed();
+    const initial: ProductRecord[] = Array.isArray(seed?.products) ? seed.products : [];
+    if (initial.length > 0) {
+      await kvSet('products', initial);
+    }
+    return initial;
   }
   return products;
 }
@@ -218,8 +287,12 @@ async function getProducts(): Promise<ProductRecord[]> {
 async function getCategories(): Promise<CategoryRecord[]> {
   const categories = await kvGet<CategoryRecord[]>('categories');
   if (categories === null) {
-    // Turso DB starts empty — returns empty array on first use.
-    return [];
+    const seed = loadBundledSeed();
+    const initial: CategoryRecord[] = Array.isArray(seed?.categories) ? seed.categories : [];
+    if (initial.length > 0) {
+      await kvSet('categories', initial);
+    }
+    return initial;
   }
   return categories;
 }
@@ -233,12 +306,40 @@ async function getInquiries(): Promise<InquiryRecord[]> {
 }
 
 async function getBanners(): Promise<BannerRecord[]> {
-  return (await kvGet<BannerRecord[]>('banners')) || [];
+  const banners = await kvGet<BannerRecord[]>('banners');
+  if (banners === null) {
+    const seed = loadBundledSeed();
+    const initial: BannerRecord[] = Array.isArray(seed?.banners) ? seed.banners : [];
+    if (initial.length > 0) {
+      await kvSet('banners', initial);
+    }
+    return initial;
+  }
+  return banners;
+}
+
+async function getCoupons(): Promise<CouponRecord[]> {
+  const coupons = await kvGet<CouponRecord[]>('coupons');
+  if (coupons === null) {
+    const seed = loadBundledSeed();
+    const initial: CouponRecord[] = Array.isArray(seed?.coupons) && seed.coupons.length > 0
+      ? seed.coupons
+      : [...DEFAULT_COUPONS];
+    await kvSet('coupons', initial);
+    return initial;
+  }
+  return coupons;
 }
 
 async function getSettings(): Promise<SettingsRecord> {
   const settings = await kvGet<SettingsRecord>('settings');
-  return settings ? { ...DEFAULT_SETTINGS, ...settings } : { ...DEFAULT_SETTINGS };
+  if (!settings) {
+    const seed = loadBundledSeed();
+    const initial = seed?.settings ? { ...DEFAULT_SETTINGS, ...seed.settings } : { ...DEFAULT_SETTINGS };
+    await kvSet('settings', initial);
+    return initial;
+  }
+  return { ...DEFAULT_SETTINGS, ...settings };
 }
 
 // --------------------------------------------------------------------------
@@ -303,8 +404,9 @@ export class TursoUserClient {
     const users = await getUsers();
     const initial = users.length;
     const filtered = users.filter((u) => u.id !== args.where.id);
+    if (filtered.length === initial) return false;
     await kvSet('users', filtered);
-    return filtered.length < initial;
+    return true;
   }
 
   async findMany(): Promise<UserRecord[]> {
@@ -319,9 +421,9 @@ export class TursoUserClient {
 function enrichProduct(p: ProductRecord): ProductRecord {
   return {
     ...p,
-    paperOptions: Array.isArray(p.paperOptions) && p.paperOptions.length > 0 ? p.paperOptions : DEFAULT_PAPER_OPTIONS,
-    quantityOptions: Array.isArray(p.quantityOptions) && p.quantityOptions.length > 0 ? p.quantityOptions : DEFAULT_QUANTITY_OPTIONS,
-    cornerOptions: Array.isArray(p.cornerOptions) && p.cornerOptions.length > 0 ? p.cornerOptions : DEFAULT_CORNER_OPTIONS,
+    paperOptions: Array.isArray(p.paperOptions) ? p.paperOptions : DEFAULT_PAPER_OPTIONS,
+    quantityOptions: Array.isArray(p.quantityOptions) ? p.quantityOptions : (PRODUCT_QUANTITY_TIERS[p.id] || DEFAULT_QUANTITY_OPTIONS),
+    cornerOptions: Array.isArray(p.cornerOptions) ? p.cornerOptions : DEFAULT_CORNER_OPTIONS,
   };
 }
 
@@ -351,9 +453,9 @@ export class TursoProductClient {
     const newProduct: ProductRecord = {
       ...args.data,
       id: generateId('prd'),
-      paperOptions: Array.isArray(args.data.paperOptions) && args.data.paperOptions.length > 0 ? args.data.paperOptions : DEFAULT_PAPER_OPTIONS,
-      quantityOptions: Array.isArray(args.data.quantityOptions) && args.data.quantityOptions.length > 0 ? args.data.quantityOptions : DEFAULT_QUANTITY_OPTIONS,
-      cornerOptions: Array.isArray(args.data.cornerOptions) && args.data.cornerOptions.length > 0 ? args.data.cornerOptions : DEFAULT_CORNER_OPTIONS,
+      paperOptions: Array.isArray(args.data.paperOptions) ? args.data.paperOptions : DEFAULT_PAPER_OPTIONS,
+      quantityOptions: Array.isArray(args.data.quantityOptions) ? args.data.quantityOptions : DEFAULT_QUANTITY_OPTIONS,
+      cornerOptions: Array.isArray(args.data.cornerOptions) ? args.data.cornerOptions : DEFAULT_CORNER_OPTIONS,
       isActive: args.data.isActive !== undefined ? args.data.isActive : true,
       createdAt: now,
       updatedAt: now,
@@ -379,8 +481,9 @@ export class TursoProductClient {
     const cleanId = args.where.id.trim();
     const initial = products.length;
     const filtered = products.filter((p) => p.id.trim() !== cleanId);
+    if (filtered.length === initial) return false;
     await kvSet('products', filtered);
-    return filtered.length < initial;
+    return true;
   }
 }
 
@@ -410,7 +513,7 @@ export class TursoCategoryClient {
       categories[existingIdx] = {
         ...categories[existingIdx],
         label: args.data.label.trim(),
-        icon: args.data.icon || categories[existingIdx].icon || 'tag',
+        icon: args.data.icon || categories[existingIdx].icon || '🏷️',
         description: args.data.description !== undefined ? args.data.description : categories[existingIdx].description,
         updatedAt: now,
       };
@@ -421,7 +524,7 @@ export class TursoCategoryClient {
     const newCat: CategoryRecord = {
       id: catId,
       label: args.data.label.trim(),
-      icon: args.data.icon || 'tag',
+      icon: args.data.icon || '🏷️',
       description: args.data.description || '',
       createdAt: now,
       updatedAt: now,
@@ -447,8 +550,9 @@ export class TursoCategoryClient {
     const cleanId = args.where.id.trim().toLowerCase();
     const initial = categories.length;
     const filtered = categories.filter((c) => c.id.trim().toLowerCase() !== cleanId && c.label.trim().toLowerCase() !== cleanId);
+    if (filtered.length === initial) return false;
     await kvSet('categories', filtered);
-    return filtered.length < initial;
+    return true;
   }
 }
 
@@ -498,10 +602,12 @@ export class TursoBannerClient {
 
   async delete(args: { where: { id: string } }): Promise<boolean> {
     const banners = await getBanners();
+    const cleanId = args.where.id.trim();
     const initial = banners.length;
-    const filtered = banners.filter((b) => b.id !== args.where.id);
+    const filtered = banners.filter((b) => b.id.trim() !== cleanId);
+    if (filtered.length === initial) return false;
     await kvSet('banners', filtered);
-    return filtered.length < initial;
+    return true;
   }
 }
 
@@ -552,20 +658,39 @@ export class TursoBookingClient {
 
   async delete(args: { where: { id: string } }): Promise<boolean> {
     const bookings = await getBookings();
+    const cleanId = args.where.id.trim();
     const initial = bookings.length;
-    const filtered = bookings.filter((b) => b.id !== args.where.id);
+    const filtered = bookings.filter((b) => b.id.trim() !== cleanId);
+    if (filtered.length === initial) return false;
     await kvSet('bookings', filtered);
-    return filtered.length < initial;
+    return true;
   }
 
-  async findMany(args?: { where?: { customerEmail?: string; userId?: string }; orderBy?: unknown; take?: number }): Promise<BookingRecord[]> {
+  async findMany(args?: { where?: { customerEmail?: string; userId?: string; matchAny?: boolean }; orderBy?: { createdAt?: 'asc' | 'desc' }; take?: number }): Promise<BookingRecord[]> {
     let bookings = await getBookings();
-    if (args?.where?.customerEmail) {
-      const cleanEmail = args.where.customerEmail.toLowerCase().trim();
-      bookings = bookings.filter((b) => b.customerEmail.toLowerCase().trim() === cleanEmail);
+    const cleanEmail = args?.where?.customerEmail?.toLowerCase().trim();
+    const targetUserId = args?.where?.userId;
+
+    if (args?.where?.matchAny && (cleanEmail || targetUserId)) {
+      bookings = bookings.filter((b) =>
+        (cleanEmail && b.customerEmail?.toLowerCase().trim() === cleanEmail) ||
+        (targetUserId && b.userId === targetUserId)
+      );
+    } else {
+      if (cleanEmail) {
+        bookings = bookings.filter((b) => b.customerEmail?.toLowerCase().trim() === cleanEmail);
+      }
+      if (targetUserId) {
+        bookings = bookings.filter((b) => b.userId === targetUserId);
+      }
     }
-    if (args?.where?.userId) {
-      bookings = bookings.filter((b) => b.userId === args.where!.userId);
+
+    if (args?.orderBy?.createdAt) {
+      const dir = args.orderBy.createdAt === 'asc' ? 1 : -1;
+      bookings.sort((a, b) => dir * (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()));
+    }
+    if (args?.take && args.take > 0) {
+      bookings = bookings.slice(0, args.take);
     }
     return bookings;
   }
@@ -615,21 +740,96 @@ export class TursoInquiryClient {
     return newInquiry;
   }
 
-  async findMany(args?: { where?: { email?: string; userId?: string }; orderBy?: unknown; take?: number }): Promise<InquiryRecord[]> {
+  async findMany(args?: { where?: { email?: string; userId?: string }; orderBy?: { createdAt?: 'asc' | 'desc' }; take?: number }): Promise<InquiryRecord[]> {
     let inquiries = await getInquiries();
     if (args?.where?.email) {
       const cleanEmail = args.where.email.toLowerCase().trim();
-      inquiries = inquiries.filter((i) => i.email.toLowerCase().trim() === cleanEmail);
+      inquiries = inquiries.filter((i) => i.email?.toLowerCase().trim() === cleanEmail);
+    }
+    if (args?.orderBy?.createdAt) {
+      const dir = args.orderBy.createdAt === 'asc' ? 1 : -1;
+      inquiries.sort((a, b) => dir * (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()));
+    }
+    if (args?.take && args.take > 0) {
+      inquiries = inquiries.slice(0, args.take);
     }
     return inquiries;
   }
 
   async delete(args: { where: { id: string } }): Promise<boolean> {
     const inquiries = await getInquiries();
+    const cleanId = args.where.id.trim();
     const initial = inquiries.length;
-    const filtered = inquiries.filter((i) => i.id !== args.where.id);
+    const filtered = inquiries.filter((i) => i.id.trim() !== cleanId);
+    if (filtered.length === initial) return false;
     await kvSet('inquiries', filtered);
-    return filtered.length < initial;
+    return true;
+  }
+}
+
+// --------------------------------------------------------------------------
+// CouponClient
+// --------------------------------------------------------------------------
+
+export class TursoCouponClient {
+  async findMany(): Promise<CouponRecord[]> {
+    const coupons = await getCoupons();
+    return [...coupons].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  async findByCode(code: string): Promise<CouponRecord | null> {
+    const coupons = await getCoupons();
+    const cleanCode = code.toUpperCase().trim();
+    return coupons.find((c) => c.code.toUpperCase().trim() === cleanCode) || null;
+  }
+
+  async create(args: { data: Omit<CouponRecord, 'id' | 'createdAt'> }): Promise<CouponRecord> {
+    const coupons = await getCoupons();
+    const cleanCode = args.data.code.toUpperCase().trim();
+    const existingIdx = coupons.findIndex((c) => c.code.toUpperCase().trim() === cleanCode);
+    if (existingIdx !== -1) {
+      throw new Error(`Coupon code "${cleanCode}" already exists.`);
+    }
+    const newCoupon: CouponRecord = {
+      ...args.data,
+      code: cleanCode,
+      id: generateId('cpn'),
+      createdAt: new Date().toISOString(),
+    };
+    coupons.unshift(newCoupon);
+    await kvSet('coupons', coupons);
+    return newCoupon;
+  }
+
+  async update(args: { where: { id: string }; data: Partial<CouponRecord> }): Promise<CouponRecord> {
+    const coupons = await getCoupons();
+    const cleanId = args.where.id.trim();
+    const idx = coupons.findIndex((c) => c.id.trim() === cleanId);
+    if (idx === -1) throw new Error('Coupon not found');
+    const updated: CouponRecord = { ...coupons[idx], ...args.data };
+    coupons[idx] = updated;
+    await kvSet('coupons', coupons);
+    return updated;
+  }
+
+  async incrementUsage(code: string): Promise<void> {
+    const coupons = await getCoupons();
+    const cleanCode = code.toUpperCase().trim();
+    const idx = coupons.findIndex((c) => c.code.toUpperCase().trim() === cleanCode);
+    if (idx !== -1) {
+      coupons[idx] = { ...coupons[idx], usageCount: (coupons[idx].usageCount || 0) + 1 };
+      await kvSet('coupons', coupons);
+    }
+  }
+
+  async delete(args: { where: { id: string } }): Promise<boolean> {
+    const coupons = await getCoupons();
+    const cleanId = args.where.id.trim();
+    const initial = coupons.length;
+    const filtered = coupons.filter((c) => c.id.trim() !== cleanId);
+    if (filtered.length === initial) return false;
+    await kvSet('coupons', filtered);
+    return true;
   }
 }
 
@@ -651,15 +851,7 @@ export class TursoSettingsClient {
 }
 
 // --------------------------------------------------------------------------
-// Check if Turso is configured
-// --------------------------------------------------------------------------
-
-export function isTursoConfigured(): boolean {
-  return Boolean(process.env.TURSO_DATABASE_URL);
-}
-
-// --------------------------------------------------------------------------
-// Turso DB export (drop-in replacement for db from db.ts)
+// Exports
 // --------------------------------------------------------------------------
 
 export const tursoDb = {
@@ -669,5 +861,6 @@ export const tursoDb = {
   category: new TursoCategoryClient(),
   product: new TursoProductClient(),
   banner: new TursoBannerClient(),
+  coupon: new TursoCouponClient(),
   settings: new TursoSettingsClient(),
 };

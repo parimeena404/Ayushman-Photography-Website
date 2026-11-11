@@ -588,11 +588,11 @@ function CatalogContent() {
   useEffect(() => {
     async function loadLiveProducts() {
       try {
-        const res = await fetch('/api/products');
+        const res = await fetch('/api/products', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (data.success && Array.isArray(data.products)) {
-            setCatalogItems(data.products);
+            setCatalogItems(data.products.filter((p: any) => p.isActive !== false));
           }
           if (data.success && Array.isArray(data.categories)) {
             setCategories(data.categories);
@@ -661,16 +661,32 @@ function CatalogContent() {
 
   const handleQuickAdd = (item: ProductCatalogItem, e: React.MouseEvent) => {
     e.stopPropagation();
+    const defaultQtyObj = Array.isArray(item.quantityOptions) && item.quantityOptions.length > 0
+      ? item.quantityOptions[0]
+      : null;
+    const unitQtyMatch = item.unit?.match(/\b(\d+)\b/);
+    const fallbackQty = unitQtyMatch ? Math.max(1, parseInt(unitQtyMatch[1], 10)) : 1;
+    const qty = Math.max(1, defaultQtyObj ? defaultQtyObj.qty : fallbackQty);
+    const mult = defaultQtyObj ? Number(defaultQtyObj.multiplier) || 1 : 1;
+    const defaultPaper = Array.isArray(item.paperOptions) && item.paperOptions.length > 0
+      ? item.paperOptions[0]
+      : { label: 'Standard Premium Stock', extraPrice: 0 };
+    const defaultCorner = Array.isArray(item.cornerOptions) && item.cornerOptions.length > 0
+      ? item.cornerOptions[0]
+      : 'Standard Cut';
+    const base = Number(item.numericPrice) || 200;
+    const totalPrice = Math.round(base * mult + (Number(defaultPaper.extraPrice) || 0));
+
     addToCart({
-      productId: item.customizerId,
+      productId: item.id,
       title: item.title,
       category: item.category,
-      paperStock: 'Standard Premium Stock',
-      cornerStyle: 'Standard Square Cut',
-      finishOption: 'Matte Lamination',
-      quantity: 100,
-      unitPrice: Math.round(item.numericPrice / 100),
-      totalPrice: item.numericPrice,
+      paperStock: defaultPaper.label,
+      cornerStyle: defaultCorner,
+      finishOption: defaultPaper.extraPrice > 0 ? defaultPaper.label : 'Standard Matte',
+      quantity: qty,
+      unitPrice: Number((totalPrice / qty).toFixed(2)),
+      totalPrice,
       image: item.image,
     });
 
@@ -870,6 +886,7 @@ function CatalogContent() {
                       image: item.image,
                       badge: item.badge,
                       price: item.price,
+                      numericPrice: item.numericPrice,
                       unit: item.unit,
                       category: item.category,
                       description: item.description,
@@ -888,7 +905,9 @@ function CatalogContent() {
           /* Grouped by Distinct Categories View */
           <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
             {distinctCategories.map((catDef) => {
-              const categoryItems = catalogItems.filter((i) => i.category === catDef.id);
+              const categoryItems = catalogItems.filter(
+                (i) => (i.category || '').trim().toLowerCase() === (catDef.id || '').trim().toLowerCase()
+              );
               if (categoryItems.length === 0) return null;
 
               return (
@@ -944,6 +963,7 @@ function CatalogContent() {
                             image: item.image,
                             badge: item.badge,
                             price: item.price,
+                            numericPrice: item.numericPrice,
                             unit: item.unit,
                             category: item.category,
                             description: item.description,

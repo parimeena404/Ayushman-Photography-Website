@@ -249,7 +249,7 @@ export default function Home() {
 
   const loadProducts = useCallback(async () => {
     try {
-      const res = await fetch('/api/products');
+      const res = await fetch('/api/products', { cache: 'no-store' });
       if (!res.ok) return;
       const data = await res.json();
       if (!data.success || !Array.isArray(data.products) || data.products.length === 0) return;
@@ -264,8 +264,14 @@ export default function Home() {
         title: p.title,
         badge: p.badge || (p.price ? `Starts @ ${p.price}` : undefined),
         price: p.price,
+        numericPrice: p.numericPrice,
         unit: p.unit || (p.price ? `${p.price} each` : undefined),
         category: p.category,
+        description: p.description,
+        features: p.features,
+        paperOptions: p.paperOptions,
+        quantityOptions: p.quantityOptions,
+        cornerOptions: p.cornerOptions,
         image: p.image,
         rating: p.rating || 4.9,
         reviews: p.reviews || 500,
@@ -280,8 +286,14 @@ export default function Home() {
         title: p.title,
         badge: p.badge || `BUY 100 @ ${p.price}`,
         price: p.price,
+        numericPrice: p.numericPrice,
         unit: p.unit || `${p.price} / 100 units`,
         category: p.category,
+        description: p.description,
+        features: p.features,
+        paperOptions: p.paperOptions,
+        quantityOptions: p.quantityOptions,
+        cornerOptions: p.cornerOptions,
         image: p.image,
         rating: p.rating || 4.8,
         reviews: p.reviews || 400,
@@ -296,8 +308,14 @@ export default function Home() {
         title: p.title,
         badge: p.badge || `Starts @ ${p.price}`,
         price: p.price,
+        numericPrice: p.numericPrice,
         unit: p.unit || `${p.price} each`,
         category: p.category,
+        description: p.description,
+        features: p.features,
+        paperOptions: p.paperOptions,
+        quantityOptions: p.quantityOptions,
+        cornerOptions: p.cornerOptions,
         image: p.image,
         rating: p.rating || 4.9,
         reviews: p.reviews || 350,

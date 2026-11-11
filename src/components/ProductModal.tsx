@@ -19,6 +19,7 @@ export interface ProductModalItem {
   image: string;
   badge?: string;
   price?: string;
+  numericPrice?: number;
   unit?: string;
   category?: string;
   description?: string;
@@ -50,58 +51,75 @@ const DEFAULT_QUANTITY_OPTIONS: QuantityOption[] = [
 
 const DEFAULT_CORNER_OPTIONS = ['Standard Cut', 'Rounded Corners'];
 
+function parseFallbackQty(unit?: string): number {
+  const m = unit?.match(/\b(\d+)\b/);
+  return m ? Math.max(1, parseInt(m[1], 10)) : 1;
+}
+
 export default function ProductModal({ product, onClose }: ProductModalProps) {
   const { addToCart } = useCart();
 
-  const activePaperOptions = (product?.paperOptions && product.paperOptions.length > 0)
+  const activePaperOptions = Array.isArray(product?.paperOptions)
     ? product.paperOptions
     : DEFAULT_PAPER_OPTIONS;
 
-  const activeQuantityOptions = (product?.quantityOptions && product.quantityOptions.length > 0)
+  const activeQuantityOptions = Array.isArray(product?.quantityOptions)
     ? product.quantityOptions
     : DEFAULT_QUANTITY_OPTIONS;
 
-  const activeCornerOptions = (product?.cornerOptions && product.cornerOptions.length > 0)
+  const activeCornerOptions = Array.isArray(product?.cornerOptions)
     ? product.cornerOptions
     : DEFAULT_CORNER_OPTIONS;
 
-  const [selectedQty, setSelectedQty] = useState(activeQuantityOptions[0]?.qty || 100);
-  const [selectedPaper, setSelectedPaper] = useState(activePaperOptions[0]);
+  const initialQty = activeQuantityOptions[0]?.qty ?? parseFallbackQty(product?.unit);
+
+  const [selectedQty, setSelectedQty] = useState(initialQty);
+  const [selectedPaper, setSelectedPaper] = useState<PaperOption | undefined>(activePaperOptions[0]);
   const [cornerStyle, setCornerStyle] = useState(activeCornerOptions[0] || 'Standard Cut');
   const [addedToast, setAddedToast] = useState(false);
 
   useEffect(() => {
     if (product) {
-      const papers = (product.paperOptions && product.paperOptions.length > 0) ? product.paperOptions : DEFAULT_PAPER_OPTIONS;
-      const qtys = (product.quantityOptions && product.quantityOptions.length > 0) ? product.quantityOptions : DEFAULT_QUANTITY_OPTIONS;
-      const corners = (product.cornerOptions && product.cornerOptions.length > 0) ? product.cornerOptions : DEFAULT_CORNER_OPTIONS;
+      const papers = Array.isArray(product.paperOptions) ? product.paperOptions : DEFAULT_PAPER_OPTIONS;
+      const qtys = Array.isArray(product.quantityOptions) ? product.quantityOptions : DEFAULT_QUANTITY_OPTIONS;
+      const corners = Array.isArray(product.cornerOptions) ? product.cornerOptions : DEFAULT_CORNER_OPTIONS;
       setSelectedPaper(papers[0]);
-      setSelectedQty(qtys[0]?.qty || 100);
+      setSelectedQty(qtys[0]?.qty ?? parseFallbackQty(product.unit));
       setCornerStyle(corners[0] || 'Standard Cut');
     }
-  }, [product?.id]);
+  }, [product]);
 
   if (!product) return null;
 
-  // Base price extraction
-  const rawPriceMatch = product.price?.replace(/[^0-9]/g, '');
-  const basePrice = rawPriceMatch ? parseInt(rawPriceMatch, 10) : 200;
+  // Base price extraction: prefer numericPrice, else parse floats safely ("₹200.00" -> 200)
+  const parsedFromPriceString = (() => {
+    const cleaned = product.price?.replace(/[^0-9.]/g, '');
+    const parsed = cleaned ? parseFloat(cleaned) : NaN;
+    return !isNaN(parsed) && parsed > 0 ? parsed : 200;
+  })();
+  const basePrice =
+    typeof product.numericPrice === 'number' && !isNaN(product.numericPrice) && product.numericPrice > 0
+      ? product.numericPrice
+      : parsedFromPriceString;
 
   const currentQtyObj = activeQuantityOptions.find((q) => q.qty === selectedQty) || activeQuantityOptions[0];
+  const effectiveQty = Math.max(1, currentQtyObj ? currentQtyObj.qty : (selectedQty || parseFallbackQty(product.unit)));
   const paperExtra = Number(selectedPaper?.extraPrice) || 0;
-  const calculatedPrice = Math.round(basePrice * (currentQtyObj?.multiplier || 1) + paperExtra);
+  const calculatedPrice = Math.round(basePrice * (currentQtyObj?.multiplier ?? 1) + paperExtra);
 
   const handleAddToCart = (e: React.MouseEvent, redirect: boolean = false) => {
     e.preventDefault();
+    const paperLabel = selectedPaper?.label || 'Standard Finish';
+    const finishLabel = paperExtra > 0 ? paperLabel : (selectedPaper?.label || 'Standard Matte');
     addToCart({
       productId: product.id,
       title: product.name,
       category: product.category || 'Visiting Cards',
-      paperStock: selectedPaper.label,
-      cornerStyle: cornerStyle,
-      finishOption: selectedPaper.extraPrice > 0 ? selectedPaper.label : 'Standard Matte',
-      quantity: selectedQty,
-      unitPrice: Math.round(calculatedPrice / selectedQty),
+      paperStock: paperLabel,
+      cornerStyle: cornerStyle || 'Standard Cut',
+      finishOption: finishLabel,
+      quantity: effectiveQty,
+      unitPrice: Number((calculatedPrice / effectiveQty).toFixed(2)),
       totalPrice: calculatedPrice,
       image: product.image,
     });
@@ -234,6 +252,30 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
               >
                 {product.name}
               </h2>
+              {product.description && (
+                <p style={{ fontSize: '0.8125rem', color: '#4B5563', marginTop: '0.35rem', lineHeight: 1.45 }}>
+                  {product.description}
+                </p>
+              )}
+              {Array.isArray(product.features) && product.features.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem', marginTop: '0.4rem' }}>
+                  {product.features.slice(0, 4).map((feat, idx) => (
+                    <span
+                      key={idx}
+                      style={{
+                        fontSize: '0.6875rem',
+                        background: '#F3F4F6',
+                        color: '#374151',
+                        padding: '0.15rem 0.45rem',
+                        borderRadius: '4px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      ✓ {feat}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Quantity Selector */}
@@ -350,13 +392,13 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
               }}
             >
               <div>
-                <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>Total for {selectedQty} pcs:</div>
+                <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>Total for {effectiveQty} pcs:</div>
                 <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0B2545', fontFamily: "'Inter', sans-serif" }}>
                   ₹{calculatedPrice.toLocaleString()}
                 </div>
               </div>
               <div style={{ fontSize: '0.75rem', color: '#10B981', fontWeight: 600 }}>
-                (₹{(calculatedPrice / selectedQty).toFixed(2)}/pc)
+                (₹{(calculatedPrice / effectiveQty).toFixed(2)}/pc)
               </div>
             </div>
 

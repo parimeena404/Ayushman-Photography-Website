@@ -100,14 +100,18 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const orderId = searchParams.get('id');
 
-    if (!orderId) {
+    if (!orderId || !orderId.trim()) {
       return NextResponse.json({ error: 'Order ID parameter is required.' }, { status: 400 });
     }
 
-    await db.booking.delete({ where: { id: orderId } });
+    const deleted = await db.booking.delete({ where: { id: orderId.trim() } });
+    if (!deleted) {
+      return NextResponse.json({ error: `Order ${orderId} not found.` }, { status: 404 });
+    }
 
     return NextResponse.json({
       success: true,
+      deleted,
       message: `Order ${orderId} deleted successfully.`,
     });
   } catch (error: any) {

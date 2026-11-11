@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getCurrentUser, hashPassword } from '@/lib/auth';
+import { getCurrentUser, hashPassword, signToken, COOKIE_NAME } from '@/lib/auth';
 import { db } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -55,11 +55,28 @@ export async function PUT(req: Request) {
 
     const { password, ...userSafe } = updatedUser;
 
-    return NextResponse.json({
+    const token = signToken({
+      userId: updatedUser.id,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      name: updatedUser.name,
+    });
+
+    const response = NextResponse.json({
       success: true,
       message: 'Profile updated successfully!',
       user: userSafe,
     });
+
+    response.cookies.set(COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60,
+      path: '/',
+    });
+
+    return response;
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Failed to update profile' }, { status: 500 });
   }

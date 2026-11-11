@@ -16,7 +16,7 @@ export async function GET() {
     let inquiries: any[] = [];
     try {
       bookings = await db.booking.findMany({
-        where: { customerEmail: currentUser.email },
+        where: { customerEmail: currentUser.email, userId: currentUser.id, matchAny: true },
         orderBy: { createdAt: 'desc' },
       });
 

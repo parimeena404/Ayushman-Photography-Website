@@ -56,26 +56,38 @@ export default function Navbar() {
   const [products, setProducts] = useState<NavProduct[]>([]);
   const [hoveredTab, setHoveredTab] = useState<string | null>(null); // 'VIEW_ALL' or category ID
   const [searchQuery, setSearchQuery] = useState('');
+  const [studioPhone, setStudioPhone] = useState('9479784979');
+  const [studioName, setStudioName] = useState('Ayushman Cards & Graphics');
 
   // Mobile 3-line Category Drawer State
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [mobileExpandedCat, setMobileExpandedCat] = useState<string | null>(null);
   const [mobileCatSearch, setMobileCatSearch] = useState('');
 
-  // Fetch live products and categories from Admin Portal / public API
+  // Fetch live products, categories and settings from Admin Portal / public API
   const loadLiveCatalog = useCallback(async () => {
     try {
-      const res = await fetch('/api/products');
-      if (res.ok) {
-        const data = await res.json();
+      const [prodRes, setRes] = await Promise.all([
+        fetch('/api/products', { cache: 'no-store' }),
+        fetch('/api/settings', { cache: 'no-store' }).catch(() => null),
+      ]);
+      if (prodRes.ok) {
+        const data = await prodRes.json();
         if (data.success) {
           if (Array.isArray(data.categories) && data.categories.length > 0) {
             const cleanCats = data.categories.filter((c: any) => c.id !== 'All Products');
             setCategories(cleanCats);
           }
-          if (Array.isArray(data.products) && data.products.length > 0) {
+          if (Array.isArray(data.products)) {
             setProducts(data.products.filter((p: any) => p.isActive !== false));
           }
+        }
+      }
+      if (setRes && setRes.ok) {
+        const sData = await setRes.json();
+        if (sData.success && sData.settings) {
+          if (sData.settings.phonePrimary) setStudioPhone(sData.settings.phonePrimary);
+          if (sData.settings.shopName) setStudioName(sData.settings.shopName);
         }
       }
     } catch (err) {
@@ -91,17 +103,19 @@ export default function Navbar() {
     };
 
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'ayushman_catalog_updated_at') {
+      if (e.key === 'ayushman_catalog_updated_at' || e.key === 'ayushman_settings_updated_at') {
         loadLiveCatalog();
       }
     };
 
     window.addEventListener('catalogUpdated', handleCatalogUpdate);
+    window.addEventListener('settingsUpdated', handleCatalogUpdate);
     window.addEventListener('storage', handleStorage);
     window.addEventListener('focus', loadLiveCatalog);
 
     return () => {
       window.removeEventListener('catalogUpdated', handleCatalogUpdate);
+      window.removeEventListener('settingsUpdated', handleCatalogUpdate);
       window.removeEventListener('storage', handleStorage);
       window.removeEventListener('focus', loadLiveCatalog);
     };
@@ -275,7 +289,7 @@ export default function Navbar() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo.png"
-              alt="Ayushman Cards & Graphics"
+              alt={studioName}
               style={{ height: '48px', width: 'auto', objectFit: 'contain' }}
             />
           </Link>
@@ -340,12 +354,12 @@ export default function Navbar() {
           {/* Right Header Links */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.5rem, 1.2vw, 1.25rem)', flexShrink: 0, marginLeft: 'auto' }}>
             <a
-              href="tel:9479784979"
+              href={`tel:${studioPhone.replace(/[^0-9+]/g, '')}`}
               className="vp-desktop-only"
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none' }}
             >
               <span style={{ fontSize: '0.6875rem', color: '#6B7280', fontFamily: "'Inter', sans-serif" }}>Help is here</span>
-              <span style={{ fontSize: '0.8125rem', color: '#1E1E1E', fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>9479784979</span>
+              <span style={{ fontSize: '0.8125rem', color: '#1E1E1E', fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>{studioPhone}</span>
             </a>
 
             {/* Admin Portal Shortcut for Admins */}
@@ -936,7 +950,7 @@ export default function Navbar() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <a
-                  href="tel:9479784979"
+                  href={`tel:${studioPhone.replace(/[^0-9+]/g, '')}`}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -947,7 +961,7 @@ export default function Navbar() {
                     textDecoration: 'none',
                   }}
                 >
-                  <span>📞</span> 9479784979
+                  <span>📞</span> {studioPhone}
                 </a>
                 <Link
                   href="/cart"

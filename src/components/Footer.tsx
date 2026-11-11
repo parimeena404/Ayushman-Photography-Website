@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 interface StoreSettings {
+  shopName: string;
   proprietor: string;
   address: string;
   whatsappNumber: string;
@@ -13,6 +14,7 @@ interface StoreSettings {
 }
 
 const DEFAULT_SETTINGS: StoreSettings = {
+  shopName: 'Ayushman Cards & Graphics',
   proprietor: 'Rajesh Saatoliya',
   address: '63, Varruchi Marg, Freeganj Ujjain',
   whatsappNumber: '+919479784979',
@@ -71,11 +73,12 @@ export default function Footer() {
   useEffect(() => {
     async function loadSettings() {
       try {
-        const res = await fetch('/api/settings');
+        const res = await fetch('/api/settings', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.settings) {
             setSettings({
+              shopName: data.settings.shopName || DEFAULT_SETTINGS.shopName,
               proprietor: data.settings.proprietor || DEFAULT_SETTINGS.proprietor,
               address: data.settings.address || DEFAULT_SETTINGS.address,
               whatsappNumber: data.settings.whatsappNumber || DEFAULT_SETTINGS.whatsappNumber,
@@ -98,14 +101,17 @@ export default function Footer() {
 
     window.addEventListener('settingsUpdated', handleSettingsUpdate);
     window.addEventListener('storage', handleSettingsUpdate);
+    window.addEventListener('focus', loadSettings);
 
     return () => {
       window.removeEventListener('settingsUpdated', handleSettingsUpdate);
       window.removeEventListener('storage', handleSettingsUpdate);
+      window.removeEventListener('focus', loadSettings);
     };
   }, []);
 
-  const cleanPhone = settings.whatsappNumber.replace(/[^0-9]/g, '');
+  const cleanDigits = settings.whatsappNumber.replace(/[^0-9]/g, '');
+  const cleanPhone = cleanDigits.length === 10 ? `91${cleanDigits}` : (cleanDigits || '919479784979');
   const whatsappUrl = `https://wa.me/${cleanPhone}`;
   const instagramUrl = settings.instagramUrl.startsWith('http')
     ? settings.instagramUrl
@@ -282,7 +288,7 @@ export default function Footer() {
               margin: 0,
             }}
           >
-            © {new Date().getFullYear()} Ayushman Cards & Graphics. All rights reserved. {settings.address}
+            © {new Date().getFullYear()} {settings.shopName}. All rights reserved. {settings.address}
           </p>
           <p
             style={{

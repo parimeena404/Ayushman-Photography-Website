@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useInView } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { staggerContainer, fadeInUp } from '@/lib/animations';
 
 const images = [
@@ -19,6 +19,37 @@ const images = [
 export default function InstagramGrid() {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
+  const [instagramUrl, setInstagramUrl] = useState('https://instagram.com/ayushmancards_ujjain');
+  const [instagramHandle, setInstagramHandle] = useState('@ayushmancards_ujjain');
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/settings', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.settings) {
+            const url = data.settings.instagramUrl || 'https://instagram.com/ayushmancards_ujjain';
+            setInstagramUrl(url.startsWith('http') ? url : `https://instagram.com/${url.replace(/^@/, '')}`);
+            const derivedHandle =
+              data.settings.instagramHandle ||
+              '@' + url.replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/.*$/, '').replace(/^@/, '');
+            if (derivedHandle && derivedHandle !== '@') {
+              setInstagramHandle(derivedHandle.startsWith('@') ? derivedHandle : `@${derivedHandle}`);
+            }
+          }
+        }
+      } catch {}
+    }
+    loadSettings();
+    const onUpdate = () => loadSettings();
+    window.addEventListener('settingsUpdated', onUpdate);
+    window.addEventListener('storage', onUpdate);
+    return () => {
+      window.removeEventListener('settingsUpdated', onUpdate);
+      window.removeEventListener('storage', onUpdate);
+    };
+  }, []);
 
   return (
     <section
@@ -43,16 +74,23 @@ export default function InstagramGrid() {
           >
             Follow Along
           </p>
-          <h2
-            className="font-heading text-editorial-lg"
-            style={{
-              color: 'var(--text-primary)',
-              fontWeight: 300,
-              marginBottom: '0.75rem',
-            }}
+          <a
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: 'none' }}
           >
-            @lumiere.studio
-          </h2>
+            <h2
+              className="font-heading text-editorial-lg"
+              style={{
+                color: 'var(--text-primary)',
+                fontWeight: 300,
+                marginBottom: '0.75rem',
+              }}
+            >
+              {instagramHandle}
+            </h2>
+          </a>
         </motion.div>
 
         {/* Masonry Grid */}

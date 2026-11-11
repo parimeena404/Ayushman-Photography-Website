@@ -733,20 +733,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 10,
           "multiplier": 1
         },
         {
-          "qty": 250,
+          "qty": 25,
           "multiplier": 2.2
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 50,
+          "multiplier": 4
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 100,
+          "multiplier": 7.2
         }
       ],
       "cornerOptions": [
@@ -799,20 +799,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 500,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
-        },
-        {
-          "qty": 500,
-          "multiplier": 3.8
-        },
-        {
           "qty": 1000,
-          "multiplier": 6.5
+          "multiplier": 1.8
+        },
+        {
+          "qty": 2000,
+          "multiplier": 3.2
+        },
+        {
+          "qty": 5000,
+          "multiplier": 7
         }
       ],
       "cornerOptions": [
@@ -865,20 +865,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 500,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
-        },
-        {
-          "qty": 500,
-          "multiplier": 3.8
-        },
-        {
           "qty": 1000,
-          "multiplier": 6.5
+          "multiplier": 1.8
+        },
+        {
+          "qty": 2000,
+          "multiplier": 3.2
+        },
+        {
+          "qty": 5000,
+          "multiplier": 7
         }
       ],
       "cornerOptions": [
@@ -1129,20 +1129,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1000,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2000,
+          "multiplier": 1.85
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5000,
+          "multiplier": 4
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10000,
+          "multiplier": 7.2
         }
       ],
       "cornerOptions": [
@@ -1195,20 +1195,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1000,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2000,
+          "multiplier": 1.85
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5000,
+          "multiplier": 4
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10000,
+          "multiplier": 7.2
         }
       ],
       "cornerOptions": [
@@ -1261,20 +1261,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1000,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2000,
+          "multiplier": 1.85
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5000,
+          "multiplier": 4
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10000,
+          "multiplier": 7.2
         }
       ],
       "cornerOptions": [
@@ -1327,20 +1327,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1000,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2000,
+          "multiplier": 1.85
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5000,
+          "multiplier": 4
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10000,
+          "multiplier": 7.2
         }
       ],
       "cornerOptions": [
@@ -1393,20 +1393,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1000,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2000,
+          "multiplier": 1.85
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5000,
+          "multiplier": 4
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10000,
+          "multiplier": 7.2
         }
       ],
       "cornerOptions": [
@@ -1459,20 +1459,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1000,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2000,
+          "multiplier": 1.85
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5000,
+          "multiplier": 4
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10000,
+          "multiplier": 7.2
         }
       ],
       "cornerOptions": [
@@ -1789,20 +1789,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 500,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
-        },
-        {
-          "qty": 500,
-          "multiplier": 3.8
-        },
-        {
           "qty": 1000,
-          "multiplier": 6.5
+          "multiplier": 1.8
+        },
+        {
+          "qty": 2000,
+          "multiplier": 3.2
+        },
+        {
+          "qty": 5000,
+          "multiplier": 7
         }
       ],
       "cornerOptions": [
@@ -1855,20 +1855,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 10,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 20,
+          "multiplier": 1.85
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 50,
+          "multiplier": 4
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 100,
+          "multiplier": 7.2
         }
       ],
       "cornerOptions": [
@@ -1921,20 +1921,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2,
+          "multiplier": 1.9
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5,
+          "multiplier": 4.25
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10,
+          "multiplier": 8
         }
       ],
       "cornerOptions": [
@@ -1987,20 +1987,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 500,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
-        },
-        {
-          "qty": 500,
-          "multiplier": 3.8
-        },
-        {
           "qty": 1000,
-          "multiplier": 6.5
+          "multiplier": 1.8
+        },
+        {
+          "qty": 2000,
+          "multiplier": 3.2
+        },
+        {
+          "qty": 5000,
+          "multiplier": 7
         }
       ],
       "cornerOptions": [
@@ -2119,20 +2119,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2,
+          "multiplier": 1.9
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5,
+          "multiplier": 4.5
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10,
+          "multiplier": 8.5
         }
       ],
       "cornerOptions": [
@@ -2185,20 +2185,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2,
+          "multiplier": 1.9
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5,
+          "multiplier": 4.5
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10,
+          "multiplier": 8.5
         }
       ],
       "cornerOptions": [
@@ -2251,20 +2251,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 500,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
-        },
-        {
-          "qty": 500,
-          "multiplier": 3.8
-        },
-        {
           "qty": 1000,
-          "multiplier": 6.5
+          "multiplier": 1.8
+        },
+        {
+          "qty": 2000,
+          "multiplier": 3.2
+        },
+        {
+          "qty": 5000,
+          "multiplier": 7
         }
       ],
       "cornerOptions": [
@@ -2317,20 +2317,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1000,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2000,
+          "multiplier": 1.85
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5000,
+          "multiplier": 4
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10000,
+          "multiplier": 7.2
         }
       ],
       "cornerOptions": [
@@ -2383,20 +2383,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1000,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2000,
+          "multiplier": 1.85
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5000,
+          "multiplier": 4
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10000,
+          "multiplier": 7.2
         }
       ],
       "cornerOptions": [
@@ -2449,20 +2449,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2,
+          "multiplier": 1.9
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5,
+          "multiplier": 4.5
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10,
+          "multiplier": 8.5
         }
       ],
       "cornerOptions": [
@@ -2515,20 +2515,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2,
+          "multiplier": 1.9
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5,
+          "multiplier": 4.5
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10,
+          "multiplier": 8.5
         }
       ],
       "cornerOptions": [
@@ -2581,20 +2581,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 10,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 25,
+          "multiplier": 2.25
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 50,
+          "multiplier": 4.2
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 100,
+          "multiplier": 7.8
         }
       ],
       "cornerOptions": [
@@ -2647,20 +2647,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 5,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 10,
+          "multiplier": 1.9
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 25,
+          "multiplier": 4.3
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 50,
+          "multiplier": 8
         }
       ],
       "cornerOptions": [
@@ -2713,20 +2713,20 @@
       ],
       "quantityOptions": [
         {
-          "qty": 100,
+          "qty": 1,
           "multiplier": 1
         },
         {
-          "qty": 250,
-          "multiplier": 2.2
+          "qty": 2,
+          "multiplier": 1.9
         },
         {
-          "qty": 500,
-          "multiplier": 3.8
+          "qty": 5,
+          "multiplier": 4.5
         },
         {
-          "qty": 1000,
-          "multiplier": 6.5
+          "qty": 10,
+          "multiplier": 8.5
         }
       ],
       "cornerOptions": [
@@ -2776,6 +2776,38 @@
       "updatedAt": "2025-01-01T00:00:00.000Z"
     }
   ],
+  "coupons": [
+    {
+      "id": "c-1",
+      "code": "FESTIVE20",
+      "discountType": "PERCENT",
+      "discountValue": 20,
+      "minOrderAmount": 1000,
+      "isActive": true,
+      "usageCount": 42,
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "c-2",
+      "code": "BULKPRINT15",
+      "discountType": "PERCENT",
+      "discountValue": 15,
+      "minOrderAmount": 5000,
+      "isActive": true,
+      "usageCount": 19,
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "c-3",
+      "code": "ROYAL500",
+      "discountType": "FLAT",
+      "discountValue": 500,
+      "minOrderAmount": 3000,
+      "isActive": true,
+      "usageCount": 28,
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    }
+  ],
   "settings": {
     "id": "site-settings",
     "shopName": "Ayushman Cards & Graphics",
@@ -2793,6 +2825,6 @@
     "facebookUrl": "https://facebook.com/ayushmancards",
     "youtubeUrl": "https://youtube.com/@ayushmancards",
     "email": "ayushmancardspress@gmail.com",
-    "updatedAt": "2025-01-01T00:00:00.000Z"
+    "updatedAt": "2026-11-11T19:38:53.582Z"
   }
 }

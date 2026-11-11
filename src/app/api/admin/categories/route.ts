@@ -12,7 +12,9 @@ export async function GET() {
     // Attach product count to each category
     const categoriesWithCount = categories.map((cat: any) => ({
       ...cat,
-      count: products.filter((p: any) => p.category === cat.id).length,
+      count: products.filter(
+        (p: any) => p.category?.trim().toLowerCase() === cat.id?.trim().toLowerCase()
+      ).length,
     }));
 
     return NextResponse.json({
@@ -129,6 +131,9 @@ export async function DELETE(req: Request) {
     }
 
     const deleted = await db.category.delete({ where: { id: id.trim() } });
+    if (!deleted) {
+      return NextResponse.json({ error: 'Category not found' }, { status: 404 });
+    }
 
     return NextResponse.json({
       success: true,

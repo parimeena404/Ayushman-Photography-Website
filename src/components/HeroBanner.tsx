@@ -59,10 +59,10 @@ export default function HeroBanner() {
 
   const fetchBanners = useCallback(async () => {
     try {
-      const res = await fetch('/api/banners');
+      const res = await fetch('/api/banners', { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        if (data.success && Array.isArray(data.banners) && data.banners.length > 0) {
+        if (data.success && Array.isArray(data.banners)) {
           setBanners(data.banners.filter((b: any) => b.isActive !== false));
         }
       }

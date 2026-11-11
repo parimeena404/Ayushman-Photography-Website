@@ -10,7 +10,14 @@ interface CategoryProduct {
   image: string;
   badge?: string;
   price?: string;
+  numericPrice?: number;
   unit?: string;
+  category?: string;
+  description?: string;
+  features?: string[];
+  paperOptions?: { label: string; extraPrice: number }[];
+  quantityOptions?: { qty: number; multiplier: number }[];
+  cornerOptions?: string[];
   rating?: number;
   reviews?: number;
   bgGradient: string;
@@ -240,7 +247,7 @@ function ProductRow({
             const isFav = isInWishlist(item.id) || isInWishlist(item.name);
             return (
               <div
-                key={item.name}
+                key={item.id || item.name}
                 style={{
                   flex: '0 0 210px',
                   display: 'flex',
@@ -390,7 +397,7 @@ export default function ExploreCategories() {
 
   const loadProducts = useCallback(async () => {
     try {
-      const res = await fetch('/api/products');
+      const res = await fetch('/api/products', { cache: 'no-store' });
       if (!res.ok) return;
       const data = await res.json();
       if (!data.success || !Array.isArray(data.products)) return;
@@ -406,7 +413,14 @@ export default function ExploreCategories() {
           image: p.image,
           badge: p.badge || (p.price ? `Starts @ ${p.price}` : 'POPULAR'),
           price: p.price,
+          numericPrice: p.numericPrice,
           unit: p.unit || `${p.price} each`,
+          category: p.category,
+          description: p.description,
+          features: p.features,
+          paperOptions: p.paperOptions,
+          quantityOptions: p.quantityOptions,
+          cornerOptions: p.cornerOptions,
           rating: p.rating || 4.9,
           reviews: p.reviews || 500,
           bgGradient: bgGradients[idx % bgGradients.length],
@@ -421,7 +435,14 @@ export default function ExploreCategories() {
           image: p.image,
           badge: p.badge || (p.price ? `Starts @ ${p.price}` : 'TRENDING'),
           price: p.price,
+          numericPrice: p.numericPrice,
           unit: p.unit || `${p.price} each`,
+          category: p.category,
+          description: p.description,
+          features: p.features,
+          paperOptions: p.paperOptions,
+          quantityOptions: p.quantityOptions,
+          cornerOptions: p.cornerOptions,
           rating: p.rating || 4.8,
           reviews: p.reviews || 420,
           bgGradient: bgGradients[(idx + 2) % bgGradients.length],

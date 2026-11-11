@@ -58,7 +58,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const numPrice = Number(numericPrice) || parseInt(price.replace(/[^0-9]/g, '')) || 1000;
+    const parsedFromPrice = parseFloat(String(price).replace(/[^0-9.]/g, ''));
+    const numPrice = (numericPrice !== undefined && Number(numericPrice) > 0)
+      ? Number(numericPrice)
+      : (!Number.isNaN(parsedFromPrice) && parsedFromPrice > 0 ? parsedFromPrice : 1000);
+    const formattedPrice = String(price).trim().startsWith('₹') ? String(price).trim() : `₹${numPrice.toLocaleString('en-IN')}`;
 
     const parsedPaperOptions = Array.isArray(paperOptions)
       ? paperOptions
@@ -89,8 +93,8 @@ export async function POST(req: Request) {
         customizerId: customizerId || 'visiting-card',
         title,
         category,
-        badge: badge || `100 PCS @ ${price}`,
-        price: price.startsWith('₹') ? price : `₹${price}`,
+        badge: badge || `100 PCS @ ${formattedPrice}`,
+        price: formattedPrice,
         numericPrice: numPrice,
         unit: unit || '100 Units',
         image: image || '/images/wedding/scroll_royal_blue_velvet.png',
@@ -133,8 +137,17 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: 'Product ID is required' }, { status: 400 });
     }
 
-    if (data.numericPrice) {
-      data.numericPrice = Number(data.numericPrice);
+    if (data.numericPrice !== undefined) {
+      const parsedNum = Number(data.numericPrice);
+      data.numericPrice = Number.isFinite(parsedNum) ? parsedNum : 0;
+      if (data.price === undefined) {
+        data.price = `₹${data.numericPrice.toLocaleString('en-IN')}`;
+      }
+    } else if (data.price !== undefined) {
+      const parsedFromPrice = parseFloat(String(data.price).replace(/[^0-9.]/g, ''));
+      if (!Number.isNaN(parsedFromPrice)) {
+        data.numericPrice = parsedFromPrice;
+      }
     }
     if (data.features && typeof data.features === 'string') {
       data.features = data.features.split('\n').filter(Boolean);
@@ -201,6 +214,9 @@ export async function DELETE(req: Request) {
     }
 
     const deleted = await db.product.delete({ where: { id: id.trim() } });
+    if (!deleted) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
 
     return NextResponse.json({
       success: true,

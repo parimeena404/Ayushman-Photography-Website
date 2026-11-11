@@ -16,9 +16,57 @@ interface UploadedFile {
   previewUrl?: string;
 }
 
+interface StudioSettings {
+  shopName: string;
+  address: string;
+  city: string;
+  whatsappNumber: string;
+  phonePrimary: string;
+  email: string;
+}
+
+const DEFAULT_STUDIO_SETTINGS: StudioSettings = {
+  shopName: 'Ayushman Cards & Graphics',
+  address: '63, Varruchi Marg, Freeganj Ujjain',
+  city: 'Ujjain',
+  whatsappNumber: '+919479784979',
+  phonePrimary: '9479784979',
+  email: 'ayushmancards@gmail.com',
+};
+
 export default function CheckoutPage() {
-  const { cart, grandTotal, subtotal, discountAmount, gstAmount, shippingFee, clearCart } = useCart();
+  const { cart, grandTotal, subtotal, discountAmount, gstAmount, shippingFee, couponCode, clearCart } = useCart();
   const { user } = useAuth();
+  const [studioSettings, setStudioSettings] = useState<StudioSettings>(DEFAULT_STUDIO_SETTINGS);
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/settings', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.settings) {
+            setStudioSettings({
+              shopName: data.settings.shopName || DEFAULT_STUDIO_SETTINGS.shopName,
+              address: data.settings.address || DEFAULT_STUDIO_SETTINGS.address,
+              city: data.settings.city || DEFAULT_STUDIO_SETTINGS.city,
+              whatsappNumber: data.settings.whatsappNumber || DEFAULT_STUDIO_SETTINGS.whatsappNumber,
+              phonePrimary: data.settings.phonePrimary || DEFAULT_STUDIO_SETTINGS.phonePrimary,
+              email: data.settings.email || DEFAULT_STUDIO_SETTINGS.email,
+            });
+          }
+        }
+      } catch {}
+    }
+    loadSettings();
+    const onUpdate = () => loadSettings();
+    window.addEventListener('settingsUpdated', onUpdate);
+    window.addEventListener('storage', onUpdate);
+    return () => {
+      window.removeEventListener('settingsUpdated', onUpdate);
+      window.removeEventListener('storage', onUpdate);
+    };
+  }, []);
 
   const [fullName, setFullName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
@@ -118,10 +166,15 @@ export default function CheckoutPage() {
   const [successOrder, setSuccessOrder] = useState<any>(null);
 
   const finalTotal = grandTotal + (deliverySpeed === 'express' ? 250 : 0);
+  const cleanWaDigits = (studioSettings.whatsappNumber || '+919479784979').replace(/[^0-9]/g, '');
+  const waTarget = cleanWaDigits.length === 10 ? `91${cleanWaDigits}` : (cleanWaDigits || '919479784979');
+  const displayPhone = studioSettings.phonePrimary || '9479784979';
+  const upiPhone = displayPhone.replace(/[^0-9]/g, '').slice(-10) || '9479784979';
+  const encodedShopPn = encodeURIComponent((studioSettings.shopName || 'AyushmanCardsAndGraphics').replace(/\s+/g, ''));
 
-  // Dynamic QR Code URL for Ayushman Cards & Graphics
+  // Dynamic QR Code URL for Studio UPI
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
-    `upi://pay?pa=9479784979@ybl&pn=AyushmanCardsAndGraphics&am=${finalTotal}&cu=INR&tn=Order_Payment`
+    `upi://pay?pa=${upiPhone}@ybl&pn=${encodedShopPn}&am=${finalTotal}&cu=INR&tn=Order_Payment`
   )}`;
 
   const handleInitiateOrder = async (e: React.FormEvent) => {
@@ -135,22 +188,34 @@ export default function CheckoutPage() {
     setLoading(true);
 
     try {
+      const itemsSummary = cart
+        .map((i) => `${i.title} (${i.quantity} pcs | ${i.paperStock} | ${i.finishOption} | ${i.cornerStyle} = ₹${i.totalPrice})`)
+        .join('; ');
+      const fullOrderNotes = [
+        notes.trim(),
+        itemsSummary ? `Items: ${itemsSummary}` : '',
+        couponCode ? `Coupon: ${couponCode} (-₹${discountAmount})` : '',
+      ]
+        .filter(Boolean)
+        .join(' | ');
+
       // Create pending order on API
       const res = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           customerName: fullName,
-          customerEmail: email || 'customer@ayushmancards.com',
+          customerEmail: email || studioSettings.email || 'customer@ayushmancards.com',
           customerPhone: phone,
           eventType: cart.map((i) => i.title).join(', '),
           eventDate: new Date().toISOString().split('T')[0],
           city: `${city}, ${state} (${pincode})`,
           address: `${address} ${gstin ? `[GSTIN: ${gstin}]` : ''}`,
-          notes: notes || `Items: ${cart.length} print job(s)`,
+          notes: fullOrderNotes || `Items: ${cart.length} print job(s)`,
           packageType: cart[0]?.category || 'Custom Print Job',
           totalAmount: finalTotal,
           depositAmount: finalTotal,
+          couponCode: couponCode || undefined,
           uploadedFiles: uploadedFiles.map((f) => ({ name: f.name, size: f.size, type: f.type, previewUrl: f.previewUrl })),
           driveLink: driveLink.trim() || null,
           printInstructions: printInstructions.trim() || null,
@@ -178,7 +243,7 @@ export default function CheckoutPage() {
           key: orderPayload.keyId || 'rzp_test_TMSAlhSBWAt4fa',
           amount: orderPayload.amount,
           currency: 'INR',
-          name: 'Ayushman Cards & Graphics',
+          name: studioSettings.shopName,
           description: `Print Order (${cart.length} item(s))`,
           handler: async function (response: any) {
             await handleConfirmPayment(response.razorpay_payment_id || `pay_${Date.now()}`);
@@ -258,8 +323,8 @@ export default function CheckoutPage() {
     if (printInstructions.trim()) {
       artworkDetails += `\n*Print Instructions:* ${printInstructions.trim()}`;
     }
-    const msg = `Hi Ayushman Cards & Graphics!\nI want to place an order:\n\n*Name:* ${fullName}\n*Phone:* ${phone}\n*Address:* ${address}, ${city} - ${pincode}\n\n*Order Items:*\n${itemsSummary}${artworkDetails}\n\n*Total Amount:* ₹${finalTotal.toLocaleString()}`;
-    window.open(`https://wa.me/919479784979?text=${encodeURIComponent(msg)}`, '_blank');
+    const msg = `Hi ${studioSettings.shopName}!\nI want to place an order:\n\n*Name:* ${fullName}\n*Phone:* ${phone}\n*Address:* ${address}, ${city} - ${pincode}\n\n*Order Items:*\n${itemsSummary}${artworkDetails}\n\n*Total Amount:* ₹${finalTotal.toLocaleString()}`;
+    window.open(`https://wa.me/${waTarget}?text=${encodeURIComponent(msg)}`, '_blank');
     handleConfirmPayment(`WA_${Date.now()}`);
   };
 
@@ -626,7 +691,7 @@ export default function CheckoutPage() {
                     onChange={(e) => setWhatsappFollowup(e.target.checked)}
                     style={{ width: '16px', height: '16px', accentColor: '#25D366' }}
                   />
-                  <span>💬 Connect with printing specialist on WhatsApp (+91 9479784979) for design guidance</span>
+                  <span>💬 Connect with printing specialist on WhatsApp ({studioSettings.whatsappNumber}) for design guidance</span>
                 </label>
 
                 {/* ════ SECTION 3: DELIVERY SPEED ════ */}
@@ -819,7 +884,7 @@ export default function CheckoutPage() {
               {/* Modal Header */}
               <div style={{ textAlign: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '1rem' }}>
                 <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#0B2545', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  AYUSHMAN CARDS & GRAPHICS
+                  {studioSettings.shopName}
                 </span>
                 <h2 style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.35rem', fontWeight: 700, color: '#1E1E1E', margin: '0.2rem 0' }}>
                   Select Payment Method
@@ -861,11 +926,11 @@ export default function CheckoutPage() {
               {activePaymentTab === 'upi' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   <p style={{ fontSize: '0.8125rem', color: '#6B7280', margin: 0 }}>
-                    Tap below to pay directly to <strong>9479784979</strong> (Ayushman Cards & Graphics):
+                    Tap below to pay directly to <strong>{displayPhone}</strong> ({studioSettings.shopName}):
                   </p>
 
                   <a
-                    href={`upi://pay?pa=9479784979@ybl&pn=AyushmanCardsAndGraphics&am=${finalTotal}&cu=INR`}
+                    href={`upi://pay?pa=${upiPhone}@ybl&pn=${encodedShopPn}&am=${finalTotal}&cu=INR`}
                     style={{
                       padding: '0.75rem 1rem',
                       borderRadius: '8px',
@@ -880,7 +945,7 @@ export default function CheckoutPage() {
                     }}
                   >
                     <span>🟣 Pay via PhonePe App</span>
-                    <span>9479784979@ybl</span>
+                    <span>{upiPhone}@ybl</span>
                   </a>
                 </div>
               )}
@@ -896,7 +961,7 @@ export default function CheckoutPage() {
                     <img src={qrCodeUrl} alt="UPI Payment QR Code" style={{ width: '180px', height: '180px', display: 'block', margin: '0 auto' }} />
                   </div>
                   <div style={{ fontSize: '0.78125rem', color: '#1E1E1E', fontWeight: 700, marginTop: '0.5rem' }}>
-                    Ayushman Cards & Graphics • 9479784979
+                    {studioSettings.shopName} • {displayPhone}
                   </div>
                 </div>
               )}
@@ -934,7 +999,7 @@ export default function CheckoutPage() {
                     Studio Collection & Pay on Delivery
                   </p>
                   <p style={{ fontSize: '0.78125rem', color: '#6B7280', marginBottom: '1rem' }}>
-                    Visit our studio at 63, Varruchi Marg, Freeganj Ujjain to inspect sample proof and pay cash/UPI on order pickup.
+                    Visit our studio at {studioSettings.address} to inspect sample proof and pay cash/UPI on order pickup.
                   </p>
                 </div>
               )}

@@ -60,11 +60,12 @@ export default function Products() {
   useEffect(() => {
     async function loadProducts() {
       try {
-        const res = await fetch('/api/products');
+        const res = await fetch('/api/products', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
-          if (data.success && Array.isArray(data.products) && data.products.length > 0) {
-            const mapped: ProductItem[] = data.products.slice(0, 5).map((p: any) => ({
+          if (data.success && Array.isArray(data.products)) {
+            const active = data.products.filter((p: any) => p.isActive !== false);
+            const mapped: ProductItem[] = active.slice(0, 5).map((p: any) => ({
               id: p.id,
               name: p.title,
               desc: p.description || p.badge || 'Premium Custom Print',
@@ -88,9 +89,11 @@ export default function Products() {
 
     window.addEventListener('catalogUpdated', handleUpdate);
     window.addEventListener('storage', handleUpdate);
+    window.addEventListener('focus', handleUpdate);
     return () => {
       window.removeEventListener('catalogUpdated', handleUpdate);
       window.removeEventListener('storage', handleUpdate);
+      window.removeEventListener('focus', handleUpdate);
     };
   }, []);
 

@@ -21,7 +21,7 @@ export default function FloatingWhatsApp() {
   useEffect(() => {
     async function loadSettings() {
       try {
-        const res = await fetch('/api/settings');
+        const res = await fetch('/api/settings', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.settings) {
@@ -52,7 +52,8 @@ export default function FloatingWhatsApp() {
     };
   }, []);
 
-  const cleanPhone = settings.whatsappNumber.replace(/[^0-9]/g, '');
+  const cleanDigits = settings.whatsappNumber.replace(/[^0-9]/g, '');
+  const cleanPhone = cleanDigits.length === 10 ? `91${cleanDigits}` : (cleanDigits || '919479784979');
   const encodedMsg = encodeURIComponent(settings.whatsappMessage || DEFAULT_SETTINGS.whatsappMessage);
   const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
   const instagramUrl = settings.instagramUrl.startsWith('http')

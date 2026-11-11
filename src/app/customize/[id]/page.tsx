@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, use } from 'react';
+import { useState, useRef, useEffect, use } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
@@ -83,6 +83,46 @@ const PRODUCTS_DB: Record<string, ProductSpec> = {
     paperOptions: ['11 oz Magic Heat Color Changing Mug', '11 oz Premium White Ceramic Mug', '11 oz Inner Color Mug (Red/Black)', 'Stainless Steel Travel Tumbler'],
     finishOptions: ['HD Sublimation Gloss Finish', 'Matte Ceramic Finish', 'Dual Sided Printing', 'Full Wrap Panoramic Print'],
   },
+  'bday-card': {
+    id: 'bday-card',
+    name: 'Birthday & Celebration Invitation Cards',
+    category: 'Birthday & Event Cards',
+    defaultImage: '/images/birthday/birthday_theme_photo.jpg',
+    description: 'Vibrant custom photo birthday invitations, milestone anniversary cards & event invites.',
+    basePrice100: 1450,
+    paperOptions: ['350 GSM Premium Art Card', '400 GSM Velvet Soft-Touch', 'Metallic Pearl Ivory Stock', 'Translucent Vellum Sleeve'],
+    finishOptions: ['Glossy Lamination', 'Gold Foil Birthday Crest', 'Die-Cut Character Shape', 'Matching Printed Envelopes'],
+  },
+  'stationery': {
+    id: 'stationery',
+    name: 'Executive Office Stationery & Letterheads',
+    category: 'Office Stationery',
+    defaultImage: '/images/stationery/letterhead_bond.jpg',
+    description: '100 GSM Alabaster Bond Letterheads, GST bill books, envelopes & corporate welcome folders.',
+    basePrice100: 1450,
+    paperOptions: ['100 GSM Alabaster Executive Bond', '120 GSM Textured Linen Bond', '80 GSM Standard Maplitho', '350 GSM Folder Board'],
+    finishOptions: ['4-Color Offset Print', 'Watermark Seal Print', 'Perforated Carbonless Copies', 'Pocket Folder Slit'],
+  },
+  'sticker': {
+    id: 'sticker',
+    name: 'Die-Cut Waterproof Stickers & Product Labels',
+    category: 'Stickers & Labels',
+    defaultImage: '/images/stickers/vinyl_stickers.jpg',
+    description: 'Waterproof weatherproof vinyl die-cut logo stickers, roll labels & cosmetic jar packaging seals.',
+    basePrice100: 950,
+    paperOptions: ['PVC Waterproof Vinyl (White)', 'Clear Transparent BOPP Film', 'Metallic Gold Foil Sticker', 'Kraft Brown Textured Label'],
+    finishOptions: ['Kiss-Cut Custom Shape', 'Matte Anti-Scratch Lamination', 'Gloss UV Resistant', 'Security Tamper-Evident Void'],
+  },
+  'custom-tshirt': {
+    id: 'custom-tshirt',
+    name: 'Custom Printed Corporate T-Shirts & Merch',
+    category: 'Custom Gifts',
+    defaultImage: '/images/fashion/fashion1.png',
+    description: '220 GSM 100% combed cotton polo & round-neck t-shirts with Japanese embroidery or DTF logo print.',
+    basePrice100: 1750,
+    paperOptions: ['220 GSM Combed Cotton Pique Polo', '180 GSM Biowash Round Neck', 'Dry-Fit Sports Jersey Knit', 'Heavy Fleece Hoodie'],
+    finishOptions: ['Japanese Machine Logo Embroidery', 'HD DTF Permanent Transfer', 'Reflective Safety Print', 'Chest + Back Full Branding'],
+  },
 };
 
 const QUANTITY_TIERS = [
@@ -96,17 +136,110 @@ const QUANTITY_TIERS = [
 export default function CustomizerPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const productId = resolvedParams.id || 'visiting-card';
-  const product = PRODUCTS_DB[productId] || PRODUCTS_DB['visiting-card'];
+  const baseSpec = PRODUCTS_DB[productId] || PRODUCTS_DB['visiting-card'];
+
+  const [liveProduct, setLiveProduct] = useState<any | null>(null);
+  const [studioSettings, setStudioSettings] = useState({
+    shopName: 'Ayushman Cards & Graphics',
+    whatsappNumber: '+919479784979',
+    phonePrimary: '9479784979',
+    email: 'info@ayushmancards.com',
+    address: '63, Varruchi Marg, Freeganj Ujjain',
+  });
+
+  useEffect(() => {
+    async function loadLive() {
+      try {
+        const [pRes, sRes] = await Promise.all([
+          fetch('/api/products', { cache: 'no-store' }),
+          fetch('/api/settings', { cache: 'no-store' }),
+        ]);
+        if (pRes.ok) {
+          const pData = await pRes.json();
+          if (pData.success && Array.isArray(pData.products)) {
+            const match =
+              pData.products.find((p: any) => p.id === productId) ||
+              pData.products.find((p: any) => p.customizerId === productId);
+            if (match) setLiveProduct(match);
+          }
+        }
+        if (sRes.ok) {
+          const sData = await sRes.json();
+          if (sData.success && sData.settings) {
+            setStudioSettings({
+              shopName: sData.settings.shopName || 'Ayushman Cards & Graphics',
+              whatsappNumber: sData.settings.whatsappNumber || '+919479784979',
+              phonePrimary: sData.settings.phonePrimary || '9479784979',
+              email: sData.settings.email || 'info@ayushmancards.com',
+              address: sData.settings.address || '63, Varruchi Marg, Freeganj Ujjain',
+            });
+          }
+        }
+      } catch {}
+    }
+    loadLive();
+    const onUpdate = () => loadLive();
+    window.addEventListener('catalogUpdated', onUpdate);
+    window.addEventListener('settingsUpdated', onUpdate);
+    window.addEventListener('storage', onUpdate);
+    return () => {
+      window.removeEventListener('catalogUpdated', onUpdate);
+      window.removeEventListener('settingsUpdated', onUpdate);
+      window.removeEventListener('storage', onUpdate);
+    };
+  }, [productId]);
+
+  const product: ProductSpec = liveProduct
+    ? {
+        ...baseSpec,
+        id: liveProduct.id || baseSpec.id,
+        name: liveProduct.title || baseSpec.name,
+        category: liveProduct.category || baseSpec.category,
+        defaultImage: liveProduct.image || baseSpec.defaultImage,
+        description: liveProduct.description || baseSpec.description,
+        basePrice100: Number(liveProduct.numericPrice) || baseSpec.basePrice100,
+        paperOptions:
+          Array.isArray(liveProduct.paperOptions) && liveProduct.paperOptions.length > 0
+            ? liveProduct.paperOptions.map((p: any) => p.label).filter(Boolean)
+            : baseSpec.paperOptions,
+      }
+    : baseSpec;
+
+  const activeQuantityTiers =
+    liveProduct && Array.isArray(liveProduct.quantityOptions) && liveProduct.quantityOptions.length > 0
+      ? liveProduct.quantityOptions.map((q: any, i: number, arr: any[]) => {
+          const baseQty = Math.max(1, Number(arr[0]?.qty) || 1);
+          const baseMult = Number(arr[0]?.multiplier) || 1;
+          const linearMult = (Number(q.qty) / baseQty) * baseMult;
+          const pctSave = linearMult > 0 ? Math.round((1 - Number(q.multiplier) / linearMult) * 100) : 0;
+          return {
+            qty: Number(q.qty) || 1,
+            multiplier: Number(q.multiplier) || 1,
+            savings: i === 0 || pctSave <= 0 ? 'Standard' : `${pctSave}% OFF`,
+          };
+        })
+      : QUANTITY_TIERS;
 
   const { addToCart } = useCart();
   const router = useRouter();
 
   // Customization Options State
-  const [paperStock, setPaperStock] = useState(product.paperOptions[0]);
+  const [paperStock, setPaperStock] = useState(baseSpec.paperOptions[0]);
   const [cornerStyle, setCornerStyle] = useState('Standard Square Cut');
-  const [finishOption, setFinishOption] = useState(product.finishOptions[0]);
+  const [finishOption, setFinishOption] = useState(baseSpec.finishOptions[0]);
   const [selectedQtyIndex, setSelectedQtyIndex] = useState(2); // default 500 qty
   const [activeSide, setActiveSide] = useState<'front' | 'back'>('front');
+
+  useEffect(() => {
+    if (liveProduct) {
+      if (Array.isArray(liveProduct.paperOptions) && liveProduct.paperOptions.length > 0) {
+        setPaperStock(liveProduct.paperOptions[0].label);
+      }
+      if (Array.isArray(liveProduct.quantityOptions) && liveProduct.quantityOptions.length > 0) {
+        setSelectedQtyIndex(0);
+      }
+    }
+  }, [liveProduct]);
 
   // Custom Design Inputs State
   const [companyName, setCompanyName] = useState('AYUSHMAN CARDS & GRAPHICS');
@@ -125,9 +258,9 @@ export default function CustomizerPage({ params }: { params: Promise<{ id: strin
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Price Calculation
-  const selectedTier = QUANTITY_TIERS[selectedQtyIndex];
+  const selectedTier = activeQuantityTiers[selectedQtyIndex] || activeQuantityTiers[0] || { qty: 100, multiplier: 1, savings: 'Standard' };
   const totalPrice = Math.round(product.basePrice100 * selectedTier.multiplier);
-  const unitPrice = (totalPrice / selectedTier.qty).toFixed(2);
+  const unitPrice = (totalPrice / Math.max(1, selectedTier.qty)).toFixed(2);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -173,9 +306,11 @@ export default function CustomizerPage({ params }: { params: Promise<{ id: strin
   };
 
   const handleWhatsAppQuote = () => {
-    const message = `Hello Ayushman Cards & Graphics! I want to order:\n- Product: ${product.name}\n- Quantity: ${selectedTier.qty}\n- Paper Stock: ${paperStock}\n- Finish: ${finishOption}\n- Corner: ${cornerStyle}\n- Total Estimated Price: ₹${totalPrice.toLocaleString()}\n- Custom Text: ${companyName} (${fullName})`;
+    const cleanDigits = (studioSettings.whatsappNumber || '+919479784979').replace(/[^0-9]/g, '');
+    const waNum = cleanDigits.length === 10 ? `91${cleanDigits}` : (cleanDigits || '919479784979');
+    const message = `Hello ${studioSettings.shopName}! I want to order:\n- Product: ${product.name}\n- Quantity: ${selectedTier.qty}\n- Paper Stock: ${paperStock}\n- Finish: ${finishOption}\n- Corner: ${cornerStyle}\n- Total Estimated Price: ₹${totalPrice.toLocaleString()}\n- Custom Text: ${companyName} (${fullName})`;
     const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/919479784979?text=${encoded}`, '_blank');
+    window.open(`https://wa.me/${waNum}?text=${encoded}`, '_blank');
   };
 
   return (
@@ -306,7 +441,7 @@ export default function CustomizerPage({ params }: { params: Promise<{ id: strin
                   4. Quantity Discount Tiers
                 </label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(52px, 1fr))', gap: '0.35rem' }}>
-                  {QUANTITY_TIERS.map((tier, idx) => (
+                  {activeQuantityTiers.map((tier: any, idx: number) => (
                     <button
                       key={tier.qty}
                       onClick={() => setSelectedQtyIndex(idx)}
@@ -444,7 +579,7 @@ export default function CustomizerPage({ params }: { params: Promise<{ id: strin
                       📍 {address}
                     </p>
                     <div style={{ marginTop: '0.8rem', fontSize: '0.65rem', color: '#FFD700', fontWeight: 700 }}>
-                      Quality Printed by Ayushman Offset Press
+                      Quality Printed by {studioSettings.shopName}
                     </div>
                   </div>
                 )}

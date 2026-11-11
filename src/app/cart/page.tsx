@@ -14,7 +14,9 @@ export default function CartPage() {
     updateQuantity,
     clearCart,
     couponCode,
-    couponDiscountPercent,
+    couponType,
+    couponValue,
+    couponMinOrder,
     applyCoupon,
     removeCoupon,
     subtotal,
@@ -27,13 +29,21 @@ export default function CartPage() {
 
   const [inputCoupon, setInputCoupon] = useState('');
   const [couponStatus, setCouponStatus] = useState<{ success: boolean; message: string } | null>(null);
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
   const router = useRouter();
 
-  const handleApplyCoupon = (e: React.FormEvent) => {
+  const getQtyStep = (qty: number) => (qty <= 10 ? 1 : qty <= 50 ? 5 : qty < 250 ? 25 : 100);
+
+  const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputCoupon.trim()) return;
-    const res = applyCoupon(inputCoupon);
-    setCouponStatus(res);
+    if (!inputCoupon.trim() || applyingCoupon) return;
+    setApplyingCoupon(true);
+    try {
+      const res = await applyCoupon(inputCoupon);
+      setCouponStatus(res);
+    } finally {
+      setApplyingCoupon(false);
+    }
   };
 
   const handleAddCrossSell = (title: string, category: string, price: number, image: string) => {
@@ -148,8 +158,9 @@ export default function CartPage() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 100)}
-                            style={{ width: '28px', height: '28px', borderRadius: '4px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 700 }}
+                            onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - getQtyStep(item.quantity)))}
+                            disabled={item.quantity <= 1}
+                            style={{ width: '28px', height: '28px', borderRadius: '4px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: item.quantity <= 1 ? 'not-allowed' : 'pointer', opacity: item.quantity <= 1 ? 0.45 : 1, fontWeight: 700 }}
                           >
                             -
                           </button>
@@ -157,7 +168,7 @@ export default function CartPage() {
                             {item.quantity} units
                           </span>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 100)}
+                            onClick={() => updateQuantity(item.id, item.quantity + getQtyStep(item.quantity))}
                             style={{ width: '28px', height: '28px', borderRadius: '4px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 700 }}
                           >
                             +
@@ -247,9 +258,10 @@ export default function CartPage() {
                     />
                     <button
                       type="submit"
-                      style={{ padding: '0.5rem 1rem', borderRadius: '6px', background: '#D40000', color: '#FFF', border: 'none', fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer' }}
+                      disabled={applyingCoupon}
+                      style={{ padding: '0.5rem 1rem', borderRadius: '6px', background: '#D40000', color: '#FFF', border: 'none', fontWeight: 700, fontSize: '0.8125rem', cursor: applyingCoupon ? 'wait' : 'pointer' }}
                     >
-                      Apply
+                      {applyingCoupon ? '...' : 'Apply'}
                     </button>
                   </div>
                   {couponStatus && (
@@ -260,9 +272,10 @@ export default function CartPage() {
                   {couponCode && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.4rem', background: 'rgba(46,125,50,0.08)', padding: '0.35rem 0.65rem', borderRadius: '4px' }}>
                       <span style={{ fontSize: '0.75rem', color: '#2E7D32', fontWeight: 700 }}>
-                        🎟️ {couponCode} ({couponDiscountPercent}% OFF)
+                        🎟️ {couponCode} ({couponType === 'FLAT' ? `₹${couponValue.toLocaleString()} OFF` : `${couponValue}% OFF`})
+                        {couponMinOrder > subtotal && ` • Add ₹${(couponMinOrder - subtotal).toLocaleString()} more`}
                       </span>
-                      <button onClick={removeCoupon} style={{ background: 'none', border: 'none', color: '#D32F2F', fontSize: '0.7rem', cursor: 'pointer' }}>Remove</button>
+                      <button type="button" onClick={removeCoupon} style={{ background: 'none', border: 'none', color: '#D32F2F', fontSize: '0.7rem', cursor: 'pointer' }}>Remove</button>
                     </div>
                   )}
                 </form>
@@ -276,7 +289,7 @@ export default function CartPage() {
 
                   {discountAmount > 0 && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', color: '#2E7D32' }}>
-                      <span>Promo Discount ({couponDiscountPercent}%):</span>
+                      <span>Promo Discount ({couponType === 'FLAT' ? `Flat ₹${couponValue.toLocaleString()}` : `${couponValue}%`}):</span>
                       <span style={{ fontWeight: 700 }}>- ₹{discountAmount.toLocaleString()}</span>
                     </div>
                   )}

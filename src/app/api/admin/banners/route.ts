@@ -30,16 +30,16 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { title, subtitle, badge, image, link, buttonText, displayOrder, isActive } = body;
 
-    if (!title || !image) {
+    if (!image || !String(image).trim()) {
       return NextResponse.json(
-        { error: 'Banner Title and Image URL are required' },
+        { error: 'Banner Image URL is required' },
         { status: 400 }
       );
     }
 
     const banner = await db.banner.create({
       data: {
-        title: title.trim(),
+        title: title ? String(title).trim() : '',
         subtitle: subtitle ? subtitle.trim() : '',
         badge: badge ? badge.trim() : '',
         image: image.trim(),
@@ -121,10 +121,14 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'Banner ID is required' }, { status: 400 });
     }
 
-    await db.banner.delete({ where: { id } });
+    const deleted = await db.banner.delete({ where: { id: id.trim() } });
+    if (!deleted) {
+      return NextResponse.json({ error: 'Banner not found' }, { status: 404 });
+    }
 
     return NextResponse.json({
       success: true,
+      deleted,
       message: 'Banner deleted successfully',
     });
   } catch (error: any) {

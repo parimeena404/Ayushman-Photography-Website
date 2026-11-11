@@ -14,6 +14,7 @@ export default function DashboardPage() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [inquiries, setInquiries] = useState<any[]>([]);
   const [fetchingData, setFetchingData] = useState(true);
+  const [studioWhatsApp, setStudioWhatsApp] = useState('919479784979');
 
   useEffect(() => {
     if (!loading && !user) {
@@ -21,16 +22,33 @@ export default function DashboardPage() {
       return;
     }
 
-    if (user) {
-      fetch('/api/auth/me')
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.authenticated) {
-            setBookings(data.bookings || []);
-            setInquiries(data.inquiries || []);
+    const loadDashboard = () => {
+      if (!user) return;
+      Promise.all([
+        fetch('/api/auth/me', { cache: 'no-store' }).then((res) => res.json()),
+        fetch('/api/settings', { cache: 'no-store' }).then((res) => (res.ok ? res.json() : null)).catch(() => null),
+      ])
+        .then(([authData, setData]) => {
+          if (authData?.authenticated) {
+            setBookings(authData.bookings || []);
+            setInquiries(authData.inquiries || []);
+          }
+          if (setData?.success && setData.settings?.whatsappNumber) {
+            const digits = String(setData.settings.whatsappNumber).replace(/[^0-9]/g, '');
+            setStudioWhatsApp(digits.length === 10 ? `91${digits}` : (digits || '919479784979'));
           }
         })
         .finally(() => setFetchingData(false));
+    };
+
+    if (user) {
+      loadDashboard();
+      window.addEventListener('focus', loadDashboard);
+      window.addEventListener('settingsUpdated', loadDashboard);
+      return () => {
+        window.removeEventListener('focus', loadDashboard);
+        window.removeEventListener('settingsUpdated', loadDashboard);
+      };
     }
   }, [user, loading, router]);
 
@@ -156,36 +174,66 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Vistaprint 5-Stage Visual Progress Bar */}
-                    <div>
-                      <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.75rem' }}>
-                        Print Production & Dispatch Stage:
+                    {b.status === 'CANCELLED' ? (
+                      <div
+                        style={{
+                          padding: '0.85rem 1rem',
+                          borderRadius: '8px',
+                          background: '#FEE2E2',
+                          border: '1px solid #FCA5A5',
+                          color: '#991B1B',
+                          fontSize: '0.8125rem',
+                          fontWeight: 700,
+                        }}
+                      >
+                        ❌ This order has been marked as CANCELLED. Contact our press manager if you have questions.
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem', textAlign: 'center' }}>
-                        {[
-                          { title: 'Order Placed', icon: '📝', active: true },
-                          { title: 'Proof Approved', icon: '🔍', active: true },
-                          { title: 'Offset Press', icon: '🖨️', active: true },
-                          { title: 'Lamination', icon: '✂️', active: b.paymentStatus === 'PAID' },
-                          { title: 'Dispatched', icon: '🚚', active: false },
-                        ].map((stage, idx) => (
-                          <div
-                            key={stage.title}
-                            style={{
-                              padding: '0.6rem 0.25rem',
-                              borderRadius: '6px',
-                              border: stage.active ? '1.5px solid #2E7D32' : '1px solid var(--border-medium)',
-                              background: stage.active ? 'rgba(46, 125, 50, 0.08)' : 'var(--bg-secondary)',
-                              color: stage.active ? '#2E7D32' : 'var(--text-tertiary)',
-                            }}
-                          >
-                            <div style={{ fontSize: '1.1rem' }}>{stage.icon}</div>
-                            <div style={{ fontSize: '0.6875rem', fontWeight: 700, marginTop: '0.25rem' }}>
-                              {idx + 1}. {stage.title}
-                            </div>
-                          </div>
-                        ))}
+                    ) : (
+                      <div>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.75rem' }}>
+                          Print Production & Dispatch Stage ({b.status || 'NEW'}):
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem', textAlign: 'center' }}>
+                          {(() => {
+                            const statusUpper = (b.status || 'NEW').toUpperCase();
+                            const isPaid = b.paymentStatus === 'PAID';
+                            const stageStep =
+                              statusUpper === 'COMPLETED'
+                                ? 5
+                                : statusUpper === 'IN_PROGRESS'
+                                  ? 4
+                                  : statusUpper === 'CONFIRMED'
+                                    ? 3
+                                    : isPaid
+                                      ? 2
+                                      : 1;
+                            return [
+                              { title: 'Order Placed', icon: '📝', active: stageStep >= 1 },
+                              { title: 'Proof Approved', icon: '🔍', active: stageStep >= 2 },
+                              { title: 'Offset Press', icon: '🖨️', active: stageStep >= 3 },
+                              { title: 'Lamination', icon: '✂️', active: stageStep >= 4 },
+                              { title: 'Dispatched', icon: '🚚', active: stageStep >= 5 },
+                            ].map((stage, idx) => (
+                              <div
+                                key={stage.title}
+                                style={{
+                                  padding: '0.6rem 0.25rem',
+                                  borderRadius: '6px',
+                                  border: stage.active ? '1.5px solid #2E7D32' : '1px solid var(--border-medium)',
+                                  background: stage.active ? 'rgba(46, 125, 50, 0.08)' : 'var(--bg-secondary)',
+                                  color: stage.active ? '#2E7D32' : 'var(--text-tertiary)',
+                                }}
+                              >
+                                <div style={{ fontSize: '1.1rem' }}>{stage.icon}</div>
+                                <div style={{ fontSize: '0.6875rem', fontWeight: 700, marginTop: '0.25rem' }}>
+                                  {idx + 1}. {stage.title}
+                                </div>
+                              </div>
+                            ));
+                          })()}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Re-order & WhatsApp Support */}
                     <div style={{ marginTop: '1.25rem', paddingTop: '0.85rem', borderTop: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -196,7 +244,7 @@ export default function DashboardPage() {
                         🔄 Re-order This Print Design
                       </Link>
                       <a
-                        href={`https://wa.me/919479784979?text=Hi!%20Inquiry%20regarding%20my%20order%20ref:%20${b.razorpayOrderId || b.id}`}
+                        href={`https://wa.me/${studioWhatsApp}?text=Hi!%20Inquiry%20regarding%20my%20order%20ref:%20${b.razorpayOrderId || b.id}`}
                         target="_blank"
                         rel="noreferrer"
                         style={{ fontSize: '0.78125rem', fontWeight: 700, color: '#25D366', textDecoration: 'none' }}

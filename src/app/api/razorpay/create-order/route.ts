@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       driveLink,
       printInstructions,
       whatsappFollowup,
+      couponCode,
     } = body;
 
     if (!customerName || !customerPhone || !depositAmount) {
@@ -108,6 +109,11 @@ export async function POST(req: Request) {
       });
       if (booking?.id) {
         bookingId = booking.id;
+      }
+      if (couponCode && typeof couponCode === 'string' && couponCode.trim()) {
+        try {
+          await db.coupon.incrementUsage(couponCode.trim());
+        } catch {}
       }
     } catch (dbErr) {
       console.warn('Database save warning:', dbErr);

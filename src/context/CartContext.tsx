@@ -39,7 +39,10 @@ interface CartContextType {
   clearCart: () => void;
   couponCode: string;
   couponDiscountPercent: number;
-  applyCoupon: (code: string) => { success: boolean; message: string };
+  couponType: 'PERCENT' | 'FLAT';
+  couponValue: number;
+  couponMinOrder: number;
+  applyCoupon: (code: string) => Promise<{ success: boolean; message: string }>;
   removeCoupon: () => void;
   subtotal: number;
   discountAmount: number;
@@ -54,7 +57,9 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [couponCode, setCouponCode] = useState<string>('');
-  const [couponDiscountPercent, setCouponDiscountPercent] = useState<number>(0);
+  const [couponType, setCouponType] = useState<'PERCENT' | 'FLAT'>('PERCENT');
+  const [couponValue, setCouponValue] = useState<number>(0);
+  const [couponMinOrder, setCouponMinOrder] = useState<number>(0);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -67,7 +72,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (savedCoupon) {
         const parsed = JSON.parse(savedCoupon);
         setCouponCode(parsed.code || '');
-        setCouponDiscountPercent(parsed.discount || 0);
+        setCouponType(parsed.type === 'FLAT' ? 'FLAT' : 'PERCENT');
+        setCouponValue(Number(parsed.value ?? parsed.discount ?? 0) || 0);
+        setCouponMinOrder(Number(parsed.minOrder ?? 0) || 0);
       }
     } catch (e) {
       console.error('Failed to parse cart from storage:', e);
@@ -112,39 +119,71 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => {
     setCart([]);
+    setCouponCode('');
+    setCouponType('PERCENT');
+    setCouponValue(0);
+    setCouponMinOrder(0);
     localStorage.removeItem('ayushman_print_cart');
+    localStorage.removeItem('ayushman_print_coupon');
   };
 
-  const applyCoupon = (code: string) => {
+  const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+
+  const applyCoupon = async (code: string): Promise<{ success: boolean; message: string }> => {
     const clean = code.trim().toUpperCase();
-    if (clean === 'FESTIVE20') {
-      setCouponCode('FESTIVE20');
-      setCouponDiscountPercent(20);
-      localStorage.setItem('ayushman_print_coupon', JSON.stringify({ code: 'FESTIVE20', discount: 20 }));
-      return { success: true, message: 'Festive 20% discount applied!' };
-    } else if (clean === 'BULKPRINT15') {
-      setCouponCode('BULKPRINT15');
-      setCouponDiscountPercent(15);
-      localStorage.setItem('ayushman_print_coupon', JSON.stringify({ code: 'BULKPRINT15', discount: 15 }));
-      return { success: true, message: 'Bulk print 15% discount applied!' };
-    } else if (clean === 'FIRSTPRINT10') {
-      setCouponCode('FIRSTPRINT10');
-      setCouponDiscountPercent(10);
-      localStorage.setItem('ayushman_print_coupon', JSON.stringify({ code: 'FIRSTPRINT10', discount: 10 }));
-      return { success: true, message: 'First order 10% discount applied!' };
-    } else {
-      return { success: false, message: 'Invalid coupon code. Try FESTIVE20 for 20% OFF' };
+    if (!clean) {
+      return { success: false, message: 'Please enter a promo code.' };
+    }
+    try {
+      const res = await fetch(`/api/coupons?code=${encodeURIComponent(clean)}`, { cache: 'no-store' });
+      const data = await res.json();
+      if (!res.ok || !data.success || !data.coupon) {
+        return { success: false, message: data?.error || 'Invalid or expired coupon code.' };
+      }
+
+      const c = data.coupon;
+      const minOrder = Number(c.minOrderAmount) || 0;
+      if (minOrder > 0 && subtotal < minOrder) {
+        return {
+          success: false,
+          message: `Minimum order of ₹${minOrder.toLocaleString()} required to apply ${c.code}.`,
+        };
+      }
+
+      const dType: 'PERCENT' | 'FLAT' = c.discountType === 'FLAT' ? 'FLAT' : 'PERCENT';
+      const dVal = Number(c.discountValue) || 0;
+
+      setCouponCode(c.code);
+      setCouponType(dType);
+      setCouponValue(dVal);
+      setCouponMinOrder(minOrder);
+      localStorage.setItem(
+        'ayushman_print_coupon',
+        JSON.stringify({ code: c.code, type: dType, value: dVal, minOrder })
+      );
+
+      const label = dType === 'FLAT' ? `₹${dVal.toLocaleString()} flat discount` : `${dVal}% discount`;
+      return { success: true, message: `${c.code} applied (${label})!` };
+    } catch {
+      return { success: false, message: 'Could not verify coupon. Please try again.' };
     }
   };
 
   const removeCoupon = () => {
     setCouponCode('');
-    setCouponDiscountPercent(0);
+    setCouponType('PERCENT');
+    setCouponValue(0);
+    setCouponMinOrder(0);
     localStorage.removeItem('ayushman_print_coupon');
   };
 
-  const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-  const discountAmount = Math.round((subtotal * couponDiscountPercent) / 100);
+  const couponMeetsMin = couponCode !== '' && subtotal >= couponMinOrder;
+  const couponDiscountPercent = couponMeetsMin && couponType === 'PERCENT' ? couponValue : 0;
+  const discountAmount = !couponMeetsMin
+    ? 0
+    : couponType === 'FLAT'
+      ? Math.min(subtotal, Math.round(couponValue))
+      : Math.round((subtotal * couponValue) / 100);
   const taxableAmount = Math.max(0, subtotal - discountAmount);
   const gstAmount = Math.round(taxableAmount * 0.18); // 18% GST on print work
   const shippingFee = taxableAmount > 999 || cart.length === 0 ? 0 : 99; // Free shipping over ₹999
@@ -163,6 +202,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         couponCode,
         couponDiscountPercent,
+        couponType,
+        couponValue,
+        couponMinOrder,
         applyCoupon,
         removeCoupon,
         subtotal,

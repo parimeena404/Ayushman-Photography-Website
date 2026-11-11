@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getCurrentUser } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,6 +43,10 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized. Admin login required.' }, { status: 401 });
+    }
     const inquiries = await db.inquiry.findMany({
       orderBy: { createdAt: 'desc' },
       take: 50,
@@ -54,18 +59,26 @@ export async function GET() {
 
 export async function DELETE(req: Request) {
   try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized. Admin login required.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
-    if (!id) {
+    if (!id || !id.trim()) {
       return NextResponse.json({ error: 'Inquiry ID is required' }, { status: 400 });
     }
 
-    await db.inquiry.delete({
-      where: { id },
+    const deleted = await db.inquiry.delete({
+      where: { id: id.trim() },
     });
+    if (!deleted) {
+      return NextResponse.json({ error: 'Inquiry not found' }, { status: 404 });
+    }
 
-    return NextResponse.json({ success: true, message: 'Inquiry deleted successfully' });
+    return NextResponse.json({ success: true, deleted, message: 'Inquiry deleted successfully' });
   } catch (error: any) {
     return NextResponse.json({ error: error?.message || 'Failed to delete inquiry' }, { status: 500 });
   }

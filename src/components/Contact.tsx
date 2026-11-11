@@ -1,11 +1,78 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+interface ContactSettings {
+  shopName: string;
+  proprietor: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  phonePrimary: string;
+  phoneSecondary: string;
+  email: string;
+}
+
+const DEFAULT_CONTACT_SETTINGS: ContactSettings = {
+  shopName: 'Ayushman Cards & Graphics',
+  proprietor: 'Rajesh Saatoliya',
+  address: '63, Varruchi Marg, Freeganj Ujjain',
+  city: 'Ujjain',
+  state: 'Madhya Pradesh',
+  pincode: '456001',
+  phonePrimary: '9479784979',
+  phoneSecondary: '9893022451',
+  email: 'ayushmancards@gmail.com',
+};
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', service: '', message: '' });
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [submitMessage, setSubmitMessage] = useState('');
+  const [settings, setSettings] = useState<ContactSettings>(DEFAULT_CONTACT_SETTINGS);
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/settings', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.settings) {
+            const s = data.settings;
+            setSettings({
+              shopName: s.shopName || DEFAULT_CONTACT_SETTINGS.shopName,
+              proprietor: s.proprietor || DEFAULT_CONTACT_SETTINGS.proprietor,
+              address: s.address || DEFAULT_CONTACT_SETTINGS.address,
+              city: s.city || DEFAULT_CONTACT_SETTINGS.city,
+              state: s.state || DEFAULT_CONTACT_SETTINGS.state,
+              pincode: s.pincode || DEFAULT_CONTACT_SETTINGS.pincode,
+              phonePrimary: s.phonePrimary || DEFAULT_CONTACT_SETTINGS.phonePrimary,
+              phoneSecondary: s.phoneSecondary || DEFAULT_CONTACT_SETTINGS.phoneSecondary,
+              email: s.email || DEFAULT_CONTACT_SETTINGS.email,
+            });
+          }
+        }
+      } catch {}
+    }
+    loadSettings();
+    const onUpdate = () => loadSettings();
+    window.addEventListener('settingsUpdated', onUpdate);
+    window.addEventListener('storage', onUpdate);
+    window.addEventListener('focus', loadSettings);
+    return () => {
+      window.removeEventListener('settingsUpdated', onUpdate);
+      window.removeEventListener('storage', onUpdate);
+      window.removeEventListener('focus', loadSettings);
+    };
+  }, []);
+
+  const fullAddress = `${settings.address}, ${settings.state} ${settings.pincode}`;
+  const mapsSearchQuery = encodeURIComponent(`${settings.address}, ${settings.city}, ${settings.state} ${settings.pincode}`);
+  const phonesDisplay = [settings.phonePrimary, settings.phoneSecondary]
+    .filter(Boolean)
+    .map((p) => (p.startsWith('+') ? p : `+91 ${p}`))
+    .join(' | ');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,7 +176,7 @@ export default function Contact() {
                 marginBottom: '0.75rem',
               }}
             >
-              Ayushman Cards & Graphics
+              {settings.shopName}
             </h3>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: '#4B5563', lineHeight: 1.6, marginBottom: '1.25rem' }}>
               Direct in-house printing press. We welcome you to visit our studio in Freeganj to feel our luxury paper stocks, velvet lamination, gold foil samples, and custom acrylic wedding box collections in person.
@@ -136,10 +203,10 @@ export default function Contact() {
             {/* Contact Details List */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               {[
-                { icon: '👤', label: 'Proprietor', value: 'Properiter - Rajesh Saatoliya' },
-                { icon: '📍', label: 'Studio & Press Address', value: '63, Varruchi Marg, Freeganj Ujjain, Madhya Pradesh 456001' },
-                { icon: '📞', label: 'Direct Phone / WhatsApp', value: '+91 94797 84979 | +91 98930 22451' },
-                { icon: '📧', label: 'Email Support', value: 'ayushmancards@gmail.com' },
+                { icon: '👤', label: 'Proprietor', value: `Properiter - ${settings.proprietor}` },
+                { icon: '📍', label: 'Studio & Press Address', value: fullAddress },
+                { icon: '📞', label: 'Direct Phone / WhatsApp', value: phonesDisplay },
+                { icon: '📧', label: 'Email Support', value: settings.email },
                 { icon: '🕐', label: 'Studio Working Hours', value: 'Mon–Sat: 10:00 AM – 8:30 PM | Sun: By Appointment' },
               ].map((item) => (
                 <div key={item.label} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
@@ -303,13 +370,13 @@ export default function Contact() {
                 📍 Verified Press Location
               </div>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0.2rem 0 0', color: '#FFFFFF' }}>
-                Ayushman Cards & Graphics • 63, Varruchi Marg, Freeganj Ujjain
+                {settings.shopName} • {settings.address}
               </h3>
             </div>
 
             <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
               <a
-                href="https://www.google.com/maps/search/?api=1&query=63+Varruchi+Marg+Freeganj+Ujjain+Madhya+Pradesh+456001"
+                href={`https://www.google.com/maps/search/?api=1&query=${mapsSearchQuery}`}
                 target="_blank"
                 rel="noreferrer"
                 style={{
@@ -353,8 +420,8 @@ export default function Contact() {
           {/* Embedded Google Maps Frame */}
           <div style={{ width: '100%', height: '360px', position: 'relative', background: '#F1F5F9' }}>
             <iframe
-              title="Ayushman Cards & Graphics Location Map - Freeganj Ujjain"
-              src="https://maps.google.com/maps?q=63%2C%20Varruchi%20Marg%2C%20Freeganj%2C%20Ujjain%2C%20Madhya%20Pradesh%20456001&t=m&z=16&output=embed&iwloc=near"
+              title={`${settings.shopName} Location Map`}
+              src={`https://maps.google.com/maps?q=${mapsSearchQuery}&t=m&z=16&output=embed&iwloc=near`}
               width="100%"
               height="100%"
               style={{ border: 0, display: 'block' }}

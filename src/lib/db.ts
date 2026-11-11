@@ -1,8 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-// Turso DB import — lazy to avoid circular dependency issues
-// isTursoConfigured() and tursoDb are imported at the bottom after all classes are defined
+import { tursoDb, isTursoConfigured } from './turso-db';
 
 export interface UserRecord {
   id: string;
@@ -150,6 +149,50 @@ export interface BannerRecord {
   updatedAt: string;
 }
 
+export interface CouponRecord {
+  id: string;
+  code: string;
+  discountType: 'PERCENT' | 'FLAT';
+  discountValue: number;
+  minOrderAmount: number;
+  isActive: boolean;
+  expiryDate?: string;
+  usageCount: number;
+  createdAt: string;
+}
+
+export const DEFAULT_COUPONS: CouponRecord[] = [
+  { id: 'c-1', code: 'FESTIVE20', discountType: 'PERCENT', discountValue: 20, minOrderAmount: 1000, isActive: true, usageCount: 42, createdAt: '2025-01-01T00:00:00.000Z' },
+  { id: 'c-2', code: 'BULKPRINT15', discountType: 'PERCENT', discountValue: 15, minOrderAmount: 5000, isActive: true, usageCount: 19, createdAt: '2025-01-01T00:00:00.000Z' },
+  { id: 'c-3', code: 'ROYAL500', discountType: 'FLAT', discountValue: 500, minOrderAmount: 3000, isActive: true, usageCount: 28, createdAt: '2025-01-01T00:00:00.000Z' },
+];
+
+export const PRODUCT_QUANTITY_TIERS: Record<string, QuantityOption[]> = {
+  'vc-metal': [{ qty: 10, multiplier: 1 }, { qty: 25, multiplier: 2.2 }, { qty: 50, multiplier: 4 }, { qty: 100, multiplier: 7.2 }],
+  'vc-500-velvet': [{ qty: 500, multiplier: 1 }, { qty: 1000, multiplier: 1.8 }, { qty: 2000, multiplier: 3.2 }, { qty: 5000, multiplier: 7 }],
+  'vc-500-matt': [{ qty: 500, multiplier: 1 }, { qty: 1000, multiplier: 1.8 }, { qty: 2000, multiplier: 3.2 }, { qty: 5000, multiplier: 7 }],
+  'vc-180-nt': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'vc-matt-spotuv': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'vc-matt-texture': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'vc-gloss-lamination': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'vc-uncoated': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'vc-mini-cards': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'st-1': [{ qty: 500, multiplier: 1 }, { qty: 1000, multiplier: 1.8 }, { qty: 2000, multiplier: 3.2 }, { qty: 5000, multiplier: 7 }],
+  'st-2': [{ qty: 10, multiplier: 1 }, { qty: 20, multiplier: 1.85 }, { qty: 50, multiplier: 4 }, { qty: 100, multiplier: 7.2 }],
+  'st-3': [{ qty: 1, multiplier: 1 }, { qty: 2, multiplier: 1.9 }, { qty: 5, multiplier: 4.25 }, { qty: 10, multiplier: 8 }],
+  'st-4': [{ qty: 500, multiplier: 1 }, { qty: 1000, multiplier: 1.8 }, { qty: 2000, multiplier: 3.2 }, { qty: 5000, multiplier: 7 }],
+  'flex-2': [{ qty: 1, multiplier: 1 }, { qty: 2, multiplier: 1.9 }, { qty: 5, multiplier: 4.5 }, { qty: 10, multiplier: 8.5 }],
+  'flex-3': [{ qty: 1, multiplier: 1 }, { qty: 2, multiplier: 1.9 }, { qty: 5, multiplier: 4.5 }, { qty: 10, multiplier: 8.5 }],
+  'stk-1': [{ qty: 500, multiplier: 1 }, { qty: 1000, multiplier: 1.8 }, { qty: 2000, multiplier: 3.2 }, { qty: 5000, multiplier: 7 }],
+  'stk-2': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'stk-3': [{ qty: 1000, multiplier: 1 }, { qty: 2000, multiplier: 1.85 }, { qty: 5000, multiplier: 4 }, { qty: 10000, multiplier: 7.2 }],
+  'pb-1': [{ qty: 1, multiplier: 1 }, { qty: 2, multiplier: 1.9 }, { qty: 5, multiplier: 4.5 }, { qty: 10, multiplier: 8.5 }],
+  'pb-2': [{ qty: 1, multiplier: 1 }, { qty: 2, multiplier: 1.9 }, { qty: 5, multiplier: 4.5 }, { qty: 10, multiplier: 8.5 }],
+  'gift-1': [{ qty: 10, multiplier: 1 }, { qty: 25, multiplier: 2.25 }, { qty: 50, multiplier: 4.2 }, { qty: 100, multiplier: 7.8 }],
+  'gift-2': [{ qty: 5, multiplier: 1 }, { qty: 10, multiplier: 1.9 }, { qty: 25, multiplier: 4.3 }, { qty: 50, multiplier: 8 }],
+  'gift-3': [{ qty: 1, multiplier: 1 }, { qty: 2, multiplier: 1.9 }, { qty: 5, multiplier: 4.5 }, { qty: 10, multiplier: 8.5 }],
+};
+
 interface DBStore {
   users: UserRecord[];
   bookings: BookingRecord[];
@@ -157,6 +200,7 @@ interface DBStore {
   categories: CategoryRecord[];
   products: ProductRecord[];
   banners: BannerRecord[];
+  coupons?: CouponRecord[];
   settings?: SettingsRecord;
 }
 
@@ -1001,8 +1045,14 @@ const DEFAULT_STORE: DBStore = {
   bookings: [],
   inquiries: [],
   categories: INITIAL_CATEGORIES,
-  products: INITIAL_PRODUCTS,
+  products: INITIAL_PRODUCTS.map((p) => ({
+    ...p,
+    paperOptions: Array.isArray(p.paperOptions) ? p.paperOptions : DEFAULT_PAPER_OPTIONS,
+    quantityOptions: Array.isArray(p.quantityOptions) ? p.quantityOptions : (PRODUCT_QUANTITY_TIERS[p.id] || DEFAULT_QUANTITY_OPTIONS),
+    cornerOptions: Array.isArray(p.cornerOptions) ? p.cornerOptions : DEFAULT_CORNER_OPTIONS,
+  })),
   banners: INITIAL_BANNERS,
+  coupons: DEFAULT_COUPONS,
   settings: DEFAULT_SETTINGS,
 };
 
@@ -1092,6 +1142,7 @@ function readStore(): DBStore {
           categories: Array.isArray(parsed.categories) ? parsed.categories : [...DEFAULT_STORE.categories],
           products: Array.isArray(parsed.products) ? parsed.products : [...DEFAULT_STORE.products],
           banners: Array.isArray(parsed.banners) ? parsed.banners : [...DEFAULT_STORE.banners],
+          coupons: Array.isArray(parsed.coupons) ? parsed.coupons : [...DEFAULT_COUPONS],
           settings: parsed.settings ? { ...DEFAULT_SETTINGS, ...parsed.settings } : { ...DEFAULT_SETTINGS },
         };
 
@@ -1120,6 +1171,7 @@ function readStore(): DBStore {
     categories: [...DEFAULT_STORE.categories],
     products: [...DEFAULT_STORE.products],
     banners: [...DEFAULT_STORE.banners],
+    coupons: [...DEFAULT_COUPONS],
     settings: { ...DEFAULT_SETTINGS },
   };
 
@@ -1218,10 +1270,13 @@ class UserClient {
 
   async delete(args: { where: { id: string } }): Promise<boolean> {
     const store = readStore();
+    const cleanId = args.where.id.trim();
     const initialLen = store.users.length;
-    store.users = store.users.filter((u) => u.id !== args.where.id);
+    const filtered = store.users.filter((u) => u.id.trim() !== cleanId);
+    if (filtered.length === initialLen) return false;
+    store.users = filtered;
     writeStore(store);
-    return store.users.length < initialLen;
+    return true;
   }
 
   async findMany(): Promise<UserRecord[]> {
@@ -1282,21 +1337,41 @@ class BookingClient {
 
   async delete(args: { where: { id: string } }): Promise<boolean> {
     const store = readStore();
+    const cleanId = args.where.id.trim();
     const initialLen = store.bookings.length;
-    store.bookings = store.bookings.filter((b) => b.id !== args.where.id);
+    const filtered = store.bookings.filter((b) => b.id.trim() !== cleanId);
+    if (filtered.length === initialLen) return false;
+    store.bookings = filtered;
     writeStore(store);
-    return store.bookings.length < initialLen;
+    return true;
   }
 
-  async findMany(args?: { where?: { customerEmail?: string; userId?: string }; orderBy?: any; take?: number }): Promise<BookingRecord[]> {
+  async findMany(args?: { where?: { customerEmail?: string; userId?: string; matchAny?: boolean }; orderBy?: { createdAt?: 'asc' | 'desc' }; take?: number }): Promise<BookingRecord[]> {
     const store = readStore();
-    let result = store.bookings;
-    if (args?.where?.customerEmail) {
-      const cleanEmail = args.where.customerEmail.toLowerCase().trim();
-      result = result.filter((b) => b.customerEmail.toLowerCase().trim() === cleanEmail);
+    let result = [...store.bookings];
+    const cleanEmail = args?.where?.customerEmail?.toLowerCase().trim();
+    const targetUserId = args?.where?.userId;
+
+    if (args?.where?.matchAny && (cleanEmail || targetUserId)) {
+      result = result.filter((b) =>
+        (cleanEmail && b.customerEmail?.toLowerCase().trim() === cleanEmail) ||
+        (targetUserId && b.userId === targetUserId)
+      );
+    } else {
+      if (cleanEmail) {
+        result = result.filter((b) => b.customerEmail?.toLowerCase().trim() === cleanEmail);
+      }
+      if (targetUserId) {
+        result = result.filter((b) => b.userId === targetUserId);
+      }
     }
-    if (args?.where?.userId) {
-      result = result.filter((b) => b.userId === args.where?.userId);
+
+    if (args?.orderBy?.createdAt) {
+      const dir = args.orderBy.createdAt === 'asc' ? 1 : -1;
+      result.sort((a, b) => dir * (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()));
+    }
+    if (args?.take && args.take > 0) {
+      result = result.slice(0, args.take);
     }
     return result;
   }
@@ -1346,22 +1421,32 @@ class InquiryClient {
     return newInquiry;
   }
 
-  async findMany(args?: { where?: { email?: string; userId?: string }; orderBy?: any; take?: number }): Promise<InquiryRecord[]> {
+  async findMany(args?: { where?: { email?: string; userId?: string }; orderBy?: { createdAt?: 'asc' | 'desc' }; take?: number }): Promise<InquiryRecord[]> {
     const store = readStore();
-    let result = store.inquiries;
+    let result = [...store.inquiries];
     if (args?.where?.email) {
       const cleanEmail = args.where.email.toLowerCase().trim();
-      result = result.filter((i) => i.email.toLowerCase().trim() === cleanEmail);
+      result = result.filter((i) => i.email?.toLowerCase().trim() === cleanEmail);
+    }
+    if (args?.orderBy?.createdAt) {
+      const dir = args.orderBy.createdAt === 'asc' ? 1 : -1;
+      result.sort((a, b) => dir * (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()));
+    }
+    if (args?.take && args.take > 0) {
+      result = result.slice(0, args.take);
     }
     return result;
   }
 
   async delete(args: { where: { id: string } }): Promise<boolean> {
     const store = readStore();
+    const cleanId = args.where.id.trim();
     const initialLen = store.inquiries.length;
-    store.inquiries = store.inquiries.filter((i) => i.id !== args.where.id);
+    const filtered = store.inquiries.filter((i) => i.id.trim() !== cleanId);
+    if (filtered.length === initialLen) return false;
+    store.inquiries = filtered;
     writeStore(store);
-    return store.inquiries.length < initialLen;
+    return true;
   }
 }
 
@@ -1429,10 +1514,21 @@ class CategoryClient {
     const store = readStore();
     const cleanId = args.where.id.trim().toLowerCase();
     const initialLen = store.categories.length;
-    store.categories = store.categories.filter((c) => c.id.trim().toLowerCase() !== cleanId && c.label.trim().toLowerCase() !== cleanId);
+    const filtered = store.categories.filter((c) => c.id.trim().toLowerCase() !== cleanId && c.label.trim().toLowerCase() !== cleanId);
+    if (filtered.length === initialLen) return false;
+    store.categories = filtered;
     writeStore(store);
-    return store.categories.length < initialLen;
+    return true;
   }
+}
+
+function enrichProductRecord(p: ProductRecord): ProductRecord {
+  return {
+    ...p,
+    paperOptions: Array.isArray(p.paperOptions) ? p.paperOptions : DEFAULT_PAPER_OPTIONS,
+    quantityOptions: Array.isArray(p.quantityOptions) ? p.quantityOptions : (PRODUCT_QUANTITY_TIERS[p.id] || DEFAULT_QUANTITY_OPTIONS),
+    cornerOptions: Array.isArray(p.cornerOptions) ? p.cornerOptions : DEFAULT_CORNER_OPTIONS,
+  };
 }
 
 class ProductClient {
@@ -1446,12 +1542,7 @@ class ProductClient {
     if (args?.where?.isActive !== undefined) {
       result = result.filter((p) => (p.isActive !== false) === args.where?.isActive);
     }
-    return result.map((p) => ({
-      ...p,
-      paperOptions: Array.isArray(p.paperOptions) && p.paperOptions.length > 0 ? p.paperOptions : DEFAULT_PAPER_OPTIONS,
-      quantityOptions: Array.isArray(p.quantityOptions) && p.quantityOptions.length > 0 ? p.quantityOptions : DEFAULT_QUANTITY_OPTIONS,
-      cornerOptions: Array.isArray(p.cornerOptions) && p.cornerOptions.length > 0 ? p.cornerOptions : DEFAULT_CORNER_OPTIONS,
-    }));
+    return result.map(enrichProductRecord);
   }
 
   async findUnique(args: { where: { id: string } }): Promise<ProductRecord | null> {
@@ -1459,12 +1550,7 @@ class ProductClient {
     const cleanId = args.where.id.trim();
     const prod = (store.products || []).find((p) => p.id.trim() === cleanId) || null;
     if (!prod) return null;
-    return {
-      ...prod,
-      paperOptions: Array.isArray(prod.paperOptions) && prod.paperOptions.length > 0 ? prod.paperOptions : DEFAULT_PAPER_OPTIONS,
-      quantityOptions: Array.isArray(prod.quantityOptions) && prod.quantityOptions.length > 0 ? prod.quantityOptions : DEFAULT_QUANTITY_OPTIONS,
-      cornerOptions: Array.isArray(prod.cornerOptions) && prod.cornerOptions.length > 0 ? prod.cornerOptions : DEFAULT_CORNER_OPTIONS,
-    };
+    return enrichProductRecord(prod);
   }
 
   async create(args: { data: Omit<ProductRecord, 'id' | 'createdAt' | 'updatedAt'> }): Promise<ProductRecord> {
@@ -1473,9 +1559,9 @@ class ProductClient {
     const newProduct: ProductRecord = {
       ...args.data,
       id: generateId('prd'),
-      paperOptions: Array.isArray(args.data.paperOptions) && args.data.paperOptions.length > 0 ? args.data.paperOptions : DEFAULT_PAPER_OPTIONS,
-      quantityOptions: Array.isArray(args.data.quantityOptions) && args.data.quantityOptions.length > 0 ? args.data.quantityOptions : DEFAULT_QUANTITY_OPTIONS,
-      cornerOptions: Array.isArray(args.data.cornerOptions) && args.data.cornerOptions.length > 0 ? args.data.cornerOptions : DEFAULT_CORNER_OPTIONS,
+      paperOptions: Array.isArray(args.data.paperOptions) ? args.data.paperOptions : DEFAULT_PAPER_OPTIONS,
+      quantityOptions: Array.isArray(args.data.quantityOptions) ? args.data.quantityOptions : DEFAULT_QUANTITY_OPTIONS,
+      cornerOptions: Array.isArray(args.data.cornerOptions) ? args.data.cornerOptions : DEFAULT_CORNER_OPTIONS,
       isActive: args.data.isActive !== undefined ? args.data.isActive : true,
       createdAt: now,
       updatedAt: now,
@@ -1497,21 +1583,18 @@ class ProductClient {
     };
     store.products[idx] = updated;
     writeStore(store);
-    return {
-      ...updated,
-      paperOptions: Array.isArray(updated.paperOptions) && updated.paperOptions.length > 0 ? updated.paperOptions : DEFAULT_PAPER_OPTIONS,
-      quantityOptions: Array.isArray(updated.quantityOptions) && updated.quantityOptions.length > 0 ? updated.quantityOptions : DEFAULT_QUANTITY_OPTIONS,
-      cornerOptions: Array.isArray(updated.cornerOptions) && updated.cornerOptions.length > 0 ? updated.cornerOptions : DEFAULT_CORNER_OPTIONS,
-    };
+    return enrichProductRecord(updated);
   }
 
   async delete(args: { where: { id: string } }): Promise<boolean> {
     const store = readStore();
     const cleanId = args.where.id.trim();
     const initialLen = store.products.length;
-    store.products = store.products.filter((p) => p.id.trim() !== cleanId);
+    const filtered = store.products.filter((p) => p.id.trim() !== cleanId);
+    if (filtered.length === initialLen) return false;
+    store.products = filtered;
     writeStore(store);
-    return store.products.length < initialLen;
+    return true;
   }
 }
 
@@ -1565,10 +1648,80 @@ class BannerClient {
   async delete(args: { where: { id: string } }): Promise<boolean> {
     const store = readStore();
     if (!store.banners) return false;
+    const cleanId = args.where.id.trim();
     const initialLen = store.banners.length;
-    store.banners = store.banners.filter((b) => b.id !== args.where.id);
+    const filtered = store.banners.filter((b) => b.id.trim() !== cleanId);
+    if (filtered.length === initialLen) return false;
+    store.banners = filtered;
     writeStore(store);
-    return store.banners.length < initialLen;
+    return true;
+  }
+}
+
+class CouponClient {
+  async findMany(): Promise<CouponRecord[]> {
+    const store = readStore();
+    const coupons = store.coupons || [];
+    return [...coupons].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  async findByCode(code: string): Promise<CouponRecord | null> {
+    const store = readStore();
+    const cleanCode = code.toUpperCase().trim();
+    return (store.coupons || []).find((c) => c.code.toUpperCase().trim() === cleanCode) || null;
+  }
+
+  async create(args: { data: Omit<CouponRecord, 'id' | 'createdAt'> }): Promise<CouponRecord> {
+    const store = readStore();
+    if (!store.coupons) store.coupons = [];
+    const cleanCode = args.data.code.toUpperCase().trim();
+    if (store.coupons.some((c) => c.code.toUpperCase().trim() === cleanCode)) {
+      throw new Error(`Coupon code "${cleanCode}" already exists.`);
+    }
+    const newCoupon: CouponRecord = {
+      ...args.data,
+      code: cleanCode,
+      id: generateId('cpn'),
+      createdAt: new Date().toISOString(),
+    };
+    store.coupons.unshift(newCoupon);
+    writeStore(store);
+    return newCoupon;
+  }
+
+  async update(args: { where: { id: string }; data: Partial<CouponRecord> }): Promise<CouponRecord> {
+    const store = readStore();
+    if (!store.coupons) store.coupons = [];
+    const cleanId = args.where.id.trim();
+    const idx = store.coupons.findIndex((c) => c.id.trim() === cleanId);
+    if (idx === -1) throw new Error('Coupon not found');
+    const updated: CouponRecord = { ...store.coupons[idx], ...args.data };
+    store.coupons[idx] = updated;
+    writeStore(store);
+    return updated;
+  }
+
+  async incrementUsage(code: string): Promise<void> {
+    const store = readStore();
+    if (!store.coupons) return;
+    const cleanCode = code.toUpperCase().trim();
+    const idx = store.coupons.findIndex((c) => c.code.toUpperCase().trim() === cleanCode);
+    if (idx !== -1) {
+      store.coupons[idx] = { ...store.coupons[idx], usageCount: (store.coupons[idx].usageCount || 0) + 1 };
+      writeStore(store);
+    }
+  }
+
+  async delete(args: { where: { id: string } }): Promise<boolean> {
+    const store = readStore();
+    if (!store.coupons) return false;
+    const cleanId = args.where.id.trim();
+    const initialLen = store.coupons.length;
+    const filtered = store.coupons.filter((c) => c.id.trim() !== cleanId);
+    if (filtered.length === initialLen) return false;
+    store.coupons = filtered;
+    writeStore(store);
+    return true;
   }
 }
 
@@ -1597,9 +1750,6 @@ class SettingsClient {
 // otherwise falls back to the file-based JSON store (local dev).
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { tursoDb, isTursoConfigured } = require('./turso-db');
-
 const _fileDb = {
   user: new UserClient(),
   booking: new BookingClient(),
@@ -1607,6 +1757,7 @@ const _fileDb = {
   category: new CategoryClient(),
   product: new ProductClient(),
   banner: new BannerClient(),
+  coupon: new CouponClient(),
   settings: new SettingsClient(),
 };
 

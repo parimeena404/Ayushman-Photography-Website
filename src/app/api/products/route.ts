@@ -9,36 +9,41 @@ export async function GET(req: Request) {
     const category = searchParams.get('category');
     const search = searchParams.get('search');
 
-    let products = await db.product.findMany({
+    const allActiveProducts = await db.product.findMany({
       where: { isActive: true },
     });
 
     const categories = await db.category.findMany();
 
+    // Attach accurate counts across all active products before category/search filtering
+    const categoriesWithCount = categories.map((cat: any) => ({
+      ...cat,
+      count: allActiveProducts.filter(
+        (p: any) => p.category?.trim().toLowerCase() === cat.id?.trim().toLowerCase()
+      ).length,
+    }));
+
+    let products = allActiveProducts;
+
     if (category && category !== 'All Products') {
-      products = products.filter((p: any) => p.category.toLowerCase() === category.toLowerCase());
+      const catLower = category.trim().toLowerCase();
+      products = products.filter((p: any) => p.category?.trim().toLowerCase() === catLower);
     }
 
     if (search) {
       const q = search.toLowerCase().trim();
       products = products.filter((p: any) =>
-        p.title.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q)
+        (p.title || '').toLowerCase().includes(q) ||
+        (p.category || '').toLowerCase().includes(q) ||
+        (p.description || '').toLowerCase().includes(q)
       );
     }
-
-    // Attach counts to categories
-    const categoriesWithCount = categories.map((cat: any) => ({
-      ...cat,
-      count: products.filter((p: any) => p.category === cat.id).length,
-    }));
 
     return NextResponse.json({
       success: true,
       products,
       categories: [
-        { id: 'All Products', label: '🌟 All Products', icon: '🌟', count: products.length },
+        { id: 'All Products', label: '🌟 All Products', icon: '🌟', count: allActiveProducts.length },
         ...categoriesWithCount,
       ],
     });

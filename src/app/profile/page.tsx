@@ -40,7 +40,7 @@ export default function UserProfilePage() {
 
   const fetchUserBookings = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch('/api/auth/me', { cache: 'no-store' });
       const data = await res.json();
       if (res.ok && data.bookings) {
         setUserBookings(data.bookings);

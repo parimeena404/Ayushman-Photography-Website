@@ -8,19 +8,49 @@ import Footer from '@/components/Footer';
 export default function SubmitReviewPage() {
   const [rating, setRating] = useState(5);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    eventType: 'Wedding',
+    phone: '',
+    eventType: 'Wedding Cards',
     date: '',
     venue: '',
     message: '',
     consent: false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const res = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || 'Not Provided',
+          eventType: `Client Review: ${formData.eventType} (${rating} Stars)`,
+          date: formData.date || new Date().toISOString().split('T')[0],
+          message: `Rating: ${rating}/5 Stars\nCategory: ${formData.eventType}\nOrder Date: ${formData.date || 'N/A'}\nCity/Venue: ${formData.venue || 'N/A'}\nReview: ${formData.message}`,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSubmitted(true);
+      } else {
+        setSubmitError(data.error || 'Failed to submit review');
+      }
+    } catch {
+      setSubmitError('Network error. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -36,7 +66,7 @@ export default function SubmitReviewPage() {
               Share Your Experience
             </h1>
             <p className="font-body" style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', maxWidth: '550px', margin: '0 auto' }}>
-              We are deeply honored to have documented your story. Your review helps future couples understand what it feels like to work with us.
+              We are deeply honored to have printed for your celebration and brand. Your review helps future clients choose with confidence.
             </p>
           </div>
 
@@ -85,22 +115,22 @@ export default function SubmitReviewPage() {
                   value={formData.eventType}
                   onChange={(e) => setFormData({ ...formData, eventType: e.target.value })}
                 >
-                  <option value="Wedding">Wedding</option>
-                  <option value="Pre-Wedding">Pre-Wedding</option>
-                  <option value="Destination">Destination</option>
-                  <option value="Engagement">Engagement</option>
-                  <option value="Portrait">Portrait</option>
+                  <option value="Wedding Cards">Wedding Cards</option>
+                  <option value="Business Cards">Visiting & Business Cards</option>
+                  <option value="Flex Banners">Flex Banners & Signage</option>
+                  <option value="Office Stationery">Office Stationery</option>
+                  <option value="Photobooks">Photobooks & Gifts</option>
                 </select>
                 <input
                   type="text"
-                  placeholder="Wedding Date"
+                  placeholder="Order / Event Date"
                   className="input-luxury font-body"
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                 />
                 <input
                   type="text"
-                  placeholder="Venue & City"
+                  placeholder="City"
                   className="input-luxury font-body"
                   value={formData.venue}
                   onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
@@ -109,21 +139,13 @@ export default function SubmitReviewPage() {
 
               <textarea
                 rows={5}
-                placeholder="Share your thoughts about your experience with Lumière Studio..."
+                placeholder="Share your thoughts about your printing experience with Ayushman Cards & Graphics..."
                 required
                 className="input-luxury font-body"
                 style={{ resize: 'none' }}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               />
-
-              {/* Photo Upload Placeholder */}
-              <div>
-                <label className="font-body" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>
-                  Upload Couple Photo (Optional)
-                </label>
-                <input type="file" accept="image/*" className="font-body" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }} />
-              </div>
 
               {/* Consent Checkbox */}
               <label style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', cursor: 'pointer' }}>
@@ -135,13 +157,19 @@ export default function SubmitReviewPage() {
                   style={{ accentColor: 'var(--accent)' }}
                 />
                 <span className="font-body" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  I agree to have my review and details published on the Lumière Studio website upon curation.
+                  I agree to have my review published on the Ayushman Cards & Graphics website upon curation.
                 </span>
               </label>
 
+              {submitError && (
+                <div style={{ padding: '0.65rem', background: '#FEE2E2', color: '#991B1B', borderRadius: '8px', fontSize: '0.8125rem', textAlign: 'center' }}>
+                  {submitError}
+                </div>
+              )}
+
               <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-                <button type="submit" className="btn-premium">
-                  Submit Review
+                <button type="submit" disabled={submitting} className="btn-premium" style={{ cursor: submitting ? 'wait' : 'pointer' }}>
+                  {submitting ? 'Submitting Review...' : 'Submit Review'}
                 </button>
               </div>
             </form>
